@@ -1,0 +1,12 @@
+{
+  "ticker": "AAPL",
+  "tweets": [],
+  "stocktwits_messages": [],
+  "sentiment_summary": {},
+  "key_accounts": [],
+  "cache_used": false,
+  "success": true,
+  "errors": [],
+  "warnings": [],
+  "timestamp": "2025-11-11T01:56:01.834801"
+}

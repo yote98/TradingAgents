@@ -1,0 +1,46 @@
+# thesys.dev Deployment Configuration
+# TradingAgents Discord Enhancement API
+
+name: tradingagents-discord-api
+runtime: python3.10
+
+# Main entry point
+start: python examples/discord_bot_server_enhanced.py
+
+# Environment variables (set these in thesys.dev dashboard)
+env:
+  DISCORD_BOT_TOKEN: ${DISCORD_BOT_TOKEN}
+  DATABASE_PATH: /data/coach_plans.db
+  API_PORT: 8080
+  MOCK_MODE: false
+  LOG_LEVEL: INFO
+
+# Required files and directories
+include:
+  - tradingagents/
+  - examples/
+  - requirements.txt
+  - README.md
+
+# Persistent storage for database
+volumes:
+  - /data
+
+# Health check configuration
+health_check:
+  path: /health
+  interval: 30s
+  timeout: 5s
+  retries: 3
+
+# Resource limits (adjust based on your needs)
+resources:
+  memory: 512MB
+  cpu: 0.5
+
+# Auto-restart on failure
+restart: always
+
+# Port mapping
+ports:
+  - 8080:8080

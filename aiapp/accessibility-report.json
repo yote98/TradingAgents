@@ -1,0 +1,47 @@
+{
+  "timestamp": "2025-11-11T08:19:40.294Z",
+  "summary": {
+    "colorContrastTests": {
+      "passed": 11,
+      "failed": 4,
+      "total": 15
+    },
+    "ariaAttributes": 37,
+    "semanticHTML": 50
+  },
+  "colorContrastFailures": [
+    {
+      "theme": "lightTheme",
+      "name": "Muted text on white",
+      "fg": "#94a3b8",
+      "bg": "#ffffff",
+      "minRatio": 3,
+      "actualRatio": 2.5640413904962034
+    },
+    {
+      "theme": "lightTheme",
+      "name": "Primary button",
+      "fg": "#ffffff",
+      "bg": "#3b82f6",
+      "minRatio": 4.5,
+      "actualRatio": 3.6779011537825332
+    },
+    {
+      "theme": "lightTheme",
+      "name": "Active nav item",
+      "fg": "#ffffff",
+      "bg": "#3b82f6",
+      "minRatio": 4.5,
+      "actualRatio": 3.6779011537825332
+    },
+    {
+      "theme": "darkTheme",
+      "name": "Primary button (dark)",
+      "fg": "#ffffff",
+      "bg": "#3b82f6",
+      "minRatio": 4.5,
+      "actualRatio": 3.6779011537825332
+    }
+  ],
+  "overallScore": 79
+}

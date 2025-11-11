@@ -1,0 +1,27 @@
+{
+  "mcpServers": {
+    "alphavantage": {
+      "url": "https://mcp.alphavantage.co/mcp?apikey=H0MDWALD76X9X96C",
+      "disabled": false,
+      "autoApprove": [
+        "TIME_SERIES_DAILY",
+        "TIME_SERIES_INTRADAY",
+        "GLOBAL_QUOTE",
+        "COMPANY_OVERVIEW",
+        "INCOME_STATEMENT",
+        "BALANCE_SHEET",
+        "CASH_FLOW",
+        "EARNINGS",
+        "NEWS_SENTIMENT",
+        "SYMBOL_SEARCH",
+        "TOP_GAINERS_LOSERS",
+        "INSIDER_TRANSACTIONS",
+        "RSI",
+        "MACD",
+        "SMA",
+        "EMA",
+        "BBANDS"
+      ]
+    }
+  }
+}

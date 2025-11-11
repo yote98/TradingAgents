@@ -1,0 +1,20 @@
+# Minimal requirements for Discord Enhancement API deployment
+# Use this for deploying just the API service
+
+# Core dependencies
+flask>=2.3.0
+requests>=2.31.0
+
+# Discord integration (optional - only if using real Discord bot)
+discord.py>=2.3.0
+
+# Environment management
+python-dotenv>=1.0.0
+
+# Optional: If you want to use the full TradingAgents system
+# Uncomment these lines:
+# langchain>=0.1.0
+# langchain-openai>=0.0.5
+# langchain-anthropic>=0.1.0
+# yfinance>=0.2.0
+# pandas>=2.0.0

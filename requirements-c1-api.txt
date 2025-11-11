@@ -1,0 +1,19 @@
+# C1 Backend API Requirements
+# Flask-based REST API for TradingAgents integration
+
+# Core Flask dependencies
+Flask==3.0.0
+flask-cors==4.0.0
+
+# Environment configuration
+python-dotenv==1.0.0
+
+# Existing TradingAgents dependencies (already in main requirements.txt)
+# These are referenced but not duplicated:
+# - langchain
+# - langchain-openai
+# - langgraph
+# - All other TradingAgents dependencies
+
+# Note: Install this with: pip install -r requirements-c1-api.txt
+# Make sure you have already installed the main requirements.txt

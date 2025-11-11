@@ -20,6 +20,7 @@ from tradingagents.agents.utils.agent_states import (
     InvestDebateState,
     RiskDebateState,
 )
+from tradingagents.integrations.discord_webhook import DiscordWebhookClient
 from tradingagents.dataflows.config import set_config
 
 # Import the new abstract tool methods from agent_utils
@@ -90,6 +91,13 @@ class TradingAgentsGraph:
         self.trader_memory = FinancialSituationMemory("trader_memory", self.config)
         self.invest_judge_memory = FinancialSituationMemory("invest_judge_memory", self.config)
         self.risk_manager_memory = FinancialSituationMemory("risk_manager_memory", self.config)
+        
+        # Initialize Discord webhook client for coaches
+        self.discord_client = None
+        if self.config.get("enable_coaches", False):
+            webhook_urls = self.config.get("discord_webhooks", {})
+            if any(webhook_urls.values()):
+                self.discord_client = DiscordWebhookClient(webhook_urls)
 
         # Create tool nodes
         self.tool_nodes = self._create_tool_nodes()
@@ -117,7 +125,7 @@ class TradingAgentsGraph:
         self.ticker = None
         self.log_states_dict = {}  # date to full state dict
 
-        # Set up the graph
+        # Set up the graph (coaches are not part of the workflow)
         self.graph = self.graph_setup.setup_graph(selected_analysts)
 
     def _create_tool_nodes(self) -> Dict[str, ToolNode]:
@@ -166,6 +174,12 @@ class TradingAgentsGraph:
         init_agent_state = self.propagator.create_initial_state(
             company_name, trade_date
         )
+        
+        # Fetch coach daily plans from Discord if enabled (stored separately, not in workflow)
+        coach_plans = {}
+        if self.discord_client:
+            coach_plans = self.discord_client.fetch_all_coach_plans(trade_date)
+        
         args = self.propagator.get_graph_args()
 
         if self.debug:
@@ -185,12 +199,28 @@ class TradingAgentsGraph:
 
         # Store current state for reflection
         self.curr_state = final_state
+        
+        # Store coach plans separately (they don't integrate into the workflow)
+        self.coach_plans = coach_plans
 
         # Log state
         self._log_state(trade_date, final_state)
+        
+        # Send summary to Discord if enabled
+        if self.discord_client and self.config.get("discord_webhooks", {}).get("summary_webhook"):
+            summary = {
+                "ticker": company_name,
+                "date": trade_date,
+                "decision": final_state.get("final_trade_decision", "No decision"),
+                "action": self.process_signal(final_state["final_trade_decision"])
+            }
+            self.discord_client.send_trading_summary(
+                self.config["discord_webhooks"]["summary_webhook"],
+                summary
+            )
 
-        # Return decision and processed signal
-        return final_state, self.process_signal(final_state["final_trade_decision"])
+        # Return decision, processed signal, and coach plans (separate)
+        return final_state, self.process_signal(final_state["final_trade_decision"]), coach_plans
 
     def _log_state(self, trade_date, final_state):
         """Log the final state to a JSON file."""
@@ -255,3 +285,18 @@ class TradingAgentsGraph:
     def process_signal(self, full_signal):
         """Process a signal to extract the core decision."""
         return self.signal_processor.process_signal(full_signal)
+    
+    def get_coach_plans(self, trade_date=None):
+        """
+        Fetch coach plans from Discord independently (not part of workflow).
+        
+        Args:
+            trade_date: Date to fetch plans for (defaults to today)
+            
+        Returns:
+            Dictionary with coach plans and charts
+        """
+        if not self.discord_client:
+            return {}
+        
+        return self.discord_client.fetch_all_coach_plans(trade_date)

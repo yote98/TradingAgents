@@ -1,0 +1,904 @@
+{
+  "ticker": "AAPL",
+  "start_date": "2023-01-01",
+  "end_date": "2023-06-30",
+  "initial_balance": 10000.0,
+  "final_balance": 10000.0,
+  "trades": [],
+  "equity_history": [
+    {
+      "date": "2023-01-03 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-01-04 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-01-05 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-01-06 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-01-09 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-01-10 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-01-11 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-01-12 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-01-13 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-01-17 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-01-18 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-01-19 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-01-20 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-01-23 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-01-24 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-01-25 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-01-26 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-01-27 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-01-30 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-01-31 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-02-01 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-02-02 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-02-03 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-02-06 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-02-07 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-02-08 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-02-09 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-02-10 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-02-13 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-02-14 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-02-15 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-02-16 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-02-17 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-02-21 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-02-22 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-02-23 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-02-24 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-02-27 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-02-28 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-03-01 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-03-02 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-03-03 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-03-06 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-03-07 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-03-08 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-03-09 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-03-10 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-03-13 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-03-14 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-03-15 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-03-16 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-03-17 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-03-20 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-03-21 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-03-22 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-03-23 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-03-24 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-03-27 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-03-28 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-03-29 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-03-30 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-03-31 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-04-03 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-04-04 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-04-05 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-04-06 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-04-10 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-04-11 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-04-12 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-04-13 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-04-14 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-04-17 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-04-18 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-04-19 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-04-20 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-04-21 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-04-24 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-04-25 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-04-26 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-04-27 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-04-28 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-05-01 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-05-02 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-05-03 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-05-04 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-05-05 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-05-08 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-05-09 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-05-10 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-05-11 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-05-12 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-05-15 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-05-16 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-05-17 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-05-18 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-05-19 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-05-22 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-05-23 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-05-24 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-05-25 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-05-26 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-05-30 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-05-31 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-06-01 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-06-02 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-06-05 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-06-06 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-06-07 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-06-08 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-06-09 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-06-12 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-06-13 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-06-14 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-06-15 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-06-16 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-06-20 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-06-21 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-06-22 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-06-23 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-06-26 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-06-27 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-06-28 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    },
+    {
+      "date": "2023-06-29 00:00:00",
+      "cash_balance": 10000.0,
+      "total_equity": 10000.0,
+      "positions": {},
+      "daily_return": 0.0
+    }
+  ],
+  "config": {
+    "initial_balance": 10000.0,
+    "commission_rate": 0.001,
+    "slippage": 0.001,
+    "selected_analysts": null,
+    "enable_coaches": false,
+    "risk_management_config": null,
+    "start_date": "2023-01-01",
+    "end_date": "2023-06-30",
+    "benchmark": "SPY",
+    "data_interval": "daily",
+    "train_period_days": 252,
+    "test_period_days": 63,
+    "position_sizing_method": "fixed_percentage",
+    "risk_per_trade_pct": 2.0,
+    "max_position_size_pct": 20.0
+  },
+  "total_return": 0.0,
+  "total_return_pct": 0.0,
+  "cagr": 0.0,
+  "sharpe_ratio": 0.0,
+  "sortino_ratio": 0.0,
+  "max_drawdown": 0.0,
+  "volatility": 0.0,
+  "total_trades": 0,
+  "winning_trades": 0,
+  "losing_trades": 0,
+  "win_rate": 0.0,
+  "profit_factor": 0.0,
+  "avg_win": 0.0,
+  "avg_loss": 0.0,
+  "avg_holding_days": 0.0,
+  "created_at": "2025-11-09T18:42:00.922555"
+}

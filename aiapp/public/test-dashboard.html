@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Enhancement Testing</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+    }
+    
+    .test-section {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .test-section h2 {
+      margin-top: 0;
+      color: #333;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 10px;
+    }
+    
+    button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      margin: 5px;
+      transition: background 0.3s;
+    }
+    
+    button:hover {
+      background: #5568d3;
+    }
+    
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    
+    .result {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 5px;
+      font-family: monospace;
+      font-size: 12px;
+    }
+    
+    .result.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    
+    .result.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    
+    .result.info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+    
+    .status-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+    
+    .status-badge.pass {
+      background: #28a745;
+      color: white;
+    }
+    
+    .status-badge.fail {
+      background: #dc3545;
+      color: white;
+    }
+    
+    .status-badge.pending {
+      background: #ffc107;
+      color: #000;
+    }
+    
+    pre {
+      background: #f4f4f4;
+      padding: 10px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    
+    .test-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 10px;
+      margin-top: 15px;
+    }
+    
+    .test-card {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 5px;
+      border-left: 4px solid #667eea;
+    }
+    
+    .test-card h4 {
+      margin: 0 0 10px 0;
+      color: #333;
+    }
+    
+    .test-card p {
+      margin: 5px 0;
+      font-size: 13px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🧪 Dashboard Enhancement Testing Suite</h1>
+    <p>Comprehensive testing for notifications and chart generation features</p>
+  </div>
+
+  <!-- System Check -->
+  <div class="test-section">
+    <h2>1. System Compatibility Check</h2>
+    <button onclick="runSystemCheck()">Run System Check</button>
+    <div id="system-check-result"></div>
+  </div>
+
+  <!-- Notification Tests -->
+  <div class="test-section">
+    <h2>2. Notification Tests</h2>
+    <div class="test-grid">
+      <div class="test-card">
+        <h4>Permission Request</h4>
+        <button onclick="testNotificationPermission()">Test Permission</button>
+        <div id="permission-result"></div>
+      </div>
+      
+      <div class="test-card">
+        <h4>Show Notification</h4>
+        <button onclick="testShowNotification()">Show Test Notification</button>
+        <div id="show-notification-result"></div>
+      </div>
+      
+      <div class="test-card">
+        <h4>Throttling</h4>
+        <button onclick="testThrottling()">Test Throttling</button>
+        <div id="throttling-result"></div>
+      </div>
+      
+      <div class="test-card">
+        <h4>Preferences</h4>
+        <button onclick="testPreferences()">Test Preferences</button>
+        <div id="preferences-result"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart Tests -->
+  <div class="test-section">
+    <h2>3. Chart Generation Tests</h2>
+    <div class="test-grid">
+      <div class="test-card">
+        <h4>Ticker Extraction</h4>
+        <button onclick="testTickerExtraction()">Test Extraction</button>
+        <div id="ticker-result"></div>
+      </div>
+      
+      <div class="test-card">
+        <h4>Timeframe Parsing</h4>
+        <button onclick="testTimeframeParsing()">Test Parsing</button>
+        <div id="timeframe-result"></div>
+      </div>
+      
+      <div class="test-card">
+        <h4>Cache Operations</h4>
+        <button onclick="testCache()">Test Cache</button>
+        <div id="cache-result"></div>
+      </div>
+      
+      <div class="test-card">
+        <h4>Storage Monitoring</h4>
+        <button onclick="testStorage()">Test Storage</button>
+        <div id="storage-result"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Integration Tests -->
+  <div class="test-section">
+    <h2>4. Integration Tests</h2>
+    <button onclick="runAllTests()">Run All Tests</button>
+    <button onclick="clearAllData()">Clear All Data</button>
+    <div id="integration-result"></div>
+  </div>
+
+  <!-- Test Results Summary -->
+  <div class="test-section">
+    <h2>5. Test Results Summary</h2>
+    <div id="summary-result"></div>
+  </div>
+
+  <script>
+    const testResults = {
+      passed: 0,
+      failed: 0,
+      total: 0
+    };
+
+    function updateSummary() {
+      const summaryDiv = document.getElementById('summary-result');
+      const passRate = testResults.total > 0 
+        ? ((testResults.passed / testResults.total) * 100).toFixed(1) 
+        : 0;
+      
+      summaryDiv.innerHTML = `
+        <div class="result info">
+          <strong>Test Summary:</strong><br>
+          Total Tests: ${testResults.total}<br>
+          Passed: ${testResults.passed} <span class="status-badge pass">✓</span><br>
+          Failed: ${testResults.failed} <span class="status-badge fail">✗</span><br>
+          Pass Rate: ${passRate}%
+        </div>
+      `;
+    }
+
+    function recordResult(passed) {
+      testResults.total++;
+      if (passed) {
+        testResults.passed++;
+      } else {
+        testResults.failed++;
+      }
+      updateSummary();
+    }
+
+    // System Check
+    function runSystemCheck() {
+      const resultDiv = document.getElementById('system-check-result');
+      const checks = [];
+      
+      // Check Notification API
+      const hasNotification = 'Notification' in window;
+      checks.push({
+        name: 'Notification API',
+        status: hasNotification,
+        details: hasNotification ? `Permission: ${Notification.permission}` : 'Not supported'
+      });
+      
+      // Check localStorage
+      let hasLocalStorage = false;
+      try {
+        localStorage.setItem('test', 'test');
+        localStorage.removeItem('test');
+        hasLocalStorage = true;
+      } catch (e) {
+        hasLocalStorage = false;
+      }
+      checks.push({
+        name: 'localStorage',
+        status: hasLocalStorage,
+        details: hasLocalStorage ? 'Available' : 'Blocked or unavailable'
+      });
+      
+      // Check fetch API
+      const hasFetch = 'fetch' in window;
+      checks.push({
+        name: 'Fetch API',
+        status: hasFetch,
+        details: hasFetch ? 'Available' : 'Not supported'
+      });
+      
+      // Check Intersection Observer
+      const hasIntersectionObserver = 'IntersectionObserver' in window;
+      checks.push({
+        name: 'Intersection Observer',
+        status: hasIntersectionObserver,
+        details: hasIntersectionObserver ? 'Available' : 'Not supported'
+      });
+      
+      // Display results
+      let html = '<div class="result info"><strong>System Compatibility:</strong><br><br>';
+      checks.forEach(check => {
+        const badge = check.status 
+          ? '<span class="status-badge pass">✓</span>' 
+          : '<span class="status-badge fail">✗</span>';
+        html += `${badge} ${check.name}: ${check.details}<br>`;
+        recordResult(check.status);
+      });
+      html += '</div>';
+      resultDiv.innerHTML = html;
+    }
+
+    // Notification Tests
+    async function testNotificationPermission() {
+      const resultDiv = document.getElementById('permission-result');
+      
+      if (!('Notification' in window)) {
+        resultDiv.innerHTML = '<div class="result error">Notification API not supported</div>';
+        recordResult(false);
+        return;
+      }
+      
+      try {
+        const permission = await Notification.requestPermission();
+        resultDiv.innerHTML = `<div class="result success">Permission: ${permission}</div>`;
+        recordResult(permission === 'granted' || permission === 'denied');
+      } catch (error) {
+        resultDiv.innerHTML = `<div class="result error">Error: ${error.message}</div>`;
+        recordResult(false);
+      }
+    }
+
+    function testShowNotification() {
+      const resultDiv = document.getElementById('show-notification-result');
+      
+      if (!('Notification' in window)) {
+        resultDiv.innerHTML = '<div class="result error">Notification API not supported</div>';
+        recordResult(false);
+        return;
+      }
+      
+      if (Notification.permission !== 'granted') {
+        resultDiv.innerHTML = '<div class="result error">Permission not granted. Please grant permission first.</div>';
+        recordResult(false);
+        return;
+      }
+      
+      try {
+        const notification = new Notification('Test Notification', {
+          body: 'This is a test notification from the testing suite',
+          icon: '/favicon.ico',
+          tag: 'test-notification'
+        });
+        
+        notification.onclick = () => {
+          resultDiv.innerHTML = '<div class="result success">Notification clicked!</div>';
+          notification.close();
+        };
+        
+        resultDiv.innerHTML = '<div class="result success">Notification sent! Check your notification center.</div>';
+        recordResult(true);
+      } catch (error) {
+        resultDiv.innerHTML = `<div class="result error">Error: ${error.message}</div>`;
+        recordResult(false);
+      }
+    }
+
+    function testThrottling() {
+      const resultDiv = document.getElementById('throttling-result');
+      
+      const minInterval = 300; // 5 minutes in seconds
+      const now = Date.now();
+      const lastTime = now - (2 * 60 * 1000); // 2 minutes ago
+      
+      const timePassed = now - lastTime;
+      const canNotify = timePassed >= (minInterval * 1000);
+      const remainingSeconds = Math.ceil(((minInterval * 1000) - timePassed) / 1000);
+      
+      const html = `
+        <div class="result ${canNotify ? 'error' : 'success'}">
+          <strong>Throttling Test:</strong><br>
+          Min Interval: ${minInterval}s (${Math.floor(minInterval / 60)} minutes)<br>
+          Time Since Last: ${Math.floor(timePassed / 1000)}s<br>
+          Can Notify: ${canNotify ? 'Yes' : 'No'}<br>
+          ${!canNotify ? `Remaining: ${remainingSeconds}s` : ''}
+        </div>
+      `;
+      
+      resultDiv.innerHTML = html;
+      recordResult(!canNotify); // Should be throttled
+    }
+
+    function testPreferences() {
+      const resultDiv = document.getElementById('preferences-result');
+      
+      try {
+        const testPrefs = {
+          enabled: true,
+          coaches: {
+            coach_d: true,
+            coach_i: false,
+            coach_s: true,
+            coach_n: true
+          },
+          minInterval: 300,
+          sound: false,
+          lastNotificationTime: {
+            coach_d: 0,
+            coach_i: 0,
+            coach_s: 0,
+            coach_n: 0
+          }
+        };
+        
+        // Save
+        localStorage.setItem('test-preferences', JSON.stringify(testPrefs));
+        
+        // Load
+        const loaded = JSON.parse(localStorage.getItem('test-preferences'));
+        
+        // Verify
+        const matches = JSON.stringify(testPrefs) === JSON.stringify(loaded);
+        
+        // Cleanup
+        localStorage.removeItem('test-preferences');
+        
+        resultDiv.innerHTML = `
+          <div class="result ${matches ? 'success' : 'error'}">
+            <strong>Preferences Test:</strong><br>
+            Save: ✓<br>
+            Load: ✓<br>
+            Match: ${matches ? '✓' : '✗'}
+          </div>
+        `;
+        
+        recordResult(matches);
+      } catch (error) {
+        resultDiv.innerHTML = `<div class="result error">Error: ${error.message}</div>`;
+        recordResult(false);
+      }
+    }
+
+    // Chart Tests
+    function testTickerExtraction() {
+      const resultDiv = document.getElementById('ticker-result');
+      
+      const testCases = [
+        { input: 'Looking at $AAPL for a breakout', expected: 'AAPL' },
+        { input: 'TSLA 4H chart shows divergence', expected: 'TSLA' },
+        { input: 'Ticker: MSFT showing momentum', expected: 'MSFT' },
+        { input: 'Market looking bullish', expected: null }
+      ];
+      
+      let passed = 0;
+      let failed = 0;
+      
+      testCases.forEach(test => {
+        const dollarMatch = test.input.match(/\$([A-Z]{1,5})/);
+        const tickerMatch = test.input.match(/\b([A-Z]{2,5})\s+\d+[HhDd]/);
+        const colonMatch = test.input.match(/(?:ticker|symbol):\s*([A-Z]{2,5})/i);
+        
+        let result = null;
+        if (dollarMatch) result = dollarMatch[1];
+        else if (tickerMatch) result = tickerMatch[1];
+        else if (colonMatch) result = colonMatch[1];
+        
+        if (result === test.expected) {
+          passed++;
+        } else {
+          failed++;
+        }
+      });
+      
+      resultDiv.innerHTML = `
+        <div class="result ${failed === 0 ? 'success' : 'error'}">
+          <strong>Ticker Extraction:</strong><br>
+          Passed: ${passed}/${testCases.length}<br>
+          Failed: ${failed}/${testCases.length}
+        </div>
+      `;
+      
+      recordResult(failed === 0);
+    }
+
+    function testTimeframeParsing() {
+      const resultDiv = document.getElementById('timeframe-result');
+      
+      const testCases = [
+        { input: '1D', expected: '1D' },
+        { input: '4H', expected: '4H' },
+        { input: 'daily', expected: '1D' },
+        { input: 'hourly', expected: '1H' }
+      ];
+      
+      const normalize = (tf) => {
+        const lower = tf.toLowerCase();
+        if (lower.includes('daily')) return '1D';
+        if (lower.includes('hourly')) return '1H';
+        return tf;
+      };
+      
+      let passed = 0;
+      let failed = 0;
+      
+      testCases.forEach(test => {
+        const result = normalize(test.input);
+        if (result === test.expected) {
+          passed++;
+        } else {
+          failed++;
+        }
+      });
+      
+      resultDiv.innerHTML = `
+        <div class="result ${failed === 0 ? 'success' : 'error'}">
+          <strong>Timeframe Parsing:</strong><br>
+          Passed: ${passed}/${testCases.length}<br>
+          Failed: ${failed}/${testCases.length}
+        </div>
+      `;
+      
+      recordResult(failed === 0);
+    }
+
+    function testCache() {
+      const resultDiv = document.getElementById('cache-result');
+      
+      try {
+        const testData = {
+          'AAPL-1D': {
+            ticker: 'AAPL',
+            timeframe: '1D',
+            data: [],
+            generatedAt: Date.now()
+          }
+        };
+        
+        // Save to cache
+        localStorage.setItem('test-chart-cache', JSON.stringify(testData));
+        
+        // Load from cache
+        const loaded = JSON.parse(localStorage.getItem('test-chart-cache'));
+        
+        // Test cache hit
+        const cacheHit = loaded['AAPL-1D'] !== undefined;
+        
+        // Test cache miss
+        const cacheMiss = loaded['TSLA-4H'] === undefined;
+        
+        // Test expiration
+        const EXPIRATION = 5 * 60 * 1000;
+        const age = Date.now() - loaded['AAPL-1D'].generatedAt;
+        const isExpired = age > EXPIRATION;
+        
+        // Cleanup
+        localStorage.removeItem('test-chart-cache');
+        
+        resultDiv.innerHTML = `
+          <div class="result success">
+            <strong>Cache Test:</strong><br>
+            Save: ✓<br>
+            Load: ✓<br>
+            Cache Hit: ${cacheHit ? '✓' : '✗'}<br>
+            Cache Miss: ${cacheMiss ? '✓' : '✗'}<br>
+            Expiration Check: ${!isExpired ? '✓' : '✗'}
+          </div>
+        `;
+        
+        recordResult(cacheHit && cacheMiss && !isExpired);
+      } catch (error) {
+        resultDiv.innerHTML = `<div class="result error">Error: ${error.message}</div>`;
+        recordResult(false);
+      }
+    }
+
+    function testStorage() {
+      const resultDiv = document.getElementById('storage-result');
+      
+      try {
+        let totalSize = 0;
+        for (let key in localStorage) {
+          if (localStorage.hasOwnProperty(key)) {
+            const value = localStorage.getItem(key);
+            totalSize += key.length + (value ? value.length : 0);
+          }
+        }
+        
+        const sizeKB = (totalSize / 1024).toFixed(2);
+        const sizeMB = (totalSize / (1024 * 1024)).toFixed(2);
+        const quota = 5 * 1024 * 1024; // 5MB typical quota
+        const percentage = ((totalSize / quota) * 100).toFixed(1);
+        
+        const isHealthy = totalSize < (quota * 0.8);
+        
+        resultDiv.innerHTML = `
+          <div class="result ${isHealthy ? 'success' : 'error'}">
+            <strong>Storage Monitoring:</strong><br>
+            Total Size: ${sizeKB} KB (${sizeMB} MB)<br>
+            Quota Usage: ${percentage}%<br>
+            Status: ${isHealthy ? 'Healthy' : 'Approaching Limit'}
+          </div>
+        `;
+        
+        recordResult(isHealthy);
+      } catch (error) {
+        resultDiv.innerHTML = `<div class="result error">Error: ${error.message}</div>`;
+        recordResult(false);
+      }
+    }
+
+    // Integration Tests
+    async function runAllTests() {
+      const resultDiv = document.getElementById('integration-result');
+      resultDiv.innerHTML = '<div class="result info">Running all tests...</div>';
+      
+      // Reset counters
+      testResults.passed = 0;
+      testResults.failed = 0;
+      testResults.total = 0;
+      
+      // Run all tests
+      runSystemCheck();
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      testTickerExtraction();
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      testTimeframeParsing();
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      testCache();
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      testStorage();
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      testThrottling();
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      testPreferences();
+      
+      resultDiv.innerHTML = '<div class="result success">All tests completed! Check summary below.</div>';
+    }
+
+    function clearAllData() {
+      if (confirm('This will clear all localStorage data. Continue?')) {
+        localStorage.clear();
+        alert('All data cleared!');
+        location.reload();
+      }
+    }
+
+    // Initialize
+    updateSummary();
+  </script>
+</body>
+</html>
