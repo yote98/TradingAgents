@@ -1,11 +1,47 @@
-.venv
-results
-env/
-__pycache__/
-.DS_Store
-*.csv
-src/
-eval_results/
-eval_data/
-*.egg-info/
+# Environment variables (NEVER commit these!)
 .env
+c1-template/.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+c1-template/node_modules/
+aiapp/node_modules/
+
+# Build outputs
+.next/
+c1-template/.next/
+aiapp/.next/
+dist/
+build/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+venv/
+env/
+
+# Cache
+.cache/
+tradingagents/dataflows/data_cache/
+
+# Logs
+*.log
+eval_results/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
