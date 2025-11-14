@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: tradingagents-c1
+    runtime: node
+    region: oregon
+    plan: free
+    rootDir: c1-template
+    buildCommand: rm -rf .next && npm ci && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 20.11.0
+      - key: NPM_CONFIG_PRODUCTION
+        value: false
