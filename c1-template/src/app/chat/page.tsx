@@ -4,9 +4,9 @@ import { C1Chat, ThemeProvider } from "@thesysai/genui-sdk";
 import "@crayonai/react-ui/styles/index.css";
 import clsx from "clsx";
 import styles from "../page.module.scss";
-import { theme, darkTheme, themeMode } from "@/theme";
+import { theme, darkTheme, themeMode } from "../../theme";
 import { useEffect, useState } from "react";
-import AgentModal, { Agent } from "@/components/AgentModal";
+import AgentModal, { Agent } from "../../components/AgentModal";
 
 export default function ChatPage() {
   const [mounted, setMounted] = useState(false);
