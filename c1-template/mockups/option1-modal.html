@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Option 1: Modal Overlay</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0f0f0f;
+      color: #ededed;
+      height: 100vh;
+      overflow: hidden;
+    }
+    
+    /* Chat Interface */
+    .chat-container {
+      display: flex;
+      height: 100vh;
+    }
+    .sidebar {
+      width: 260px;
+      background: #1a1a1a;
+      border-right: 1px solid #2a2a2a;
+      padding: 20px;
+    }
+    .chat-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .chat-header {
+      padding: 20px;
+      border-bottom: 1px solid #2a2a2a;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .chat-messages {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    
+    /* Modal Button */
+    .modal-trigger {
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #00ff88, #00ffcc);
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .modal-trigger:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 255, 136, 0.3);
+    }
+    
+    /* Modal Overlay */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      animation: fadeIn 0.3s;
+    }
+    
+    .modal-content {
+      background: #1a1a1a;
+      border: 2px solid rgba(0, 255, 136, 0.3);
+      border-radius: 16px;
+      padding: 40px;
+      max-width: 900px;
+      max-height: 80vh;
+      overflow-y: auto;
+      animation: slideUp 0.3s;
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+    
+    .close-btn {
+      background: none;
+      border: none;
+      color: #ededed;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 8px;
+    }
+    
+    .section-title {
+      color: #00ff88;
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin: 30px 0 15px 0;
+    }
+    
+    .agent-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+    
+    .agent-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(0, 255, 136, 0.2);
+      border-radius: 12px;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .agent-card:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(0, 255, 136, 0.4);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0, 255, 136, 0.2);
+    }
+    
+    .agent-icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+    }
+    
+    .agent-name {
+      font-weight: 600;
+      color: #00ff88;
+      margin-bottom: 4px;
+    }
+    
+    .agent-desc {
+      font-size: 13px;
+      color: #999;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes slideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="sidebar">
+      <div style="color: #ededed; font-weight: 600; margin-bottom: 20px;">AlphaFlow AI</div>
+      <button style="width: 100%; padding: 12px; background: #2a2a2a; border: none; color: #ededed; border-radius: 8px; cursor: pointer;">+ New Chat</button>
+    </div>
+    
+    <div class="chat-main">
+      <div class="chat-header">
+        <h2 style="font-size: 18px; font-weight: 600;">AI Trading Assistant</h2>
+        <button class="modal-trigger" onclick="document.getElementById('modal').style.display='flex'">
+          🤖 Select Analyst/Coach
+        </button>
+      </div>
+      
+      <div class="chat-messages">
+        <p style="color: #999; text-align: center; margin-top: 100px;">
+          Click "Select Analyst/Coach" to choose who you want to chat with
+        </p>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal -->
+  <div id="modal" class="modal-overlay" style="display: none;" onclick="if(event.target === this) this.style.display='none'">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h2 style="font-size: 24px; font-weight: 700;">Select Your AI Agent</h2>
+        <button class="close-btn" onclick="document.getElementById('modal').style.display='none'">✕</button>
+      </div>
+      
+      <div class="section-title">INTERNAL ANALYSTS</div>
+      <div class="agent-grid">
+        <div class="agent-card">
+          <div class="agent-icon">📈</div>
+          <div class="agent-name">Market Analyst</div>
+          <div class="agent-desc">Technical indicators</div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-icon">💰</div>
+          <div class="agent-name">Fundamentals Analyst</div>
+          <div class="agent-desc">Financial metrics</div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-icon">📰</div>
+          <div class="agent-name">News Analyst</div>
+          <div class="agent-desc">News & insider data</div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-icon">💬</div>
+          <div class="agent-name">Social Media Analyst</div>
+          <div class="agent-desc">Sentiment analysis</div>
+        </div>
+      </div>
+      
+      <div class="section-title">EXTERNAL COACHES</div>
+      <div class="agent-grid">
+        <div class="agent-card">
+          <div class="agent-icon">📊</div>
+          <div class="agent-name">Coach D</div>
+          <div class="agent-desc">Daily trading plans</div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-icon">💡</div>
+          <div class="agent-name">Coach I</div>
+          <div class="agent-desc">Insights & analysis</div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-icon">🎯</div>
+          <div class="agent-name">Coach S</div>
+          <div class="agent-desc">Sentiment & positioning</div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-icon">📖</div>
+          <div class="agent-name">Coach N</div>
+          <div class="agent-desc">Narrative & context</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
