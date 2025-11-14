@@ -1,0 +1,479 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-inter), sans-serif;
+}
+
+/* C1 Playground Dark Theme Override */
+[data-theme="dark"],
+.dark {
+  /* Main background - clean dark like C1 Playground */
+  --background: #0f0f0f;
+  --foreground: #ededed;
+  
+  /* Chat container background */
+  --chat-background: #0f0f0f;
+  
+  /* Sidebar background - slightly lighter for contrast */
+  --sidebar-background: #1a1a1a;
+  
+  /* Input area */
+  --input-background: #1a1a1a;
+  --input-border: #2a2a2a;
+  
+  /* Message bubbles */
+  --message-user-bg: #2a2a2a;
+  --message-assistant-bg: #1a1a1a;
+  
+  /* Borders and dividers */
+  --border-color: #2a2a2a;
+}
+
+/* Force dark theme on body and root elements */
+body,
+#__next,
+[data-radix-portal] {
+  background-color: #0f0f0f !important;
+}
+
+/* Chat page specific overrides */
+.c1-chat-container,
+.chat-container,
+[class*="chat"] {
+  background-color: #0f0f0f !important;
+}
+
+/* Sidebar styling */
+.sidebar,
+[class*="sidebar"] {
+  background-color: #1a1a1a !important;
+  border-right: 1px solid #2a2a2a !important;
+}
+
+/* Input area */
+.chat-input,
+[class*="input"] {
+  background-color: #1a1a1a !important;
+  border-color: #2a2a2a !important;
+}
+
+/* Remove any teal/green backgrounds */
+[style*="background"] {
+  background-color: #0f0f0f !important;
+}
+
+/* Font improvements - Apply to everything */
+body,
+* {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'Roboto', 'Helvetica Neue', Arial, sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* C1Chat Sidebar Styling */
+[class*="sidebar"],
+[class*="Sidebar"],
+nav[class*="nav"] {
+  background-color: #1a1a1a !important;
+  border-right: 1px solid #2a2a2a !important;
+}
+
+/* Hide or customize the default logo */
+[class*="logo"],
+[class*="Logo"],
+header img {
+  display: none !important;
+}
+
+/* Custom branding area */
+[class*="sidebar"] header,
+[class*="Sidebar"] header {
+  padding: 20px 16px;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+/* Sidebar items */
+[class*="sidebar"] button,
+[class*="Sidebar"] button,
+[class*="chat-item"],
+[class*="conversation"] {
+  background-color: transparent !important;
+  color: #ededed !important;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+}
+
+[class*="sidebar"] button:hover,
+[class*="Sidebar"] button:hover,
+[class*="chat-item"]:hover,
+[class*="conversation"]:hover {
+  background-color: #2a2a2a !important;
+}
+
+/* Active/selected chat */
+[class*="sidebar"] button[class*="active"],
+[class*="Sidebar"] button[class*="active"],
+[class*="chat-item"][class*="active"],
+[class*="conversation"][class*="active"] {
+  background-color: #2a2a2a !important;
+}
+
+/* New Chat button */
+[class*="new-chat"],
+button[class*="New"],
+button[class*="new"],
+button {
+  background-color: #2a2a2a !important;
+  color: #ededed !important;
+  border: 1px solid #3a3a3a !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'Roboto', 'Helvetica Neue', Arial, sans-serif !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.01em !important;
+}
+
+[class*="new-chat"]:hover,
+button[class*="New"]:hover,
+button[class*="new"]:hover,
+button:hover {
+  background-color: #3a3a3a !important;
+}
+
+/* All text elements */
+h1, h2, h3, h4, h5, h6,
+p, span, div, a, label, input, textarea, select {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'Roboto', 'Helvetica Neue', Arial, sans-serif !important;
+}
+
+/* Agent name / branding */
+[class*="agent"],
+[class*="brand"],
+[class*="title"],
+header {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'Roboto', 'Helvetica Neue', Arial, sans-serif !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.02em !important;
+}
+
+/* Send button - Dark green tone */
+button[type="submit"],
+button[aria-label*="Send"],
+button[aria-label*="send"],
+[class*="send"] button,
+form button:last-child {
+  background-color: #2d5016 !important;
+  color: #ededed !important;
+}
+
+button[type="submit"]:hover,
+button[aria-label*="Send"]:hover,
+button[aria-label*="send"]:hover,
+[class*="send"] button:hover,
+form button:last-child:hover {
+  background-color: #3a6b1e !important;
+}
+
+button[type="submit"]:disabled,
+button[aria-label*="Send"]:disabled,
+button[aria-label*="send"]:disabled {
+  background-color: #1a2a0f !important;
+  opacity: 0.5 !important;
+}
+
+/* Landing Page - Dark Green with Orbs Background */
+.landing-page {
+  min-height: 100vh;
+  background-image: url('https://cdn.cmsfly.com/6847c04a58030400123992c0/images/herobg-3DNHN.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  position: relative;
+  overflow: hidden;
+}
+
+.orbs-container {
+  display: none;
+}
+
+.landing-page > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Enhanced Feature Cards with Gradient Borders */
+.feature-card {
+  position: relative;
+  transform-style: preserve-3d;
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(0, 255, 136, 0.2) !important;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+/* Gradient border effect */
+.feature-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 2px;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 255, 136, 0.4),
+    rgba(0, 255, 200, 0.2),
+    rgba(0, 255, 136, 0.1)
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.feature-card:hover::before {
+  opacity: 1;
+}
+
+/* Hover effects */
+.feature-card:hover {
+  transform: translateY(-12px) scale(1.02);
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(0, 255, 136, 0.4) !important;
+  box-shadow: 
+    0 20px 60px rgba(0, 255, 136, 0.25),
+    0 10px 30px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Shine effect on hover */
+.feature-card::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 70%
+  );
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
+  pointer-events: none;
+}
+
+.feature-card:hover::after {
+  transform: translateX(100%);
+}
+
+/* Icon glow on hover */
+.feature-card:hover .text-6xl {
+  filter: drop-shadow(0 0 20px rgba(0, 255, 136, 0.6));
+  transform: scale(1.1);
+  transition: all 0.3s ease;
+}
+
+/* Add perspective to the grid container */
+.grid {
+  perspective: 1000px;
+}
+
+/* Newsletter Box - Simple Static Border */
+.newsletter-box {
+  border: 2px solid rgba(0, 255, 136, 0.4);
+  border-radius: 16px;
+  background: rgba(20, 30, 20, 0.6);
+  backdrop-filter: blur(12px);
+  padding: 48px 40px;
+}
+
+/* Newsletter Button - Force Black Text */
+.newsletter-box button[type="submit"],
+.newsletter-box form button {
+  color: #000000 !important;
+}
+
+/* Pulsing Glow Effect for Newsletter Box */
+.newsletter-box {
+  animation: pulseGlow 3s ease-in-out infinite;
+  box-shadow: 
+    0 0 20px rgba(0, 255, 136, 0.2),
+    0 0 40px rgba(0, 255, 136, 0.1),
+    inset 0 0 60px rgba(0, 255, 136, 0.05);
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 
+      0 0 20px rgba(0, 255, 136, 0.2),
+      0 0 40px rgba(0, 255, 136, 0.1),
+      inset 0 0 60px rgba(0, 255, 136, 0.05);
+    border-color: rgba(0, 255, 136, 0.4);
+  }
+  50% {
+    box-shadow: 
+      0 0 30px rgba(0, 255, 136, 0.4),
+      0 0 60px rgba(0, 255, 136, 0.2),
+      0 0 80px rgba(0, 255, 136, 0.1),
+      inset 0 0 80px rgba(0, 255, 136, 0.08);
+    border-color: rgba(0, 255, 136, 0.6);
+  }
+}
+
+
+
+/* Floating Particles Network Effect */
+.particles-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: rgba(0, 255, 136, 0.6);
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(0, 255, 136, 0.4);
+}
+
+/* Particle animations - different speeds for variety */
+@keyframes float1 {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(100px, -50px); }
+  50% { transform: translate(-50px, -100px); }
+  75% { transform: translate(-100px, 50px); }
+}
+
+@keyframes float2 {
+  0%, 100% { transform: translate(0, 0); }
+  33% { transform: translate(-80px, 80px); }
+  66% { transform: translate(80px, -80px); }
+}
+
+@keyframes float3 {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(60px, 100px); }
+}
+
+/* Apply different animations to particles */
+.particle:nth-child(1) { animation: float1 20s infinite ease-in-out; }
+.particle:nth-child(2) { animation: float2 25s infinite ease-in-out; }
+.particle:nth-child(3) { animation: float3 18s infinite ease-in-out; }
+.particle:nth-child(4) { animation: float1 22s infinite ease-in-out; animation-delay: -5s; }
+.particle:nth-child(5) { animation: float2 28s infinite ease-in-out; animation-delay: -8s; }
+.particle:nth-child(6) { animation: float3 24s infinite ease-in-out; animation-delay: -3s; }
+.particle:nth-child(7) { animation: float1 26s infinite ease-in-out; animation-delay: -10s; }
+.particle:nth-child(8) { animation: float2 21s infinite ease-in-out; animation-delay: -6s; }
+.particle:nth-child(9) { animation: float3 23s infinite ease-in-out; animation-delay: -12s; }
+.particle:nth-child(10) { animation: float1 27s infinite ease-in-out; animation-delay: -4s; }
+
+/* Connection lines between particles */
+.particle-line {
+  position: absolute;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(0, 255, 136, 0.2), 
+    transparent
+  );
+  transform-origin: left center;
+  pointer-events: none;
+  opacity: 0;
+  animation: lineAppear 2s ease-in-out infinite;
+}
+
+@keyframes lineAppear {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+/* Animated Gradient Text for Headline */
+.gradient-text {
+  background: linear-gradient(
+    90deg,
+    #ffffff 0%,
+    #00ff88 25%,
+    #00ffcc 50%,
+    #00ff88 75%,
+    #ffffff 100%
+  );
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientFlow 4s linear infinite;
+}
+
+@keyframes gradientFlow {
+  0% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+/* Modal animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.3s ease-out;
+}
+
+
