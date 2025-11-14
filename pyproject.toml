@@ -1,35 +1,67 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
-name = "tradingagents"
+name = "tradingagents-mcp-server"
 version = "0.1.0"
-description = "Add your description here"
+description = "Model Context Protocol server for TradingAgents multi-agent analysis"
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = [
-    "akshare>=1.16.98",
-    "backtrader>=1.9.78.123",
-    "chainlit>=2.5.5",
-    "chromadb>=1.0.12",
-    "eodhd>=1.0.32",
-    "feedparser>=6.0.11",
-    "finnhub-python>=2.4.23",
-    "grip>=4.6.2",
-    "langchain-anthropic>=0.3.15",
-    "langchain-experimental>=0.3.4",
-    "langchain-google-genai>=2.1.5",
-    "langchain-openai>=0.3.23",
-    "langgraph>=0.4.8",
-    "pandas>=2.3.0",
-    "parsel>=1.10.0",
-    "praw>=7.8.1",
-    "pytz>=2025.2",
-    "questionary>=2.1.0",
-    "redis>=6.2.0",
-    "requests>=2.32.4",
-    "rich>=14.0.0",
-    "setuptools>=80.9.0",
-    "stockstats>=0.6.5",
-    "tqdm>=4.67.1",
-    "tushare>=1.4.21",
-    "typing-extensions>=4.14.0",
-    "yfinance>=0.2.63",
+license = {text = "MIT"}
+authors = [
+    {name = "TradingAgents Team"}
 ]
+keywords = ["mcp", "trading", "ai", "agents", "finance"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "pyyaml>=6.0",
+    "aiofiles>=23.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.0.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+]
+
+[project.scripts]
+tradingagents-mcp = "mcp_server.__main__:main"
+
+[project.urls]
+Homepage = "https://github.com/yourusername/tradingagents-mcp-server"
+Documentation = "https://github.com/yourusername/tradingagents-mcp-server#readme"
+Repository = "https://github.com/yourusername/tradingagents-mcp-server"
+Issues = "https://github.com/yourusername/tradingagents-mcp-server/issues"
+
+[tool.setuptools]
+packages = ["mcp_server"]
+
+[tool.black]
+line-length = 88
+target-version = ['py310']
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+select = ["E", "F", "I", "N", "W"]
+ignore = []
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+asyncio_mode = "auto"

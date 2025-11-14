@@ -168,7 +168,7 @@ class RiskCalculator:
         self.stop_loss_calculator = StopLossCalculator(self.config)
         self.portfolio_assessor = PortfolioRiskAssessor(self.config)
         
-        logger.info(f"RiskCalculator initialized with {self.config.risk_profile} profile")
+        logger.info(f"RiskCalculator initialized with {self.config.position_sizing_method} method")
     
     def calculate_trade_risk(
         self,

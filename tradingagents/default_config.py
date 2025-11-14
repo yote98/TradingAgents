@@ -44,8 +44,9 @@ DEFAULT_CONFIG = {
     
     # Twitter/Social Monitor configuration
     "twitter_monitor": {
-        # Curated Twitter accounts to monitor
+        # Curated Twitter accounts to monitor (Enhanced - 45 accounts)
         "curated_accounts": [
+            # Core Financial News & Analysis
             "ChartChampions",      # Technical analysis
             "unusual_whales",      # Options flow
             "DeItaone",           # Breaking news (Walter Bloomberg)
@@ -54,6 +55,110 @@ DEFAULT_CONFIG = {
             "Investingcom",       # Financial news
             "YahooFinance",       # Market updates
             "MarketWatch",        # News and analysis
+            "business",           # Bloomberg News
+            "WSJ",                # Wall Street Journal
+            "Reuters",            # Reuters News
+            "FT",                 # Financial Times
+            "CNBC",               # CNBC Official
+            
+            # Market Commentators & Analysts
+            "jimcramer",          # Jim Cramer - CNBC
+            "carlquintanilla",    # Carl Quintanilla - CNBC
+            "ScottWapnerCNBC",    # Scott Wapner - CNBC
+            "MelissaLeeCNBC",     # Melissa Lee - CNBC
+            "SquawkCNBC",         # CNBC Squawk Box
+            
+            # Technical Analysis
+            "GRDecter",           # Gareth Decter - Technical analyst
+            "allstarcharts",      # JC Parets - Technical analysis
+            "StockCharts",        # StockCharts platform
+            "TrendSpider",        # TrendSpider platform
+            
+            # Options & Flow
+            "spotgamma",          # Options gamma exposure
+            "SqueezeMetrics",     # Dark pool data
+            "WOLF_Financial",     # Options flow
+            
+            # Crypto & Tech
+            "elonmusk",           # Elon Musk
+            "APompliano",         # Anthony Pompliano - Markets/Crypto
+            "BitcoinHypers",      # Bitcoin Hyper
+            "Luckshuryy",         # Luckshury
+            
+            # Individual Traders & Analysts
+            "CCPool_Daniel",      # Daniel Jordan
+            "AlphaCharts",        # Trader/analyst
+            "TraderStewie",       # Day trader
+            "InvestorsLive",      # Nate Michaud
+            "madaznfootballr",    # Active trader
+            
+            # Institutional & Research (NEW)
+            "GoldmanSachs",       # Goldman Sachs research
+            "MorganStanley",      # Morgan Stanley
+            "jpmorgan",           # JPMorgan Chase
+            "BofAML",             # Bank of America
+            
+            # Additional Quality Sources (NEW)
+            "Fxhedgers",          # FX & macro news
+            "LiveSquawk",         # Real-time market news
+            "FirstSquawk",        # Breaking market news
+            "TraderStewie",       # Day trader
+            "InvestorsLive",      # Nate Michaud
+            "madaznfootballr",    # Trader
+            "_TraderR",           # Trader R
+            "toroscrypto",        # Toros Crypto
+            "follis_",            # Follis
+            "c2mtrading",         # C2M Trading
+            
+            # Institutional & Research
+            "GoldmanSachs",       # Goldman Sachs
+            "MorganStanley",      # Morgan Stanley
+            "jpmorgan",           # JPMorgan
+            "BofAML",             # Bank of America
+            "FinancialJuice",     # Financial Juice - Market analysis
+            "TreeCapital",        # Tree Capital - Trading insights
+            
+            # Top Tier Traders (High Signal)
+            "mrjasonpizzino",     # Jason Pizzino - Macro/crypto
+            "CryptoCred",         # Crypto Cred - Technical analysis
+            "CryptoDonAlt",       # Crypto Don Alt - Trader
+            "ThinkingUSD",        # Thinking USD - Macro trader
+            "CryptoBirb",         # Crypto Birb - Technical analysis
+            "Pentosh1",           # Pentoshi - Crypto trader
+            "CryptoKaleo",        # Crypto Kaleo - Trader
+            "CryptoCapo_",        # Crypto Capo - Technical analysis
+            "CryptoGodJohn",      # Crypto God John - Trader
+            "TeddyCleps",         # Teddy Cleps - Trader
+            
+            # Market Structure & Data
+            "tier10k",            # Tier 10K - Market structure
+            "KobeissiLetter",     # The Kobeissi Letter - Market analysis
+            "MacroAlf",           # Macro Alf - Macro analysis
+            "RaoulGMI",           # Raoul Pal - Macro investor
+            "LynAldenContact",    # Lyn Alden - Macro/markets
+            
+            # High-Volume Traders
+            "TraderLion_",        # Trader Lion - Day trading
+            "Trader_mcaruso",     # Mike Caruso - Trader
+            "Trader1sz",          # Trader 1sz
+            "traderstewie",       # Trader Stewie (duplicate check)
+            "MrZackMorris",       # Zack Morris - Momentum trader
+            
+            # Smart Money & Whales
+            "lookonchain",        # LookOnChain - Whale tracking
+            "whale_alert",        # Whale Alert - Large transactions
+            "WatcherGuru",        # Watcher Guru - Breaking news
+            "Fxhedgers",          # FX Hedgers - Breaking news
+            
+            # Technical Analysis Experts
+            "CryptoBullet1",      # Crypto Bullet - TA
+            "CryptoWzrd",         # Crypto Wizard - TA
+            "CryptoGirlNova",     # Crypto Girl Nova - TA
+            "CryptoMichNL",       # Crypto Mich - TA
+            "CryptoTony__",       # Crypto Tony - TA
+            "MorganStanley",      # Morgan Stanley
+            "jpmorgan",           # JPMorgan
+            "BofAML",             # Bank of America
         ],
         
         # Nitter instances for RSS feeds (rotate for reliability)

@@ -1,0 +1,3 @@
+@echo off
+echo Opening modal mockup in your default browser...
+start "" "c1-template\mockups\option1-modal.html"

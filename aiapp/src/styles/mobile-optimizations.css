@@ -1,0 +1,199 @@
+/**
+ * Mobile Performance Optimizations
+ * 
+ * CSS optimizations specifically for mobile devices to improve
+ * rendering performance and reduce layout shifts.
+ */
+
+/* Enable hardware acceleration for transforms and animations */
+.touch-manipulation {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Optimize scrolling performance on mobile */
+.mobile-scroll-optimize {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  will-change: scroll-position;
+}
+
+/* Reduce paint complexity for mobile */
+@media (max-width: 768px) {
+  /* Simplify shadows on mobile for better performance */
+  .shadow-md {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .shadow-lg {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Optimize animations for mobile */
+  .animate-pulse {
+    animation-duration: 2s;
+  }
+  
+  /* Reduce blur effects on mobile */
+  .backdrop-blur {
+    backdrop-filter: none;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* Optimize font rendering on mobile */
+@media (max-width: 768px) {
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+}
+
+/* Prevent layout shift during image loading */
+.lazy-image-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.lazy-image-container::before {
+  content: '';
+  display: block;
+  padding-top: 100%; /* 1:1 aspect ratio, adjust as needed */
+}
+
+.lazy-image-container img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Optimize touch targets for mobile (minimum 44x44px) */
+@media (max-width: 768px) {
+  button,
+  a,
+  input[type="button"],
+  input[type="submit"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Exception for inline elements */
+  .inline-touch-target {
+    min-height: auto;
+    min-width: auto;
+  }
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Optimize for 3G network speeds */
+@media (prefers-reduced-data: reduce) {
+  /* Disable background images on slow connections */
+  .bg-gradient-to-r,
+  .bg-gradient-to-br {
+    background-image: none !important;
+    background-color: #3b82f6; /* Fallback blue color */
+  }
+  
+  /* Reduce image quality hints */
+  img {
+    image-rendering: -webkit-optimize-contrast;
+  }
+}
+
+/* Prevent text selection on interactive elements */
+.no-select {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Optimize virtual scrolling container */
+.virtual-scroll-container {
+  contain: layout style paint;
+  content-visibility: auto;
+}
+
+/* Optimize list items for better rendering */
+.list-item-optimize {
+  contain: layout paint;
+  will-change: transform;
+}
+
+/* Mobile-specific utility classes */
+@media (max-width: 768px) {
+  /* Reduce spacing on mobile */
+  .mobile-compact {
+    padding: 0.75rem;
+  }
+  
+  /* Optimize text for mobile readability */
+  .mobile-text-optimize {
+    font-size: 14px;
+    line-height: 1.5;
+    letter-spacing: 0.01em;
+  }
+  
+  /* Full-width on mobile */
+  .mobile-full-width {
+    width: 100%;
+  }
+  
+  /* Hide on mobile */
+  .mobile-hidden {
+    display: none;
+  }
+}
+
+/* Optimize modal overlays for mobile */
+@media (max-width: 768px) {
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background-color: rgba(0, 0, 0, 0.5);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  
+  .modal-content {
+    max-height: 90vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Optimize pull-to-refresh indicator */
+.pull-to-refresh-indicator {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* Optimize swipe gestures */
+.swipeable {
+  touch-action: pan-y;
+  user-select: none;
+}
+
+/* Prevent overscroll bounce on iOS */
+.prevent-overscroll {
+  overscroll-behavior: none;
+}

@@ -80,6 +80,7 @@ Content-Type: application/json
 
 {
   "ticker": "AAPL",
+  "analysts": ["market", "fundamentals", "news", "social"],
   "config": {
     "deep_think_llm": "gpt-4o-mini",
     "quick_think_llm": "gpt-4o-mini",
@@ -88,18 +89,217 @@ Content-Type: application/json
 }
 ```
 
+Request Body:
+- `ticker` (required): Stock ticker symbol (e.g., "AAPL", "TSLA")
+- `analysts` (required): Array of analyst types to include
+  - Valid values: `"market"`, `"fundamentals"`, `"news"`, `"social"`
+  - Minimum 1 analyst required
+- `config` (optional): Analysis configuration
+  - `deep_think_llm`: Model for deep analysis (default: "gpt-4o-mini")
+  - `quick_think_llm`: Model for quick analysis (default: "gpt-4o-mini")
+  - `max_debate_rounds`: Number of debate rounds (default: 1, max: 3)
+
 Response:
 ```json
 {
-  "ticker": "AAPL",
-  "decision": "BUY",
-  "confidence": 0.75,
-  "reports": {
-    "market": "Market analysis...",
-    "fundamentals": "Fundamental analysis..."
-  },
-  "timestamp": "2024-01-15T10:30:00Z"
+  "success": true,
+  "results": {
+    "ticker": "AAPL",
+    "timestamp": "2024-01-15T10:30:00Z",
+    "analystReports": {
+      "market": "Market analysis report...",
+      "fundamentals": "Fundamental analysis report...",
+      "news": "News sentiment analysis...",
+      "social": "Social media sentiment..."
+    },
+    "bullArguments": [
+      "Strong technical setup with breakout above resistance",
+      "Positive earnings momentum and revenue growth",
+      "Favorable analyst ratings and price targets"
+    ],
+    "bearArguments": [
+      "Overbought RSI indicating potential pullback",
+      "High valuation compared to sector peers",
+      "Macroeconomic headwinds affecting tech sector"
+    ],
+    "finalDecision": "BUY",
+    "confidence": 0.75,
+    "reasoning": "Despite some technical overbought conditions, strong fundamentals and positive sentiment support a buy decision..."
+  }
 }
+```
+
+**Caching**: Analysis results are cached for 5 minutes per ticker to reduce API costs
+
+**Cost Estimates**:
+- 1 analyst, 1 round, gpt-4o-mini: ~$0.01-0.02
+- 4 analysts, 1 round, gpt-4o-mini: ~$0.05-0.10
+- 4 analysts, 3 rounds, o1-preview: ~$0.50-1.00
+
+**Error Codes**:
+- `400`: Invalid ticker or analysts array
+- `422`: Validation error (invalid analyst type, invalid config)
+- `500`: Analysis execution failed
+- `503`: TradingAgents service unavailable
+
+**Example curl**:
+```bash
+# Basic analysis with 2 analysts
+curl -X POST http://localhost:5000/api/analyze \
+  -H "Content-Type: application/json" \
+  -d '{
+    "ticker": "AAPL",
+    "analysts": ["market", "fundamentals"]
+  }'
+
+# Full analysis with custom config
+curl -X POST http://localhost:5000/api/analyze \
+  -H "Content-Type: application/json" \
+  -d '{
+    "ticker": "TSLA",
+    "analysts": ["market", "fundamentals", "news", "social"],
+    "config": {
+      "deep_think_llm": "o1-preview",
+      "max_debate_rounds": 2
+    }
+  }'
+```
+
+### Backtesting
+
+#### Run Backtest
+```http
+POST /api/backtest
+Content-Type: application/json
+
+{
+  "ticker": "AAPL",
+  "startDate": "2023-01-01",
+  "endDate": "2023-12-31",
+  "strategy": "momentum",
+  "config": {
+    "initialCapital": 100000,
+    "positionSize": 0.1,
+    "stopLoss": 0.05,
+    "takeProfit": 0.15
+  }
+}
+```
+
+Request Body:
+- `ticker` (required): Stock ticker symbol
+- `startDate` (required): Backtest start date (YYYY-MM-DD format)
+- `endDate` (required): Backtest end date (YYYY-MM-DD format)
+- `strategy` (required): Strategy name
+  - Valid values: `"momentum"`, `"mean_reversion"`, `"breakout"`, `"custom"`
+- `config` (optional): Strategy configuration
+  - `initialCapital`: Starting capital (default: 100000)
+  - `positionSize`: Position size as fraction of capital (default: 0.1)
+  - `stopLoss`: Stop loss percentage (default: 0.05)
+  - `takeProfit`: Take profit percentage (default: 0.15)
+
+Response:
+```json
+{
+  "success": true,
+  "results": {
+    "ticker": "AAPL",
+    "period": {
+      "start": "2023-01-01",
+      "end": "2023-12-31"
+    },
+    "performance": {
+      "totalReturn": 0.234,
+      "winRate": 0.65,
+      "sharpeRatio": 1.45,
+      "maxDrawdown": -0.12,
+      "totalTrades": 45,
+      "winningTrades": 29,
+      "losingTrades": 16,
+      "avgWin": 0.045,
+      "avgLoss": -0.028,
+      "profitFactor": 2.1
+    },
+    "trades": [
+      {
+        "date": "2023-01-15",
+        "action": "BUY",
+        "price": 150.25,
+        "quantity": 66,
+        "pnl": 0
+      },
+      {
+        "date": "2023-01-22",
+        "action": "SELL",
+        "price": 157.80,
+        "quantity": 66,
+        "pnl": 498.30
+      }
+    ],
+    "equityCurve": [
+      { "date": "2023-01-01", "value": 100000 },
+      { "date": "2023-01-02", "value": 100150 },
+      { "date": "2023-01-03", "value": 100320 }
+    ],
+    "drawdownCurve": [
+      { "date": "2023-01-01", "value": 0 },
+      { "date": "2023-01-02", "value": -0.002 },
+      { "date": "2023-01-03", "value": 0 }
+    ],
+    "monthlyReturns": {
+      "2023-01": 0.045,
+      "2023-02": 0.023,
+      "2023-03": -0.012
+    }
+  }
+}
+```
+
+**Caching**: Backtest results are cached for 5 minutes per ticker/date range combination
+
+**Cost Estimates**:
+- 3-month backtest: ~$0.01-0.02
+- 1-year backtest: ~$0.02-0.05
+- 5-year backtest: ~$0.05-0.10
+
+**Performance Notes**:
+- Longer date ranges take more time to process
+- First run may be slower due to data fetching
+- Subsequent runs use cached market data
+
+**Error Codes**:
+- `400`: Invalid ticker, dates, or strategy
+- `422`: Validation error (end date before start date, invalid config)
+- `500`: Backtest execution failed
+- `503`: Backtesting service unavailable
+
+**Example curl**:
+```bash
+# Basic backtest
+curl -X POST http://localhost:5000/api/backtest \
+  -H "Content-Type: application/json" \
+  -d '{
+    "ticker": "AAPL",
+    "startDate": "2023-01-01",
+    "endDate": "2023-06-30",
+    "strategy": "momentum"
+  }'
+
+# Backtest with custom config
+curl -X POST http://localhost:5000/api/backtest \
+  -H "Content-Type: application/json" \
+  -d '{
+    "ticker": "TSLA",
+    "startDate": "2023-01-01",
+    "endDate": "2023-12-31",
+    "strategy": "breakout",
+    "config": {
+      "initialCapital": 50000,
+      "positionSize": 0.2,
+      "stopLoss": 0.03,
+      "takeProfit": 0.20
+    }
+  }'
 ```
 
 ### Twitter Sentiment

@@ -1,26 +1,10 @@
-typing-extensions
-langchain-openai
-langchain-experimental
-pandas
-yfinance
-praw
-feedparser
-stockstats
-eodhd
-langgraph
-chromadb
-setuptools
-backtrader
-akshare
-tushare
-finnhub-python
-parsel
-requests
-tqdm
-pytz
-redis
-chainlit
-rich
-questionary
-langchain_anthropic
-langchain-google-genai
+# Core dependencies
+pyyaml>=6.0
+aiofiles>=23.0.0
+
+# Development dependencies (optional)
+pytest>=7.0.0
+pytest-asyncio>=0.21.0
+pytest-cov>=4.0.0
+black>=23.0.0
+ruff>=0.1.0

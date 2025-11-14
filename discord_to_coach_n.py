@@ -6,11 +6,16 @@ Simple solution - no complex setup needed!
 
 import discord
 import json
+import os
 from datetime import datetime
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Configuration
-DISCORD_BOT_TOKEN = "MTQzNDAwOTU0MTQyMjQ4NTY1NQ.G7IcMa.FmWBPkf8SOsltYizuaCeoNtTPNM9bLSQb6KyLQ"
+DISCORD_BOT_TOKEN = os.getenv("DISCORD_BOT_TOKEN")
 CHANNEL_ID = 1364899537931599916  # Your Unusual Whales channel
 STORAGE_FILE = Path("coach_n_signals.json")
 

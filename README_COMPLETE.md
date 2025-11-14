@@ -41,6 +41,118 @@ open MASTER_GUIDE_INDEX.md
 
 ---
 
+## 🖥️ Web Dashboard
+
+### Professional Trading Interface
+
+The C1 Dashboard provides a comprehensive web interface for all trading analysis features:
+
+#### 🎯 Features
+
+**7 Navigation Sections:**
+- **Home** - Overview with recent activity and quick stats
+- **Coaches** - AI-generated trading plans from Discord coaches
+- **Social** - Twitter and Stocktwits sentiment monitoring
+- **Analyze** - Run multi-agent stock analysis
+- **Backtest** - Test strategies against historical data
+- **Risk** - Portfolio risk analysis and position sizing
+- **Settings** - Configure preferences and API settings
+
+**Key Capabilities:**
+- ⚡ Real-time data updates
+- 📱 Mobile responsive design
+- ⌨️ Keyboard shortcuts (Alt+1 through Alt+7)
+- 💾 State persistence across sessions
+- 🎨 Professional UI with Tailwind CSS
+- ♿ WCAG AA accessibility compliant
+- 🚀 Optimized performance (90+ Lighthouse score)
+
+### Quick Start
+
+#### 1. Start Backend API
+```bash
+# Install dependencies
+pip install -r requirements-c1-api.txt
+
+# Configure environment
+cp .env.c1-api.example .env
+# Edit .env with your API keys
+
+# Run server
+python c1_api_server.py
+```
+
+#### 2. Start Frontend
+```bash
+# Navigate to dashboard
+cd aiapp
+
+# Install dependencies
+npm install
+
+# Run development server
+npm run dev
+
+# Visit http://localhost:3000/dashboard
+```
+
+#### 3. Explore Features
+- Navigate using sidebar or keyboard shortcuts
+- Run analysis from the Analyze section
+- Monitor social sentiment in Social section
+- View coach plans in Coaches section
+- Calculate risk in Risk section
+
+### Documentation
+
+- **User Guide**: `aiapp/DASHBOARD_NAVIGATION_GUIDE.md`
+- **API Docs**: `c1_api/README.md`
+- **Deployment**: `aiapp/SIDEBAR_DEPLOYMENT_CHECKLIST.md`
+- **Testing**: `aiapp/TESTING_VALIDATION_GUIDE.md`
+
+### Cost Estimates
+
+| Feature | Cost per Use | Notes |
+|---------|--------------|-------|
+| Home | $0 | Cached data only |
+| Coaches | $0 | Database queries |
+| Social | $0 | Twitter API (free tier) |
+| Analyze | $0.01-$0.50 | Depends on config |
+| Backtest | $0.01-$0.10 | Depends on date range |
+| Risk | $0 | Client-side calculations |
+| Settings | $0 | Local storage |
+
+### Dashboard Interface
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    C1 Dashboard                          │
+│  ┌──────────┬──────────────────────────────────────┐   │
+│  │          │                                       │   │
+│  │ Sidebar  │        Main Content Area             │   │
+│  │          │                                       │   │
+│  │ 🏠 Home  │   Welcome back! Today is Nov 11      │   │
+│  │ 👥 Coaches                                       │   │
+│  │ 🐦 Social│   Recent Activity                    │   │
+│  │ 📊 Analyze  • NVDA analysis completed           │   │
+│  │ 📈 Backtest • New coach plan from Day Trading   │   │
+│  │ 🛡️ Risk  │   • Twitter sentiment: Bullish AAPL │   │
+│  │ ⚙️ Settings                                      │   │
+│  │          │   Quick Stats                        │   │
+│  │          │   [24 Analyses] [65% Win] [+2.3%]   │   │
+│  │          │                                       │   │
+│  └──────────┴──────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────┘
+```
+
+**Keyboard Shortcuts:**
+- `Alt+1` through `Alt+7` - Navigate to sections
+- `Tab` - Cycle through navigation items
+- `Enter` - Activate focused item
+- `Escape` - Close mobile sidebar
+
+---
+
 ## 📚 Documentation Hub
 
 ### 🎯 Start Here
@@ -117,6 +229,26 @@ python examples/batch_analysis.py evening
 
 # Weekend deep dive
 python examples/batch_analysis.py weekend
+```
+
+### Dashboard Usage
+```bash
+# Start backend API
+python c1_api_server.py
+
+# In another terminal, start frontend
+cd aiapp && npm run dev
+
+# Visit http://localhost:3000/dashboard
+
+# Use keyboard shortcuts:
+# Alt+1: Home
+# Alt+2: Coaches
+# Alt+3: Social
+# Alt+4: Analyze
+# Alt+5: Backtest
+# Alt+6: Risk
+# Alt+7: Settings
 ```
 
 ---
@@ -198,6 +330,9 @@ Time: 20-40 hours
 - Alpha Vantage MCP integration
 - Batch processing
 - Cost optimization
+- **Web Dashboard** - Professional sidebar navigation interface
+- **C1 Backend API** - REST API for dashboard integration
+- **Twitter Sentiment** - Real-time social sentiment monitoring
 
 ### 📋 Specs Ready (Implement When Needed)
 - **Custom Analysts** - Options, Crypto, Macro
@@ -215,13 +350,18 @@ Time: 20-40 hours
 
 ## 🛠️ System Requirements
 
-### Required
+### Backend (Python)
 - Python 3.10+ (3.13 recommended)
-- OpenAI API key
+- OpenAI API key (required)
 - Alpha Vantage API key (free tier works)
+
+### Frontend (Dashboard)
+- Node.js 18+ (for web dashboard)
+- Modern browser (Chrome 90+, Firefox 88+, Safari 14+, Edge 90+)
 
 ### Optional
 - Discord webhooks (for coach integration)
+- Stocktwits API token (for enhanced social sentiment)
 - Broker API access (for live trading)
 
 ---
@@ -251,6 +391,12 @@ Root Directory/
 │   ├── BATCH_ANALYSIS_GUIDE.md
 │   └── MY_TRADING_STRATEGY.md
 │
+├── Dashboard/
+│   ├── aiapp/DASHBOARD_NAVIGATION_GUIDE.md
+│   ├── aiapp/SIDEBAR_DEPLOYMENT_CHECKLIST.md
+│   ├── aiapp/TESTING_VALIDATION_GUIDE.md
+│   └── c1_api/README.md
+│
 ├── Examples/
 │   ├── main.py
 │   ├── demo_complete_system.py
@@ -260,6 +406,9 @@ Root Directory/
 │   └── config_presets.py
 │
 └── Specs/
+    ├── dashboard-sidebar-navigation/
+    ├── twitter-dashboard-integration/
+    ├── c1-backend-api/
     ├── custom-analysts/
     ├── risk-management/
     └── backtesting/

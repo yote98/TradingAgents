@@ -22,6 +22,15 @@
         "EMA",
         "BBANDS"
       ]
+    },
+    "postgres": {
+      "command": "uvx",
+      "args": ["postgres-mcp", "--access-mode=restricted"],
+      "env": {
+        "DATABASE_URI": "postgresql://username:password@localhost:5432/dbname"
+      },
+      "disabled": true,
+      "autoApprove": []
     }
   }
 }

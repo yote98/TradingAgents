@@ -1,55 +1,34 @@
-# Example Configuration for Discord Bot Server
-# Copy this file to config.yaml and update with your values
+# TradingAgents MCP Server Configuration
 
-# Discord Configuration
-discord:
-  # Discord bot token (can also be set via DISCORD_BOT_TOKEN env var)
-  bot_token: ${DISCORD_BOT_TOKEN}
-  # Number of reconnection attempts if bot disconnects
-  reconnect_attempts: 5
-  # Delay between reconnection attempts (seconds)
-  reconnect_delay_seconds: 5
+# Server settings
+host: localhost
+port: 3000
+transport: stdio
+log_level: INFO
+version: 0.1.0
 
-# Database Configuration
-database:
-  # Path to SQLite database file
-  path: ./data/coach_plans.db
-  # Connection timeout (seconds)
-  connection_timeout: 10
+# TradingAgents settings
+deep_think_llm: gpt-4o-mini
+quick_think_llm: gpt-4o-mini
+max_debate_rounds: 1
 
-# API Configuration
-api:
-  # Port for Flask API server
-  port: 5000
-  # Host to bind to (0.0.0.0 for all interfaces)
-  host: 0.0.0.0
-  # Debug mode (set to false in production)
-  debug: false
+# API keys (can also be set via environment variables)
+openai_api_key: null
+anthropic_api_key: null
+alpha_vantage_api_key: null
+twitter_bearer_token: null
 
-# Logging Configuration
-logging:
-  # Log level: DEBUG, INFO, WARNING, ERROR, CRITICAL
-  level: INFO
-  # Log file path
-  file: ./logs/discord_bot.log
-  # Maximum log file size (MB) before rotation
-  max_size_mb: 10
-  # Number of backup log files to keep
-  backup_count: 5
+# Data vendors
+core_stock_apis:
+  - yfinance
+technical_indicators:
+  - yfinance
+fundamental_data:
+  - yfinance
+news_data:
+  - yfinance
 
-# Cache Configuration
-cache:
-  # Cache TTL (time-to-live) in seconds
-  ttl_seconds: 3600
-  # Maximum number of plans to cache
-  max_size: 100
-
-# Chart Attachments
-charts:
-  # Maximum number of chart attachments per plan
-  max_attachments: 10
-
-# Mock Mode (for testing without Discord)
-mock:
-  # Enable mock mode (set to true for testing)
-  enabled: false
+# Caching
+cache_enabled: true
+cache_dir: .cache/mcp
+cache_ttl_seconds: 300

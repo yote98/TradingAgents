@@ -1,0 +1,645 @@
+/* Import modern fonts - must be first */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import mobile optimizations */
+@import '../styles/mobile-optimizations.css';
+
+:root {
+  --background: #f8fafc;
+  --foreground: #1e293b;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: 'Poppins', sans-serif;
+}
+
+/* Light theme (default) */
+:root,
+:root.light,
+[data-theme="light"] {
+  --background: #f8fafc;
+  --foreground: #1e293b;
+  --card-background: #ffffff;
+  --card-border: #e2e8f0;
+  --input-background: #ffffff;
+  --input-border: #d1d5db;
+  --button-primary: #3b82f6;
+  --button-primary-hover: #2563eb;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+  --border-color: #e2e8f0;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+}
+
+/* Dark theme */
+:root.dark,
+[data-theme="dark"] {
+  --background: #0f172a;
+  --foreground: #f1f5f9;
+  --card-background: #1e293b;
+  --card-border: #334155;
+  --input-background: #1e293b;
+  --input-border: #475569;
+  --button-primary: #3b82f6;
+  --button-primary-hover: #2563eb;
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --border-color: #334155;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.3);
+}
+
+/* NUCLEAR OPTION - Hide ALL C1 logos and fixed elements */
+/* Target by class patterns */
+[class*="logo"],
+[class*="Logo"],
+[class*="LOGO"],
+[class*="brand"],
+[class*="Brand"],
+img[alt*="logo"],
+img[alt*="Logo"],
+img[alt*="LOGO"],
+.c1-logo,
+.c1-header-logo,
+/* Target ALL fixed position elements */
+button[style*="position: fixed"],
+button[style*="position:fixed"],
+div[style*="position: fixed"],
+div[style*="position:fixed"],
+span[style*="position: fixed"],
+span[style*="position:fixed"],
+a[style*="position: fixed"],
+a[style*="position:fixed"],
+/* Target bottom positioned elements */
+*[style*="bottom"][style*="left"],
+*[style*="bottom"][style*="right"],
+/* Target high z-index elements (usually overlays) */
+*[style*="z-index: 999"],
+*[style*="z-index:999"],
+*[style*="z-index: 9999"],
+*[style*="z-index:9999"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Nuclear option - hide ALL fixed elements */
+body > *[style*="position: fixed"],
+body > *[style*="position:fixed"],
+#__next > *[style*="position: fixed"],
+#__next > *[style*="position:fixed"] {
+  display: none !important;
+}
+
+/* Target specific C1 SDK elements */
+[class*="c1-"],
+[class*="C1-"],
+[id*="c1-"],
+[id*="C1-"],
+[data-c1],
+[data-thesys] {
+  position: static !important;
+}
+
+/* Override any inline styles on fixed elements */
+*[style*="position: fixed"] {
+  position: static !important;
+  display: none !important;
+}
+
+/* Hide bottom-left corner specifically (where N logo appears) */
+body > div:first-child > *[style*="position: fixed"],
+body > div:last-child > *[style*="position: fixed"] {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 400;
+  min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* NUCLEAR OPTION: Force green background on EVERYTHING */
+html, body, #__next, [data-reactroot] {
+  background: linear-gradient(135deg, #0a1f1a 0%, #134e4a 100%) !important;
+}
+
+/* Override any white or light backgrounds */
+div, section, main, article {
+  background-color: transparent !important;
+}
+
+/* Specifically target any remaining white backgrounds */
+*[style*="background: white"],
+*[style*="background-color: white"],
+*[style*="background:#ffffff"],
+*[style*="background-color:#ffffff"],
+*[style*="background: #fff"],
+*[style*="background-color: #fff"] {
+  background: linear-gradient(135deg, #0a1f1a 0%, #134e4a 100%) !important;
+}
+
+/* Light theme body gradient */
+:root.light body,
+[data-theme="light"] body {
+  background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
+}
+
+/* Dark theme body gradient - only for dashboard pages, not landing page */
+:root.dark body:not(.landing-page),
+[data-theme="dark"] body:not(.landing-page) {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+}
+
+/* Modern 3D C1 Chat styling - GREEN DARK THEME */
+.c1-chat-container,
+[class*="c1-chat"],
+[class*="C1Chat"],
+[data-testid*="chat"] {
+  background: linear-gradient(135deg, #0a1f1a 0%, #134e4a 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 20px 60px rgba(16, 185, 129, 0.15) !important;
+}
+
+/* Force green dark theme on ALL C1 components */
+[class*="c1-"],
+[class*="C1-"],
+[id*="c1-"],
+[id*="C1-"] {
+  background: linear-gradient(135deg, #0a1f1a 0%, #134e4a 100%) !important;
+  color: #ffffff !important;
+}
+
+/* Ensure C1Chat is visible and properly styled */
+.chat-container > div {
+  background: linear-gradient(135deg, #0a1f1a 0%, #134e4a 100%) !important;
+  min-height: 100vh !important;
+  width: 100% !important;
+}
+
+/* Force all chat elements to be visible */
+.chat-container * {
+  color: #ffffff !important;
+}
+
+/* Aggressive C1Chat styling */
+.chat-container iframe,
+.chat-container > div > div,
+.chat-container [class*="chat"],
+.chat-container [class*="Chat"] {
+  background: linear-gradient(135deg, #0a1f1a 0%, #134e4a 100%) !important;
+  min-height: 100% !important;
+}
+
+/* Ensure C1Chat takes full space */
+.chat-container > div:last-child {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  z-index: 10 !important;
+}
+
+/* Additional C1 Chat dark theme overrides */
+[class*="chat"] div,
+[class*="Chat"] div,
+[class*="message"] div,
+[class*="Message"] div {
+  background: transparent !important;
+  color: #ffffff !important;
+}
+
+/* Input fields in chat */
+[class*="input"] input,
+[class*="Input"] input,
+[class*="textarea"] textarea,
+[class*="Textarea"] textarea {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(16, 185, 129, 0.3) !important;
+}
+
+/* Chat container background override - only for chat elements */
+.chat-container div[style*="background"] {
+  background: linear-gradient(135deg, #0a1f1a 0%, #134e4a 100%) !important;
+}
+
+/* Ensure all text is white in chat area */
+.c1-chat-container *,
+[class*="c1-chat"] *,
+[class*="C1Chat"] * {
+  color: #ffffff !important;
+}
+
+/* Landing page should use its original background */
+.landing-page-container {
+  background-image: url("https://cdn.cmsfly.com/6847c04a58030400123992c0/images/herobg-3DNHN.png") !important;
+  background-size: contain !important;
+  background-position: center center !important;
+  background-repeat: no-repeat !important;
+  background-color: #000000 !important;
+}
+
+/* Only override chat-specific white backgrounds, not the entire page */
+.chat-container div[style*="background-color: white"],
+.chat-container div[style*="background-color:#ffffff"],
+.chat-container div[style*="background: white"],
+.chat-container div[style*="background:#ffffff"] {
+  background: linear-gradient(135deg, #0a1f1a 0%, #134e4a 100%) !important;
+  color: #ffffff !important;
+}
+
+.c1-message-user {
+  background: rgba(16, 185, 129, 0.1) !important;
+  border-left: 4px solid #10b981 !important;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2),
+              0 2px 4px rgba(16, 185, 129, 0.1) !important;
+  border-radius: 12px !important;
+  padding: 16px !important;
+  margin: 8px 0 !important;
+  transform: translateZ(0);
+  transition: all 0.3s ease !important;
+  color: #ffffff !important;
+}
+
+.c1-message-user:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.15),
+              0 4px 8px rgba(99, 102, 241, 0.1) !important;
+}
+
+.c1-message-assistant {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-left: 4px solid #14b8a6 !important;
+  box-shadow: 0 4px 12px rgba(20, 184, 166, 0.2),
+              0 2px 4px rgba(20, 184, 166, 0.1) !important;
+  border-radius: 12px !important;
+  padding: 16px !important;
+  margin: 8px 0 !important;
+  transform: translateZ(0);
+  transition: all 0.3s ease !important;
+  color: #ffffff !important;
+}
+
+.c1-message-assistant:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 20px rgba(139, 92, 246, 0.15),
+              0 4px 8px rgba(139, 92, 246, 0.1) !important;
+}
+
+.c1-input-area {
+  background: rgba(10, 31, 26, 0.95) !important;
+  backdrop-filter: blur(10px) !important;
+  border-top: 1px solid rgba(16, 185, 129, 0.2) !important;
+  box-shadow: 0 -4px 20px rgba(16, 185, 129, 0.1) !important;
+  color: #ffffff !important;
+}
+
+.c1-button-primary {
+  background: linear-gradient(135deg, #10b981 0%, #14b8a6 100%) !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3),
+              0 2px 4px rgba(16, 185, 129, 0.2) !important;
+  border-radius: 10px !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease !important;
+  transform: translateZ(0);
+}
+
+.c1-button-primary:hover {
+  background: linear-gradient(135deg, #059669 0%, #0d9488 100%) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4),
+              0 4px 8px rgba(16, 185, 129, 0.3) !important;
+}
+
+/* Modern typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Poppins', sans-serif !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.02em !important;
+}
+
+/* AGGRESSIVE emoji fixing - prevent ALL emojis from becoming huge */
+img.emoji,
+img[alt*="emoji"],
+img[src*="emoji"],
+img[src*="twemoji"] {
+  height: 1em !important;
+  width: 1em !important;
+  max-height: 1em !important;
+  max-width: 1em !important;
+  margin: 0 0.05em 0 0.1em !important;
+  vertical-align: -0.1em !important;
+  display: inline-block !important;
+}
+
+/* Force all images inside text content to be small */
+p img, div img, span img {
+  max-height: 1.2em !important;
+  max-width: 1.2em !important;
+  height: auto !important;
+  width: auto !important;
+  display: inline !important;
+  vertical-align: middle !important;
+}
+
+/* Theme-aware utility classes */
+.bg-card {
+  background-color: var(--card-background);
+}
+
+.border-card {
+  border-color: var(--card-border);
+}
+
+.bg-input {
+  background-color: var(--input-background);
+}
+
+.border-input {
+  border-color: var(--input-border);
+}
+
+.text-primary {
+  color: var(--text-primary);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+/* Theme transition for all elements */
+* {
+  transition-property: background-color, border-color, color;
+  transition-duration: 0.2s;
+  transition-timing-function: ease-in-out;
+}
+
+/* Loading spinner animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Dark theme specific adjustments */
+:root.dark .shadow-sm,
+[data-theme="dark"] .shadow-sm {
+  box-shadow: var(--shadow-sm);
+}
+
+:root.dark .shadow-md,
+[data-theme="dark"] .shadow-md {
+  box-shadow: var(--shadow-md);
+}
+
+:root.dark .shadow-lg,
+[data-theme="dark"] .shadow-lg {
+  box-shadow: var(--shadow-lg);
+}
+
+/* Dark theme card styles */
+:root.dark .bg-white,
+[data-theme="dark"] .bg-white {
+  background-color: var(--card-background);
+}
+
+:root.dark .text-gray-900,
+[data-theme="dark"] .text-gray-900 {
+  color: var(--text-primary);
+}
+
+:root.dark .text-gray-700,
+[data-theme="dark"] .text-gray-700 {
+  color: var(--text-secondary);
+}
+
+:root.dark .text-gray-600,
+[data-theme="dark"] .text-gray-600 {
+  color: var(--text-secondary);
+}
+
+:root.dark .text-gray-500,
+[data-theme="dark"] .text-gray-500 {
+  color: var(--text-muted);
+}
+
+:root.dark .border-gray-200,
+[data-theme="dark"] .border-gray-200 {
+  border-color: var(--border-color);
+}
+
+:root.dark .border-gray-300,
+[data-theme="dark"] .border-gray-300 {
+  border-color: var(--border-color);
+}
+
+/* Dark theme input styles */
+:root.dark input,
+:root.dark textarea,
+:root.dark select,
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+  background-color: var(--input-background);
+  color: var(--text-primary);
+  border-color: var(--input-border);
+}
+
+:root.dark input::placeholder,
+:root.dark textarea::placeholder,
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: var(--text-muted);
+}
+
+/* Dark theme button adjustments */
+:root.dark .bg-blue-50,
+[data-theme="dark"] .bg-blue-50 {
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+:root.dark .bg-green-50,
+[data-theme="dark"] .bg-green-50 {
+  background-color: rgba(34, 197, 94, 0.1);
+}
+
+:root.dark .bg-red-50,
+[data-theme="dark"] .bg-red-50 {
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+:root.dark .border-blue-200,
+[data-theme="dark"] .border-blue-200 {
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+:root.dark .border-green-200,
+[data-theme="dark"] .border-green-200 {
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+:root.dark .border-red-200,
+[data-theme="dark"] .border-red-200 {
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+
+/* C1Chat Thesys Playground Styling - Jade Theme */
+.chat-container.jade-theme {
+  /* Override C1Chat default styles to match Thesys Jade preset */
+  --c1-font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --c1-font-size: 14px;
+  --c1-line-height: 1.5;
+  
+  /* Input styling */
+  --c1-input-border-radius: 12px;
+  --c1-input-padding: 12px 16px;
+  --c1-input-font-size: 14px;
+  --c1-input-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  
+  /* Message styling */
+  --c1-message-border-radius: 12px;
+  --c1-message-padding: 12px 16px;
+  --c1-message-max-width: 80%;
+  --c1-message-spacing: 12px;
+  
+  /* User message (right side) - Jade/Teal */
+  --c1-user-message-background: rgba(20, 184, 166, 0.2);
+  --c1-user-message-color: #ffffff;
+  
+  /* Assistant message (left side) */
+  --c1-assistant-message-background: rgba(255, 255, 255, 0.08);
+  --c1-assistant-message-color: #ffffff;
+  
+  /* Scrollbar - Jade theme */
+  --c1-scrollbar-width: 8px;
+  --c1-scrollbar-track: rgba(20, 184, 166, 0.05);
+  --c1-scrollbar-thumb: rgba(20, 184, 166, 0.2);
+  --c1-scrollbar-thumb-hover: rgba(20, 184, 166, 0.3);
+}
+
+/* C1Chat component overrides */
+.chat-container * {
+  font-family: var(--c1-font-family) !important;
+}
+
+/* Input box styling */
+.chat-container input[type="text"],
+.chat-container textarea {
+  background: rgba(255, 255, 255, 0.9) !important;
+  color: #1a1a1a !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 12px !important;
+  padding: 12px 16px !important;
+  font-size: 14px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.2s ease !important;
+}
+
+.chat-container.jade-theme input[type="text"]:focus,
+.chat-container.jade-theme textarea:focus {
+  outline: none !important;
+  border-color: #14b8a6 !important;
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15), 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+.chat-container input[type="text"]::placeholder,
+.chat-container textarea::placeholder {
+  color: #6b7280 !important;
+}
+
+/* Send button styling - Jade theme */
+.chat-container.jade-theme button[type="submit"] {
+  background: linear-gradient(90deg, #14b8a6 0%, #0d9488 100%) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 8px 16px !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer !important;
+}
+
+.chat-container.jade-theme button[type="submit"]:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(20, 184, 166, 0.4) !important;
+}
+
+/* Message bubbles */
+.chat-container [role="log"] > div,
+.chat-container .message {
+  border-radius: 12px !important;
+  padding: 12px 16px !important;
+  margin-bottom: 12px !important;
+  max-width: 80% !important;
+}
+
+/* Scrollbar styling - Jade theme */
+.chat-container.jade-theme ::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chat-container.jade-theme ::-webkit-scrollbar-track {
+  background: rgba(20, 184, 166, 0.05);
+}
+
+.chat-container.jade-theme ::-webkit-scrollbar-thumb {
+  background: rgba(20, 184, 166, 0.2);
+  border-radius: 4px;
+}
+
+.chat-container.jade-theme ::-webkit-scrollbar-thumb:hover {
+  background: rgba(20, 184, 166, 0.3);
+}
+
+
+/* Force dark background for C1Chat Jade theme - Override component defaults */
+.chat-container.jade-theme,
+.chat-container.jade-theme > *,
+.chat-container.jade-theme [class*="chat"],
+.chat-container.jade-theme [class*="messages"],
+.chat-container.jade-theme [class*="container"] {
+  background-color: #0d1b1b !important;
+  background: #0d1b1b !important;
+}
+
+/* Ensure messages area is dark */
+.chat-container.jade-theme [role="log"],
+.chat-container.jade-theme [class*="message-list"],
+.chat-container.jade-theme [class*="messages-container"] {
+  background-color: #0d1b1b !important;
+  background: #0d1b1b !important;
+}
+
+/* Override any teal backgrounds in the chat area */
+.chat-container.jade-theme > div:not(.input-container) {
+  background-color: #0d1b1b !important;
+}
+
+/* Keep input area light */
+.chat-container.jade-theme [class*="input"],
+.chat-container.jade-theme input,
+.chat-container.jade-theme textarea {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+}
