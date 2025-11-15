@@ -13,6 +13,8 @@ services:
         value: 20.11.0
       - key: NPM_CONFIG_PRODUCTION
         value: false
+      - key: TRADINGAGENTS_API_URL
+        value: https://tradingagents-api-tacj.onrender.com
 
   # Python API Backend
   - type: web
