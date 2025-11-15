@@ -20,7 +20,7 @@ DEFAULT_CONFIG = {
     # Data vendor configuration
     # Category-level configuration (default for all tools in category)
     "data_vendors": {
-        "core_stock_apis": "yfinance",       # Options: yfinance, alpha_vantage, local - yfinance is free with 15min delay
+        "core_stock_apis": "marketdata",     # Options: marketdata, yfinance, alpha_vantage, local - marketdata has real-time data (30-day free trial)
         "technical_indicators": "yfinance",  # Options: yfinance, alpha_vantage, local
         "fundamental_data": "alpha_vantage", # Options: openai, alpha_vantage, local - use Alpha Vantage for fundamentals
         "news_data": "alpha_vantage",        # Options: openai, alpha_vantage, google, local
