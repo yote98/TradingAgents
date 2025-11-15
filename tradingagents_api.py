@@ -217,6 +217,47 @@ def calculate_risk():
             "details": str(e)
         }), 500
 
+@app.route('/quote/<ticker>', methods=['GET'])
+def get_quote(ticker):
+    """
+    Get real-time quote for a stock using MarketData.app
+    """
+    try:
+        print(f"\n💰 Getting quote for {ticker}...")
+        
+        from tradingagents.dataflows.marketdata import get_marketdata_quote
+        
+        result = get_marketdata_quote(ticker)
+        
+        if "error" in result:
+            # Fallback to yfinance if MarketData fails
+            import yfinance as yf
+            stock = yf.Ticker(ticker)
+            info = stock.info
+            
+            result = {
+                "symbol": ticker,
+                "price": info.get("currentPrice") or info.get("regularMarketPrice"),
+                "change": info.get("regularMarketChange"),
+                "changepct": info.get("regularMarketChangePercent"),
+                "volume": info.get("volume"),
+                "open": info.get("regularMarketOpen"),
+                "high": info.get("dayHigh"),
+                "low": info.get("dayLow"),
+                "close": info.get("previousClose"),
+                "source": "yfinance (fallback)"
+            }
+        
+        print(f"✅ Quote retrieved for {ticker}: ${result.get('price')}")
+        return jsonify(result)
+        
+    except Exception as e:
+        print(f"❌ Quote error: {e}")
+        return jsonify({
+            "error": "Failed to get quote",
+            "details": str(e)
+        }), 500
+
 @app.route('/sentiment/<ticker>', methods=['GET'])
 def get_sentiment(ticker):
     """
