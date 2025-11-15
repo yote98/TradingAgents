@@ -112,7 +112,8 @@ def get_marketdata_quote(
     if not api_key:
         return {"error": "MARKETDATA_API_KEY not set"}
     
-    # Use the /prices/ endpoint for real-time data
+    # Use the /prices/ endpoint for real-time data (stocks and ETFs)
+    # Note: /stocks/quote/ from docs doesn't work on free tier
     url = f"https://api.marketdata.app/v1/stocks/prices/{symbol.upper()}/"
     
     # Use Authorization header (recommended by MarketData.app)
@@ -130,6 +131,7 @@ def get_marketdata_quote(
             return {"error": data.get("errmsg", "Unknown error")}
         
         # Extract price data (arrays with single values)
+        # Response format: {"s":"ok","symbol":["AAPL"],"mid":[150.25],...}
         symbols = data.get("symbol", [])
         prices = data.get("mid", [])  # Midpoint prices
         timestamps = data.get("updated", [])
@@ -178,9 +180,11 @@ def get_marketdata_index_quote(
     if not api_key:
         return {"error": "MARKETDATA_API_KEY not set"}
     
-    # Indices use the same /stocks/prices/ endpoint
-    # Just pass the index symbol (e.g., ^GSPC)
-    url = f"https://api.marketdata.app/v1/stocks/prices/{symbol.upper()}/"
+    # Use the /indices/quote/ endpoint for index data
+    # URL encode the symbol (^ becomes %5E)
+    import urllib.parse
+    encoded_symbol = urllib.parse.quote(symbol.upper(), safe="")
+    url = f"https://api.marketdata.app/v1/indices/quote/{encoded_symbol}/"
     
     # Use Authorization header (recommended by MarketData.app)
     headers = {
@@ -238,15 +242,16 @@ def get_marketdata_bulk_quotes(
     if len(symbols) > 100:
         return {"error": "Maximum 100 symbols per request"}
     
-    # Use the bulk endpoint - pass symbols as comma-separated string
+    # Use the bulk quote endpoint with symbols parameter
     symbols_str = ",".join([s.upper() for s in symbols])
-    url = f"https://api.marketdata.app/v1/stocks/bulkprices/{symbols_str}/"
+    url = "https://api.marketdata.app/v1/stocks/quote/"
     
     headers = {
         "Authorization": f"Token {api_key}"
     }
     
     params = {
+        "symbols": symbols_str,
         "feed": "live"
     }
     
@@ -262,15 +267,22 @@ def get_marketdata_bulk_quotes(
         # Parse bulk response
         quotes = {}
         symbols_list = data.get("symbol", [])
-        prices = data.get("mid", [])
-        timestamps = data.get("updated", [])
+        last_prices = data.get("last_price", [])
+        bid_prices = data.get("bid_price", [])
+        ask_prices = data.get("ask_price", [])
+        volumes = data.get("volume", [])
+        timestamps = data.get("timestamp", [])
         
         for i, symbol in enumerate(symbols_list):
             quotes[symbol] = {
                 "symbol": symbol,
-                "price": prices[i] if i < len(prices) else None,
+                "price": last_prices[i] if i < len(last_prices) else None,
+                "last_price": last_prices[i] if i < len(last_prices) else None,
+                "bid_price": bid_prices[i] if i < len(bid_prices) else None,
+                "ask_price": ask_prices[i] if i < len(ask_prices) else None,
+                "volume": volumes[i] if i < len(volumes) else None,
                 "updated": timestamps[i] if i < len(timestamps) else None,
-                "updated_datetime": datetime.fromtimestamp(timestamps[i]).isoformat() if i < len(timestamps) and timestamps[i] else None,
+                "updated_datetime": timestamps[i] if i < len(timestamps) else None,
                 "source": "MarketData.app (Bulk - Real-time)"
             }
         
