@@ -90,19 +90,21 @@ def get_marketdata_quote(
 ) -> dict:
     """
     Get real-time quote for a stock from MarketData.app
+    Uses the /prices/ endpoint for real-time midpoint prices
     
     Args:
         symbol: Stock ticker (e.g., AAPL, TSLA)
     
     Returns:
-        Dictionary with current price, change, volume, etc.
+        Dictionary with current price and metadata
     """
     api_key = os.getenv("MARKETDATA_API_KEY")
     
     if not api_key:
         return {"error": "MARKETDATA_API_KEY not set"}
     
-    url = f"https://api.marketdata.app/v1/stocks/quotes/{symbol.upper()}/"
+    # Use the /prices/ endpoint for real-time data
+    url = f"https://api.marketdata.app/v1/stocks/prices/{symbol.upper()}/"
     
     params = {"token": api_key}
     
@@ -115,18 +117,21 @@ def get_marketdata_quote(
         if data.get("s") != "ok":
             return {"error": data.get("errmsg", "Unknown error")}
         
-        # Extract quote data
+        # Extract price data (arrays with single values)
+        symbols = data.get("symbol", [])
+        prices = data.get("mid", [])  # Midpoint prices
+        timestamps = data.get("updated", [])
+        
+        if not prices or not symbols:
+            return {"error": "No price data returned"}
+        
+        # Extract first (and only) result
         quote = {
-            "symbol": symbol.upper(),
-            "price": data.get("last", [None])[0],
-            "change": data.get("change", [None])[0],
-            "changepct": data.get("changepct", [None])[0],
-            "volume": data.get("volume", [None])[0],
-            "open": data.get("open", [None])[0],
-            "high": data.get("high", [None])[0],
-            "low": data.get("low", [None])[0],
-            "close": data.get("close", [None])[0],
-            "updated": data.get("updated", [None])[0],
+            "symbol": symbols[0] if symbols else symbol.upper(),
+            "price": prices[0] if prices else None,
+            "mid": prices[0] if prices else None,
+            "updated": timestamps[0] if timestamps else None,
+            "updated_datetime": datetime.fromtimestamp(timestamps[0]).isoformat() if timestamps and timestamps[0] else None,
             "source": "MarketData.app (Real-time)"
         }
         
