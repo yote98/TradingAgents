@@ -21,8 +21,17 @@ def test_marketdata():
     
     # Test 1: Get real-time quote for TSLA
     print("\n📊 Test 1: Real-time quote for TSLA")
-    url = "https://api.marketdata.app/v1/stocks/quotes/TSLA/"
-    params = {"token": api_key}
+    print(f"API Key: {api_key[:20]}...")
+    
+    # Try different endpoint formats
+    endpoints_to_try = [
+        f"https://api.marketdata.app/v1/stocks/quotes/TSLA/?token={api_key}",
+        f"https://api.marketdata.app/v1/stocks/quotes/TSLA/",
+    ]
+    
+    for i, url in enumerate(endpoints_to_try):
+        print(f"\nTrying endpoint {i+1}: {url[:60]}...")
+        params = {"token": api_key} if "?" not in url else {}
     
     try:
         response = requests.get(url, params=params, timeout=10)

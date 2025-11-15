@@ -13,9 +13,12 @@
 - Clean, professional UI
 
 ### ⚠️ Known Limitations (Beta)
-- **Data Delay**: Stock prices may be delayed by 15 minutes (using free yfinance)
-- **Rate Limits**: Alpha Vantage free tier = 25 requests/day for fundamentals/news
-- **Cache Issues**: First query may show stale data (refreshes hourly)
+- **Rate Limits**: 
+  - MarketData.app: 100 calls/day (real-time prices) ✅
+  - FMP: 250 calls/day (fundamentals)
+  - NewsData.io: 200 calls/day (news)
+  - NewsAPI.org: 100 calls/day (news fallback)
+- **Cache**: 1-hour cache to preserve API limits
 - **No Real Trading**: Analysis only, no actual trade execution
 
 ---
@@ -80,6 +83,8 @@ Let's build something amazing together!
 - [x] Welcome message with instructions
 - [x] Example prompts for users
 - [x] Beta disclaimer visible
+- [x] Real-time data integration (MarketData.app) ✅
+- [x] Data accuracy verified ✅
 - [ ] Feedback mechanism (Google Form or email)
 - [ ] Usage analytics (optional but recommended)
 - [ ] Error logging (to catch bugs)
@@ -181,7 +186,7 @@ Let's build something amazing together!
 ## 💡 Feature Roadmap (Post-Beta)
 
 ### High Priority
-1. **Live Data Integration** (IBKR or paid API)
+1. ~~**Live Data Integration**~~ ✅ COMPLETE (MarketData.app)
 2. **Portfolio Tracking** (track multiple positions)
 3. **Alerts & Notifications** (price alerts, news alerts)
 4. **Historical Analysis** (track past recommendations)
