@@ -231,7 +231,14 @@ def _get_stock_stats_bulk(
             f"{symbol}-YFin-data-{start_date_str}-{end_date_str}.csv",
         )
         
+        # Check if cache exists and is fresh (less than 1 hour old)
+        cache_is_fresh = False
         if os.path.exists(data_file):
+            import time
+            file_age = time.time() - os.path.getmtime(data_file)
+            cache_is_fresh = file_age < 3600  # 1 hour in seconds
+        
+        if cache_is_fresh:
             data = pd.read_csv(data_file)
             data["Date"] = pd.to_datetime(data["Date"])
         else:
