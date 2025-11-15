@@ -18,7 +18,15 @@ def get_YFin_data_online(
     ticker = yf.Ticker(symbol.upper())
 
     # Fetch historical data for the specified date range
-    data = ticker.history(start=start_date, end=end_date)
+    # Force fresh data by disabling yfinance's internal caching
+    import yfinance.shared as shared
+    shared._CACHE = {}  # Clear yfinance's internal cache
+    
+    data = ticker.history(start=start_date, end=end_date, auto_adjust=True, actions=False)
+    
+    print(f"[DEBUG] Fetched {len(data)} rows for {symbol} from {start_date} to {end_date}")
+    if not data.empty:
+        print(f"[DEBUG] Latest date: {data.index[-1]}, Close: {data['Close'].iloc[-1]}")
 
     # Check if data is empty
     if data.empty:
