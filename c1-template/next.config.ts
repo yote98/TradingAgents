@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: false, // Disable to reduce hydration noise
+  output: 'standalone', // Use standalone output for server deployment
   eslint: {
     ignoreDuringBuilds: true, // Disable ESLint during production builds
   },
