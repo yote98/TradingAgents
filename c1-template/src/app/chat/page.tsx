@@ -8,6 +8,9 @@ import { theme, darkTheme, themeMode } from "../../theme";
 import { useEffect, useState } from "react";
 import AgentModal, { Agent } from "../../components/AgentModal";
 
+// Force dynamic rendering - no static generation
+export const dynamic = 'force-dynamic';
+
 export default function ChatPage() {
   const [mounted, setMounted] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
