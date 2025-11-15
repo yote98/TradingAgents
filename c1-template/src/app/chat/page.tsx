@@ -1,15 +1,20 @@
 "use client";
 
-import { C1Chat, ThemeProvider } from "@thesysai/genui-sdk";
-import "@crayonai/react-ui/styles/index.css";
+import { useEffect, useState } from "react";
 import clsx from "clsx";
 import styles from "../page.module.scss";
-import { theme, darkTheme, themeMode } from "../../theme";
-import { useEffect, useState } from "react";
-import AgentModal, { Agent } from "../../components/AgentModal";
+import dynamic from 'next/dynamic';
 
 // Force dynamic rendering - no static generation
 export const dynamic = 'force-dynamic';
+
+// Dynamically import components that use browser APIs
+const C1Chat = dynamic(() => import("@thesysai/genui-sdk").then(mod => ({ default: mod.C1Chat })), { ssr: false });
+const ThemeProvider = dynamic(() => import("@thesysai/genui-sdk").then(mod => ({ default: mod.ThemeProvider })), { ssr: false });
+const AgentModal = dynamic(() => import("../../components/AgentModal").then(mod => ({ default: mod.default })), { ssr: false });
+
+import { theme, darkTheme, themeMode } from "../../theme";
+import type { Agent } from "../../components/AgentModal";
 
 export default function ChatPage() {
   const [mounted, setMounted] = useState(false);
@@ -25,6 +30,15 @@ export default function ChatPage() {
     console.log('Selected agent:', agent);
     // TODO: Update chat context with selected agent
   };
+
+  // Import CSS on client side only
+  useEffect(() => {
+    import("@crayonai/react-ui/styles/index.css");
+  }, []);
+
+  if (!mounted) {
+    return <div className="flex items-center justify-center h-screen">Loading...</div>;
+  }
 
   return (
     <div className={clsx("!h-full !w-full", styles["chat-theme"])} suppressHydrationWarning>
