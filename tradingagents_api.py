@@ -252,8 +252,9 @@ def get_sentiment(ticker):
         }), 500
 
 if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
     print("\n🚀 Starting TradingAgents API Server...")
-    print("📍 Server will run on: http://localhost:5000")
+    print(f"📍 Server will run on port: {port}")
     print("🔗 C1 Frontend should connect to this URL")
     print("\nAvailable endpoints:")
     print("  GET  /health - Health check")
@@ -263,4 +264,4 @@ if __name__ == '__main__':
     print("  GET  /sentiment/<ticker> - Get sentiment")
     print("\n" + "=" * 60 + "\n")
     
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=port, debug=False)
