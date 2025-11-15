@@ -13,6 +13,7 @@ export const revalidate = 0;
 const C1Chat = dynamic(() => import("@thesysai/genui-sdk").then(mod => ({ default: mod.C1Chat })), { ssr: false });
 const ThemeProvider = dynamic(() => import("@thesysai/genui-sdk").then(mod => ({ default: mod.ThemeProvider })), { ssr: false });
 const AgentModal = dynamic(() => import("../../components/AgentModal").then(mod => ({ default: mod.default })), { ssr: false });
+const WelcomeMessage = dynamic(() => import("../../components/WelcomeMessage").then(mod => ({ default: mod.default })), { ssr: false });
 
 import { theme, darkTheme, themeMode } from "../../theme";
 import type { Agent } from "../../components/AgentModal";
@@ -78,6 +79,9 @@ export default function ChatPage() {
           </button>
         )}
       </div>
+
+      {/* Welcome Message */}
+      {mounted && <WelcomeMessage />}
 
       {/* Agent Modal */}
       <AgentModal
