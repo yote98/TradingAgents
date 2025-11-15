@@ -33,3 +33,9 @@ services:
         sync: false
       - key: MARKETDATA_API_KEY
         sync: false
+      - key: FMP_API_KEY
+        sync: false
+      - key: NEWSDATA_API_KEY
+        sync: false
+      - key: NEWSAPI_API_KEY
+        sync: false

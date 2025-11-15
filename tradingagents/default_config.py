@@ -22,8 +22,8 @@ DEFAULT_CONFIG = {
     "data_vendors": {
         "core_stock_apis": "marketdata",     # Options: marketdata, yfinance, alpha_vantage, local - marketdata has real-time data (30-day free trial)
         "technical_indicators": "yfinance",  # Options: yfinance, alpha_vantage, local
-        "fundamental_data": "alpha_vantage", # Options: openai, alpha_vantage, local - use Alpha Vantage for fundamentals
-        "news_data": "alpha_vantage",        # Options: openai, alpha_vantage, google, local
+        "fundamental_data": "fmp",           # Options: fmp, alpha_vantage, openai, local - FMP has 250 free calls/day, accurate data
+        "news_data": "newsdata",             # Options: newsdata, newsapi, alpha_vantage, openai, google, local - newsdata has 200 free calls/day with sentiment
     },
     # Tool-level configuration (takes precedence over category-level)
     "tool_vendors": {

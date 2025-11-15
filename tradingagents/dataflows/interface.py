@@ -17,6 +17,9 @@ from .alpha_vantage import (
 )
 from .alpha_vantage_common import AlphaVantageRateLimitError
 from .marketdata import get_marketdata_stock
+from .fmp import get_fmp_fundamentals, get_fmp_income_statement, get_fmp_balance_sheet, get_fmp_cash_flow, get_fmp_earnings
+from .newsdata import get_newsdata_news, get_newsdata_sentiment
+from .newsapi import get_newsapi_news, get_newsapi_headlines
 
 # Configuration and routing logic
 from .config import get_config
@@ -79,26 +82,32 @@ VENDOR_METHODS = {
     },
     # fundamental_data
     "get_fundamentals": {
+        "fmp": get_fmp_fundamentals,
         "alpha_vantage": get_alpha_vantage_fundamentals,
         "openai": get_fundamentals_openai,
     },
     "get_balance_sheet": {
+        "fmp": get_fmp_balance_sheet,
         "alpha_vantage": get_alpha_vantage_balance_sheet,
         "yfinance": get_yfinance_balance_sheet,
         "local": get_simfin_balance_sheet,
     },
     "get_cashflow": {
+        "fmp": get_fmp_cash_flow,
         "alpha_vantage": get_alpha_vantage_cashflow,
         "yfinance": get_yfinance_cashflow,
         "local": get_simfin_cashflow,
     },
     "get_income_statement": {
+        "fmp": get_fmp_income_statement,
         "alpha_vantage": get_alpha_vantage_income_statement,
         "yfinance": get_yfinance_income_statement,
         "local": get_simfin_income_statements,
     },
     # news_data
     "get_news": {
+        "newsdata": get_newsdata_news,
+        "newsapi": get_newsapi_news,
         "alpha_vantage": get_alpha_vantage_news,
         "openai": get_stock_news_openai,
         "google": get_google_news,
