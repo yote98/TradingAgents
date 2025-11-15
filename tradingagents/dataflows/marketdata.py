@@ -35,14 +35,18 @@ def get_marketdata_stock(
     # MarketData.app API endpoint
     url = f"https://api.marketdata.app/v1/stocks/candles/D/{symbol.upper()}/"
     
+    # Use Authorization header (recommended by MarketData.app)
+    headers = {
+        "Authorization": f"Token {api_key}"
+    }
+    
     params = {
         "from": start_date,
-        "to": end_date,
-        "token": api_key
+        "to": end_date
     }
     
     try:
-        response = requests.get(url, params=params, timeout=10)
+        response = requests.get(url, params=params, headers=headers, timeout=10)
         response.raise_for_status()
         
         data = response.json()
@@ -106,10 +110,13 @@ def get_marketdata_quote(
     # Use the /prices/ endpoint for real-time data
     url = f"https://api.marketdata.app/v1/stocks/prices/{symbol.upper()}/"
     
-    params = {"token": api_key}
+    # Use Authorization header (recommended by MarketData.app)
+    headers = {
+        "Authorization": f"Token {api_key}"
+    }
     
     try:
-        response = requests.get(url, params=params, timeout=10)
+        response = requests.get(url, headers=headers, timeout=10)
         response.raise_for_status()
         
         data = response.json()

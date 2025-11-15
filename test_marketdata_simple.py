@@ -6,30 +6,31 @@ Just add your API key and run: python test_marketdata_simple.py
 import requests
 from datetime import datetime
 
-# PUT YOUR API KEY HERE
-API_KEY = "YOUR_API_KEY_HERE"  # Replace with your actual key
+# PUT YOUR ACCESS TOKEN HERE
+API_TOKEN = "TmhUbDMyS0VRTmRUcWlyc3RRMUg5N1B6enM3VkNnZGMwdS1KXzRxdFVLYz0"  # Your MarketData.app token
 
 print("=" * 70)
 print("MarketData.app Simple Test")
 print("=" * 70)
 
-if API_KEY == "YOUR_API_KEY_HERE":
-    print("\n❌ Please edit this file and add your API key on line 10")
-    print("   API_KEY = \"your-actual-key-here\"")
+if API_TOKEN == "YOUR_TOKEN_HERE":
+    print("\n❌ Please edit this file and add your access token on line 10")
+    print("   API_TOKEN = \"your-actual-token-here\"")
     exit(1)
 
-print(f"\n✅ API Key: {API_KEY[:15]}...")
+print(f"\n✅ API Token: {API_TOKEN[:15]}...")
 
 # Test 1: Get real-time price for TSLA
 print("\n" + "=" * 70)
 print("Test 1: Get TSLA Real-Time Price")
 print("=" * 70)
 
-url = f"https://api.marketdata.app/v1/stocks/prices/TSLA/?token={API_KEY}"
-print(f"URL: {url[:60]}...")
+url = "https://api.marketdata.app/v1/stocks/prices/TSLA/"
+headers = {"Authorization": f"Token {API_TOKEN}"}
+print(f"URL: {url}")
 
 try:
-    response = requests.get(url, timeout=10)
+    response = requests.get(url, headers=headers, timeout=10)
     print(f"Status: {response.status_code}")
     
     if response.status_code == 200:
@@ -79,11 +80,12 @@ from datetime import timedelta
 end_date = datetime.now()
 start_date = end_date - timedelta(days=5)
 
-url = f"https://api.marketdata.app/v1/stocks/candles/D/TSLA/?from={start_date.strftime('%Y-%m-%d')}&to={end_date.strftime('%Y-%m-%d')}&token={API_KEY}"
+url = f"https://api.marketdata.app/v1/stocks/candles/D/TSLA/?from={start_date.strftime('%Y-%m-%d')}&to={end_date.strftime('%Y-%m-%d')}"
+headers = {"Authorization": f"Token {API_TOKEN}"}
 print(f"URL: {url[:80]}...")
 
 try:
-    response = requests.get(url, timeout=10)
+    response = requests.get(url, headers=headers, timeout=10)
     print(f"Status: {response.status_code}")
     
     if response.status_code == 200:
