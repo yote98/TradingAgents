@@ -1,4 +1,5 @@
 services:
+  # Next.js Frontend
   - type: web
     name: tradingagents-c1
     runtime: node
@@ -12,3 +13,15 @@ services:
         value: 20.11.0
       - key: NPM_CONFIG_PRODUCTION
         value: false
+
+  # Python API Backend
+  - type: web
+    name: tradingagents-api
+    runtime: python
+    region: oregon
+    plan: free
+    buildCommand: pip install -r requirements-api.txt
+    startCommand: python tradingagents_api.py
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
