@@ -19,9 +19,9 @@ def test_marketdata():
     
     print(f"✅ API Key found: {api_key[:10]}...")
     
-    # Test 1: Get real-time quote
-    print("\n📊 Test 1: Real-time quote for NVDA")
-    url = "https://api.marketdata.app/v1/stocks/quotes/NVDA/"
+    # Test 1: Get real-time quote for TSLA
+    print("\n📊 Test 1: Real-time quote for TSLA")
+    url = "https://api.marketdata.app/v1/stocks/quotes/TSLA/"
     params = {"token": api_key}
     
     try:
@@ -30,13 +30,18 @@ def test_marketdata():
         
         if response.status_code == 200:
             data = response.json()
-            print(f"Response: {data}")
+            print(f"Full Response: {data}")
             
             if data.get("s") == "ok":
                 price = data.get("last", [None])[0]
+                close = data.get("close", [None])[0]
                 updated = data.get("updated", [None])[0]
-                print(f"✅ NVDA Price: ${price}")
+                print(f"\n✅ TSLA Current Price: ${price}")
+                print(f"✅ TSLA Close: ${close}")
                 print(f"✅ Updated: {datetime.fromtimestamp(updated) if updated else 'N/A'}")
+                print(f"\n🎯 Expected: $404.39 (Nov 14 close)")
+                print(f"🎯 Got: ${close}")
+                print(f"🎯 Difference: ${abs(close - 404.39) if close else 'N/A'}")
                 return True
             else:
                 print(f"❌ API Error: {data.get('errmsg', 'Unknown error')}")
@@ -49,12 +54,12 @@ def test_marketdata():
         print(f"❌ Exception: {str(e)}")
         return False
     
-    # Test 2: Get historical data
-    print("\n📈 Test 2: Historical data for NVDA (last 5 days)")
+    # Test 2: Get historical data for TSLA
+    print("\n📈 Test 2: Historical data for TSLA (last 5 days)")
     end_date = datetime.now()
     start_date = end_date - timedelta(days=5)
     
-    url = "https://api.marketdata.app/v1/stocks/candles/D/NVDA/"
+    url = "https://api.marketdata.app/v1/stocks/candles/D/TSLA/"
     params = {
         "from": start_date.strftime("%Y-%m-%d"),
         "to": end_date.strftime("%Y-%m-%d"),
@@ -73,10 +78,17 @@ def test_marketdata():
                 closes = data.get("c", [])
                 
                 if timestamps and closes:
+                    print(f"\n✅ Got {len(timestamps)} data points:")
+                    for i in range(len(timestamps)):
+                        date = datetime.fromtimestamp(timestamps[i])
+                        close = closes[i]
+                        print(f"  {date.strftime('%Y-%m-%d')}: ${close}")
+                    
                     latest_date = datetime.fromtimestamp(timestamps[-1])
                     latest_close = closes[-1]
-                    print(f"✅ Latest data: {latest_date.strftime('%Y-%m-%d')} - Close: ${latest_close}")
-                    print(f"✅ Total data points: {len(timestamps)}")
+                    print(f"\n✅ Latest data: {latest_date.strftime('%Y-%m-%d')} - Close: ${latest_close}")
+                    print(f"🎯 Expected Nov 14: $404.39")
+                    print(f"🎯 Got: ${latest_close}")
                     return True
                 else:
                     print("❌ No data returned")
@@ -96,17 +108,19 @@ def test_marketdata():
 if __name__ == "__main__":
     print("=" * 60)
     print("Testing MarketData.app API Connection")
+    print(f"Today: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("=" * 60)
     
     success = test_marketdata()
     
     print("\n" + "=" * 60)
     if success:
-        print("✅ MarketData.app is working correctly!")
-        print("If your app still shows old data, check:")
-        print("1. API key is set in Render environment")
-        print("2. Backend has redeployed with new code")
-        print("3. Clear any cached data")
+        print("✅ MarketData.app is responding!")
+        print("\nIf prices don't match expected:")
+        print("1. Check if MarketData.app has data delay")
+        print("2. Verify your free trial is active")
+        print("3. Check their status page")
+        print("4. Consider switching to yfinance temporarily")
     else:
         print("❌ MarketData.app test failed")
         print("Check:")
