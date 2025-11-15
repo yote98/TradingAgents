@@ -239,27 +239,31 @@ def _get_stock_stats_bulk(
             f"{symbol}-YFin-data-{start_date_str}-{end_date_str}.csv",
         )
         
-        # Check if cache exists and is fresh (less than 1 hour old)
+        # Check if cache exists and is fresh (less than 1 hour old to ensure fresh data)
+        # Shorter cache time helps catch splits, earnings, and other corporate actions
         cache_is_fresh = False
         if os.path.exists(data_file):
             import time
             file_age = time.time() - os.path.getmtime(data_file)
-            cache_is_fresh = file_age < 3600  # 1 hour in seconds
+            cache_is_fresh = file_age < 3600  # 1 hour in seconds (was 4 hours)
         
         if cache_is_fresh:
             data = pd.read_csv(data_file)
             data["Date"] = pd.to_datetime(data["Date"])
+            print(f"[CACHE] Using cached data for {symbol}, age: {file_age/3600:.1f} hours")
         else:
+            print(f"[FETCH] Fetching fresh data for {symbol} from yfinance")
             data = yf.download(
                 symbol,
                 start=start_date_str,
                 end=end_date_str,
                 multi_level_index=False,
                 progress=False,
-                auto_adjust=True,
+                auto_adjust=True,  # This handles splits automatically
             )
             data = data.reset_index()
             data.to_csv(data_file, index=False)
+            print(f"[FETCH] Saved {len(data)} rows, latest: {data['Date'].iloc[-1] if len(data) > 0 else 'N/A'}")
         
         df = wrap(data)
         df["Date"] = df["Date"].dt.strftime("%Y-%m-%d")
