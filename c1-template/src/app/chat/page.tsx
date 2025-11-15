@@ -6,7 +6,8 @@ import styles from "../page.module.scss";
 import dynamic from 'next/dynamic';
 
 // Force dynamic rendering - no static generation
-export const dynamic = 'force-dynamic';
+export const dynamicParams = false;
+export const revalidate = 0;
 
 // Dynamically import components that use browser APIs
 const C1Chat = dynamic(() => import("@thesysai/genui-sdk").then(mod => ({ default: mod.C1Chat })), { ssr: false });
