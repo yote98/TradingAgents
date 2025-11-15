@@ -2,10 +2,32 @@
 
 import { useState } from "react";
 
-export default function WelcomeMessage() {
+interface WelcomeMessageProps {
+  onPromptSelect?: (prompt: string) => void;
+}
+
+export default function WelcomeMessage({ onPromptSelect }: WelcomeMessageProps) {
   const [isVisible, setIsVisible] = useState(true);
+  const [copiedPrompt, setCopiedPrompt] = useState<string | null>(null);
 
   if (!isVisible) return null;
+  
+  const handlePromptClick = (prompt: string) => {
+    // Copy to clipboard
+    navigator.clipboard.writeText(prompt);
+    
+    // Show copied notification
+    setCopiedPrompt(prompt);
+    setTimeout(() => setCopiedPrompt(null), 2000);
+    
+    // Close modal after a brief delay so user sees the notification
+    setTimeout(() => setIsVisible(false), 1500);
+    
+    // Call the callback if provided
+    if (onPromptSelect) {
+      onPromptSelect(prompt);
+    }
+  };
 
   const examplePrompts = [
     {
@@ -52,6 +74,19 @@ export default function WelcomeMessage() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+      {/* Copied notification toast */}
+      {copiedPrompt && (
+        <div className="fixed top-4 right-4 z-[60] bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg animate-fade-in">
+          <div className="flex items-center gap-2">
+            <span className="text-xl">✅</span>
+            <div>
+              <div className="font-semibold">Copied to clipboard!</div>
+              <div className="text-sm opacity-90">Paste it in the chat below</div>
+            </div>
+          </div>
+        </div>
+      )}
+      
       <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-gray-700">
         {/* Header */}
         <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-purple-600 p-6 rounded-t-2xl">
@@ -135,14 +170,14 @@ export default function WelcomeMessage() {
                     {section.prompts.map((prompt, pIdx) => (
                       <button
                         key={pIdx}
-                        onClick={() => {
-                          setIsVisible(false);
-                          // Copy to clipboard
-                          navigator.clipboard.writeText(prompt);
-                        }}
-                        className="block w-full text-left px-3 py-2 bg-gray-700/50 hover:bg-gray-700 rounded text-sm text-gray-200 transition-colors"
+                        onClick={() => handlePromptClick(prompt)}
+                        className="block w-full text-left px-3 py-2 bg-gray-700/50 hover:bg-gray-700 rounded text-sm text-gray-200 transition-colors hover:scale-[1.02] transform"
+                        title="Click to use this prompt"
                       >
-                        "{prompt}"
+                        <span className="flex items-center justify-between">
+                          <span>"{prompt}"</span>
+                          <span className="text-xs text-gray-400 ml-2">📋 Click to copy</span>
+                        </span>
                       </button>
                     ))}
                   </div>
@@ -172,7 +207,7 @@ export default function WelcomeMessage() {
               Start Trading Analysis
             </button>
             <p className="text-xs text-gray-400 mt-3">
-              Click any prompt above to copy it, or close this to start chatting
+              💡 Click any prompt above to copy it to your clipboard, then paste in the chat
             </p>
           </div>
         </div>
