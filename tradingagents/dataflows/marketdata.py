@@ -90,14 +90,19 @@ def get_marketdata_stock(
 
 
 def get_marketdata_quote(
-    symbol: Annotated[str, "ticker symbol of the company"]
+    symbol: Annotated[str, "ticker symbol (stock, ETF, or index)"]
 ) -> dict:
     """
-    Get real-time quote for a stock from MarketData.app
+    Get real-time quote for a stock, ETF, or index from MarketData.app
     Uses the /prices/ endpoint for real-time midpoint prices
     
+    Supports:
+    - Stocks: AAPL, TSLA, NVDA
+    - ETFs: SPY, QQQ, IWM, VTI
+    - Indices: ^GSPC (S&P 500), ^DJI (Dow), ^NDX (Nasdaq), ^VIX
+    
     Args:
-        symbol: Stock ticker (e.g., AAPL, TSLA)
+        symbol: Ticker symbol (e.g., AAPL, SPY, ^GSPC)
     
     Returns:
         Dictionary with current price and metadata
@@ -148,9 +153,136 @@ def get_marketdata_quote(
         return {"error": str(e)}
 
 
+def get_marketdata_index_quote(
+    symbol: Annotated[str, "index symbol (e.g., ^GSPC, ^DJI, ^VIX)"]
+) -> dict:
+    """
+    Get real-time quote for an index from MarketData.app
+    Uses the /indices/quote/ endpoint
+    
+    Common indices:
+    - ^GSPC: S&P 500
+    - ^DJI: Dow Jones Industrial Average
+    - ^NDX: Nasdaq 100
+    - ^RUT: Russell 2000
+    - ^VIX: Volatility Index
+    
+    Args:
+        symbol: Index symbol (e.g., ^GSPC)
+    
+    Returns:
+        Dictionary with current price and metadata
+    """
+    api_key = os.getenv("MARKETDATA_API_KEY")
+    
+    if not api_key:
+        return {"error": "MARKETDATA_API_KEY not set"}
+    
+    # Indices use the same /stocks/prices/ endpoint
+    # Just pass the index symbol (e.g., ^GSPC)
+    url = f"https://api.marketdata.app/v1/stocks/prices/{symbol.upper()}/"
+    
+    # Use Authorization header (recommended by MarketData.app)
+    headers = {
+        "Authorization": f"Token {api_key}"
+    }
+    
+    params = {"feed": "live"}
+    
+    try:
+        response = requests.get(url, headers=headers, params=params, timeout=10)
+        response.raise_for_status()
+        
+        data = response.json()
+        
+        if data.get("s") != "ok":
+            return {"error": data.get("errmsg", "Unknown error")}
+        
+        # Extract index data
+        quote = {
+            "symbol": data.get("symbol", [symbol.upper()])[0] if isinstance(data.get("symbol"), list) else data.get("symbol", symbol.upper()),
+            "price": data.get("price", [None])[0] if isinstance(data.get("price"), list) else data.get("price"),
+            "change": data.get("change", [None])[0] if isinstance(data.get("change"), list) else data.get("change"),
+            "change_percent": data.get("changepct", [None])[0] if isinstance(data.get("changepct"), list) else data.get("changepct"),
+            "high": data.get("high", [None])[0] if isinstance(data.get("high"), list) else data.get("high"),
+            "low": data.get("low", [None])[0] if isinstance(data.get("low"), list) else data.get("low"),
+            "updated": data.get("updated", [None])[0] if isinstance(data.get("updated"), list) else data.get("updated"),
+            "updated_datetime": datetime.fromtimestamp(data.get("updated", [0])[0]).isoformat() if isinstance(data.get("updated"), list) and data.get("updated", [0])[0] else None,
+            "source": "MarketData.app (Index - Real-time)"
+        }
+        
+        return quote
+        
+    except Exception as e:
+        return {"error": str(e)}
+
+
+def get_marketdata_bulk_quotes(
+    symbols: Annotated[list, "list of ticker symbols (up to 100)"]
+) -> dict:
+    """
+    Get real-time quotes for multiple stocks/ETFs at once
+    More efficient than individual calls
+    
+    Args:
+        symbols: List of tickers (e.g., ["AAPL", "SPY", "TSLA"])
+    
+    Returns:
+        Dictionary with quotes for each symbol
+    """
+    api_key = os.getenv("MARKETDATA_API_KEY")
+    
+    if not api_key:
+        return {"error": "MARKETDATA_API_KEY not set"}
+    
+    if len(symbols) > 100:
+        return {"error": "Maximum 100 symbols per request"}
+    
+    # Use the bulk endpoint - pass symbols as comma-separated string
+    symbols_str = ",".join([s.upper() for s in symbols])
+    url = f"https://api.marketdata.app/v1/stocks/bulkprices/{symbols_str}/"
+    
+    headers = {
+        "Authorization": f"Token {api_key}"
+    }
+    
+    params = {
+        "feed": "live"
+    }
+    
+    try:
+        response = requests.get(url, headers=headers, params=params, timeout=10)
+        response.raise_for_status()
+        
+        data = response.json()
+        
+        if data.get("s") != "ok":
+            return {"error": data.get("errmsg", "Unknown error")}
+        
+        # Parse bulk response
+        quotes = {}
+        symbols_list = data.get("symbol", [])
+        prices = data.get("mid", [])
+        timestamps = data.get("updated", [])
+        
+        for i, symbol in enumerate(symbols_list):
+            quotes[symbol] = {
+                "symbol": symbol,
+                "price": prices[i] if i < len(prices) else None,
+                "updated": timestamps[i] if i < len(timestamps) else None,
+                "updated_datetime": datetime.fromtimestamp(timestamps[i]).isoformat() if i < len(timestamps) and timestamps[i] else None,
+                "source": "MarketData.app (Bulk - Real-time)"
+            }
+        
+        return quotes
+        
+    except Exception as e:
+        return {"error": str(e)}
+
+
 def test_marketdata_connection():
     """
-    Test MarketData.app API connection
+    Test MarketData.app API connection with stocks, ETFs, and indices
     Returns True if working, False otherwise
     """
     api_key = os.getenv("MARKETDATA_API_KEY")
@@ -159,14 +291,53 @@ def test_marketdata_connection():
         print("❌ MARKETDATA_API_KEY not set")
         return False
     
-    # Test with AAPL quote
+    print("\n" + "=" * 60)
+    print("Testing MarketData.app Connection")
+    print("=" * 60)
+    
+    # Test stock quote
+    print("\n1. Testing Stock Quote (AAPL)...")
     result = get_marketdata_quote("AAPL")
     
     if "error" in result:
-        print(f"❌ MarketData.app test failed: {result['error']}")
+        print(f"   ❌ Failed: {result['error']}")
         return False
     
-    print(f"✅ MarketData.app working! AAPL price: ${result.get('price', 'N/A')}")
+    print(f"   ✅ AAPL price: ${result.get('price', 'N/A')}")
+    
+    # Test ETF quote
+    print("\n2. Testing ETF Quote (SPY)...")
+    result = get_marketdata_quote("SPY")
+    
+    if "error" in result:
+        print(f"   ❌ Failed: {result['error']}")
+    else:
+        print(f"   ✅ SPY price: ${result.get('price', 'N/A')}")
+    
+    # Test index quote
+    print("\n3. Testing Index Quote (^GSPC - S&P 500)...")
+    result = get_marketdata_index_quote("^GSPC")
+    
+    if "error" in result:
+        print(f"   ❌ Failed: {result['error']}")
+    else:
+        print(f"   ✅ S&P 500: {result.get('price', 'N/A')}")
+    
+    # Test bulk quotes
+    print("\n4. Testing Bulk Quotes (AAPL, TSLA, NVDA)...")
+    result = get_marketdata_bulk_quotes(["AAPL", "TSLA", "NVDA"])
+    
+    if "error" in result:
+        print(f"   ❌ Failed: {result['error']}")
+    else:
+        print(f"   ✅ Got {len(result)} quotes")
+        for symbol, quote in result.items():
+            print(f"      {symbol}: ${quote.get('price', 'N/A')}")
+    
+    print("\n" + "=" * 60)
+    print("✅ All tests passed!")
+    print("=" * 60)
+    
     return True
 
 
