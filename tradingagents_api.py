@@ -26,9 +26,9 @@ config["enable_coaches"] = False            # Disable for speed
 config["enable_memory"] = False             # Disable for speed
 
 print("=" * 60)
-print("TradingAgents API Server")
+print("TradingAgents API Server v2.0")
 print("=" * 60)
-print("Initializing TradingAgents...")
+print("Initializing TradingAgents with MarketData.app...")
 
 try:
     graph = TradingAgentsGraph(config=config)
