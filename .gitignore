@@ -45,3 +45,25 @@ eval_results/
 # OS
 .DS_Store
 Thumbs.db
+
+# Debug and documentation files (session artifacts)
+AI_*.md
+*_SUMMARY.md
+*_SOLUTION.md
+*_FIX_*.md
+*_CHECKLIST.md
+*_PLAN.md
+*_COMPLETE.md
+*_DISCOVERY_*.md
+*_FEATURES.md
+*_INTEGRATION_*.md
+AI_responses.txt/
+test_*.md
+test_*.py
+test_production_api.py
+
+# Experimental components (not used in production)
+c1-template/src/components/StockCard.tsx
+c1-template/src/components/ManualPriceDisplay.tsx
+c1-template/src/components/ChatWithPriceDisplay.tsx
+c1-template/src/components/StockPriceDisplay.tsx

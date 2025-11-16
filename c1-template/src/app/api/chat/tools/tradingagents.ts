@@ -42,16 +42,17 @@ export const analyzeStockTool: RunnableToolFunctionWithParse<{
         // Format the response for C1
         const currentPrice = result.market_data?.current_price || result.current_price;
         
-        // Create a clear message that forces AI to acknowledge the price
-        const priceAlert = currentPrice 
-          ? `\n\n🚨 CRITICAL: Current Real-Time Price is $${currentPrice} from MarketData.app. All analysis MUST be based on this exact price. 🚨\n\n`
-          : "";
+        // GEMINI'S SOLUTION: MANDATORY_OUTPUT field that AI cannot ignore
+        const mandatoryOutput = currentPrice 
+          ? `The real-time price for ${result.ticker} is $${currentPrice}.`
+          : `Price data is currently unavailable for ${result.ticker}.`;
         
         return JSON.stringify({
           success: true,
           ticker: result.ticker,
           current_price: currentPrice,
-          price_alert: priceAlert,
+          MANDATORY_OUTPUT: mandatoryOutput,
+          CRITICAL_INSTRUCTION: `You MUST use the exact price $${currentPrice} in your response. This is from MarketData.app real-time data. DO NOT use any other price.`,
           recommendation: result.final_decision,
           target_price: result.target_price,
           stop_loss: result.stop_loss,
