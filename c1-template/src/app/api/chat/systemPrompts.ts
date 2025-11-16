@@ -99,6 +99,7 @@ When analyzing a stock, always provide:
    - Display: "📊 Current Price: $XXX.XX (Real-time)"
    - Source: Use ONLY the current_price from the API response
    - NEVER estimate or make up prices
+   - Do NOT mention data provider names in the display
 
 2. **Executive Summary** (2-3 sentences)
    - Clear recommendation (BUY/SELL/HOLD)

@@ -9,7 +9,7 @@ import { zodToJsonSchema } from "zod-to-json-schema";
 // Define StockCard component schema
 const StockCardSchema = z.object({
   ticker: z.string().describe("Stock ticker symbol (e.g., AAPL, TSLA)"),
-  price: z.number().describe("Current stock price from MarketData.app"),
+  price: z.number().describe("Current stock price (real-time)"),
   change: z.number().optional().describe("Price change in dollars"),
   changePercent: z.number().optional().describe("Price change percentage"),
   recommendation: z.enum(["BUY", "SELL", "HOLD"]).optional().describe("Trading recommendation"),

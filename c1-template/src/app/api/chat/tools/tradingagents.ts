@@ -52,7 +52,7 @@ export const analyzeStockTool: RunnableToolFunctionWithParse<{
           ticker: result.ticker,
           current_price: currentPrice,
           MANDATORY_OUTPUT: mandatoryOutput,
-          CRITICAL_INSTRUCTION: `You MUST use the exact price $${currentPrice} in your response. This is from MarketData.app real-time data. DO NOT use any other price.`,
+          CRITICAL_INSTRUCTION: `You MUST use the exact price $${currentPrice} in your response. This is real-time market data. DO NOT use any other price.`,
           recommendation: result.final_decision,
           target_price: result.target_price,
           stop_loss: result.stop_loss,
