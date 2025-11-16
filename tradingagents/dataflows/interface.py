@@ -152,7 +152,13 @@ def get_vendor(category: str, method: str = None) -> str:
 def route_to_vendor(method: str, *args, **kwargs):
     """Route method calls to appropriate vendor implementation with fallback support."""
     category = get_category_for_method(method)
-    vendor_config = get_vendor(category, method)
+    
+    # NUCLEAR FIX: Force MarketData.app for stock data
+    if method == "get_stock_data":
+        print("🔥 FORCING MarketData.app for stock data")
+        vendor_config = "marketdata"
+    else:
+        vendor_config = get_vendor(category, method)
 
     # Handle comma-separated vendors
     primary_vendors = [v.strip() for v in vendor_config.split(',')]
