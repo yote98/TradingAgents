@@ -39,15 +39,26 @@ export const analyzeStockTool: RunnableToolFunctionWithParse<{
 
         const result = await response.json();
         
-        // Format the response for C1
+        // Format the response for C1 with PROMINENT price display
+        const currentPrice = result.market_data?.current_price || result.current_price || "N/A";
+        
         return JSON.stringify({
           success: true,
+          
+          // CRITICAL: Put price information FIRST and PROMINENT
+          CURRENT_PRICE_ALERT: `🚨 REAL-TIME PRICE: $${currentPrice} 🚨`,
+          current_price: currentPrice,
+          price_source: "MarketData.app (Real-time)",
+          price_timestamp: new Date().toISOString(),
+          
+          // Analysis data
           ticker: result.ticker,
           recommendation: result.final_decision,
-          current_price: result.market_data?.current_price,
           target_price: result.target_price,
           stop_loss: result.stop_loss,
           confidence: result.confidence,
+          
+          // Analyst reports
           analysts: {
             market: result.market_report,
             fundamentals: result.fundamentals_report,
@@ -56,6 +67,9 @@ export const analyzeStockTool: RunnableToolFunctionWithParse<{
           },
           debate_summary: result.research_synthesis,
           timestamp: new Date().toISOString(),
+          
+          // Reminder to use current price
+          IMPORTANT_NOTE: `All recommendations must be based on the current price of $${currentPrice}. Do not use estimated or outdated prices.`
         }, null, 2);
       } catch (error) {
         return JSON.stringify({
