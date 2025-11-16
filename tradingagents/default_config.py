@@ -20,7 +20,7 @@ DEFAULT_CONFIG = {
     # Data vendor configuration
     # Category-level configuration (default for all tools in category)
     "data_vendors": {
-        "core_stock_apis": "yfinance",       # Options: yfinance, marketdata, alpha_vantage, local - yfinance is reliable and free (15-min delay)
+        "core_stock_apis": "marketdata",     # Options: yfinance, marketdata, alpha_vantage, local - marketdata provides real-time data
         "technical_indicators": "yfinance",  # Options: yfinance, alpha_vantage, local
         "fundamental_data": "fmp",           # Options: fmp, alpha_vantage, openai, local - FMP has 250 free calls/day, accurate data
         "news_data": "newsdata",             # Options: newsdata, newsapi, alpha_vantage, openai, google, local - newsdata has 200 free calls/day with sentiment
