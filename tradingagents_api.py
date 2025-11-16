@@ -48,6 +48,20 @@ def health():
         "timestamp": datetime.now().isoformat()
     })
 
+@app.route('/clear-cache', methods=['POST'])
+def clear_cache():
+    """Clear data cache"""
+    import shutil
+    cache_dir = os.path.join(os.path.dirname(__file__), "tradingagents/dataflows/data_cache")
+    try:
+        if os.path.exists(cache_dir):
+            shutil.rmtree(cache_dir)
+            os.makedirs(cache_dir)
+            return jsonify({"status": "success", "message": "Cache cleared"})
+        return jsonify({"status": "success", "message": "No cache to clear"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
 @app.route('/analyze', methods=['POST'])
 def analyze():
     """
