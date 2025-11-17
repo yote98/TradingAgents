@@ -76,15 +76,21 @@ export class MarketDataClient {
   }
 
   async getNews(ticker: string, limit: number = 10): Promise<NewsItem[]> {
-    const alphaVantageKey = process.env.ALPHA_VANTAGE_API_KEY;
+    const newsdataKey = process.env.NEWSDATA_API_KEY;
     
-    if (!alphaVantageKey) {
+    if (!newsdataKey) {
+      console.warn('NEWSDATA_API_KEY not set, news unavailable');
       return [];
     }
 
     try {
+      // Get news from last 7 days
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - 7);
+
       const response = await fetch(
-        `https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers=${ticker}&limit=${limit}&apikey=${alphaVantageKey}`,
+        `https://newsdata.io/api/1/news?apikey=${newsdataKey}&q=${ticker}&language=en&category=business`,
         { next: { revalidate: 1800 } } // Cache for 30 minutes
       );
 
@@ -94,69 +100,87 @@ export class MarketDataClient {
 
       const data = await response.json();
       
-      if (!data.feed) {
+      if (data.status !== 'success' || !data.results) {
         return [];
       }
 
-      return data.feed.map((item: any) => ({
-        title: item.title,
-        source: item.source,
-        url: item.url,
-        publishedAt: item.time_published,
-        sentiment: item.overall_sentiment_label?.toLowerCase() as any,
+      return data.results.slice(0, limit).map((item: any) => ({
+        title: item.title || '',
+        source: item.source_id || 'Unknown',
+        url: item.link || '',
+        publishedAt: item.pubDate || '',
+        sentiment: item.sentiment?.toLowerCase() as any || 'neutral',
       }));
     } catch (error) {
-      console.error('Error fetching news:', error);
+      console.error('Error fetching news from NewsData.io:', error);
       return [];
     }
   }
 
   async getFundamentals(ticker: string) {
-    const alphaVantageKey = process.env.ALPHA_VANTAGE_API_KEY;
+    const fmpKey = process.env.FMP_API_KEY;
     
-    if (!alphaVantageKey) {
+    if (!fmpKey) {
+      console.warn('FMP_API_KEY not set, fundamentals unavailable');
       return null;
     }
 
     try {
-      const response = await fetch(
-        `https://www.alphavantage.co/query?function=OVERVIEW&symbol=${ticker}&apikey=${alphaVantageKey}`,
-        { next: { revalidate: 86400 } } // Cache for 24 hours
-      );
+      // Get company profile, metrics, and ratios in parallel
+      const [profileRes, metricsRes, ratiosRes] = await Promise.all([
+        fetch(
+          `https://financialmodelingprep.com/api/v3/profile/${ticker}?apikey=${fmpKey}`,
+          { next: { revalidate: 86400 } }
+        ),
+        fetch(
+          `https://financialmodelingprep.com/api/v3/key-metrics/${ticker}?limit=1&apikey=${fmpKey}`,
+          { next: { revalidate: 86400 } }
+        ),
+        fetch(
+          `https://financialmodelingprep.com/api/v3/ratios/${ticker}?limit=1&apikey=${fmpKey}`,
+          { next: { revalidate: 86400 } }
+        ),
+      ]);
 
-      if (!response.ok) {
+      if (!profileRes.ok || !metricsRes.ok || !ratiosRes.ok) {
         return null;
       }
 
-      const data = await response.json();
-      
+      const [profileData, metricsData, ratiosData] = await Promise.all([
+        profileRes.json(),
+        metricsRes.json(),
+        ratiosRes.json(),
+      ]);
+
+      const profile = profileData[0] || {};
+      const metrics = metricsData[0] || {};
+      const ratios = ratiosData[0] || {};
+
       return {
-        marketCap: parseFloat(data.MarketCapitalization) || 0,
-        peRatio: parseFloat(data.PERatio) || null,
-        pegRatio: parseFloat(data.PEGRatio) || null,
-        bookValue: parseFloat(data.BookValue) || null,
-        dividendYield: parseFloat(data.DividendYield) || null,
-        eps: parseFloat(data.EPS) || null,
-        revenuePerShare: parseFloat(data.RevenuePerShareTTM) || null,
-        profitMargin: parseFloat(data.ProfitMargin) || null,
-        operatingMargin: parseFloat(data.OperatingMarginTTM) || null,
-        returnOnAssets: parseFloat(data.ReturnOnAssetsTTM) || null,
-        returnOnEquity: parseFloat(data.ReturnOnEquityTTM) || null,
-        revenue: parseFloat(data.RevenueTTM) || null,
-        grossProfit: parseFloat(data.GrossProfitTTM) || null,
-        quarterlyEarningsGrowth: parseFloat(data.QuarterlyEarningsGrowthYOY) || null,
-        quarterlyRevenueGrowth: parseFloat(data.QuarterlyRevenueGrowthYOY) || null,
-        analystTargetPrice: parseFloat(data.AnalystTargetPrice) || null,
-        fiftyTwoWeekHigh: parseFloat(data['52WeekHigh']) || null,
-        fiftyTwoWeekLow: parseFloat(data['52WeekLow']) || null,
-        fiftyDayMA: parseFloat(data['50DayMovingAverage']) || null,
-        twoHundredDayMA: parseFloat(data['200DayMovingAverage']) || null,
-        sector: data.Sector || 'Unknown',
-        industry: data.Industry || 'Unknown',
-        description: data.Description || '',
+        marketCap: profile.mktCap || 0,
+        peRatio: ratios.priceEarningsRatio || null,
+        pegRatio: ratios.priceEarningsToGrowthRatio || null,
+        priceToBook: ratios.priceToBookRatio || null,
+        debtToEquity: ratios.debtEquityRatio || null,
+        dividendYield: ratios.dividendYield || null,
+        eps: metrics.netIncomePerShare || null,
+        revenuePerShare: metrics.revenuePerShare || null,
+        profitMargin: ratios.netProfitMargin || null,
+        operatingMargin: ratios.operatingProfitMargin || null,
+        returnOnAssets: ratios.returnOnAssets || null,
+        returnOnEquity: ratios.returnOnEquity || null,
+        currentRatio: ratios.currentRatio || null,
+        beta: profile.beta || null,
+        fiftyTwoWeekHigh: profile.range?.split('-')[1]?.trim() || null,
+        fiftyTwoWeekLow: profile.range?.split('-')[0]?.trim() || null,
+        sector: profile.sector || 'Unknown',
+        industry: profile.industry || 'Unknown',
+        description: profile.description || '',
+        companyName: profile.companyName || ticker,
+        source: 'FMP',
       };
     } catch (error) {
-      console.error('Error fetching fundamentals:', error);
+      console.error('Error fetching fundamentals from FMP:', error);
       return null;
     }
   }
