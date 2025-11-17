@@ -14,6 +14,9 @@ const C1Chat = dynamic(() => import("@thesysai/genui-sdk").then(mod => ({ defaul
 const ThemeProvider = dynamic(() => import("@thesysai/genui-sdk").then(mod => ({ default: mod.ThemeProvider })), { ssr: false });
 const AgentModal = dynamic(() => import("../../components/AgentModal").then(mod => ({ default: mod.default })), { ssr: false });
 const WelcomeMessage = dynamic(() => import("../../components/WelcomeMessage").then(mod => ({ default: mod.default })), { ssr: false });
+const ChatWithPriceDisplay = dynamic(() => import("../../components/ChatWithPriceDisplay").then(mod => ({ default: mod.ChatWithPriceDisplay })), { ssr: false });
+const ManualPriceDisplay = dynamic(() => import("../../components/ManualPriceDisplay").then(mod => ({ default: mod.ManualPriceDisplay })), { ssr: false });
+const StockCard = dynamic(() => import("../../components/StockCard").then(mod => ({ default: mod.StockCard })), { ssr: false });
 
 import { theme, darkTheme, themeMode } from "../../theme";
 import type { Agent } from "../../components/AgentModal";
@@ -96,7 +99,7 @@ export default function ChatPage() {
             <C1Chat 
               apiUrl="/api/chat" 
               agentName={selectedAgent ? selectedAgent.name : "AlphaFlow AI"}
-              disableThemeProvider 
+              disableThemeProvider
             />
           </ThemeProvider>
         )}

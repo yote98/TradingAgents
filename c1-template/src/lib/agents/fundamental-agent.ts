@@ -20,58 +20,107 @@ export interface FundamentalAnalysis {
 
 export async function analyzeFundamentals(ticker: string): Promise<FundamentalAnalysis> {
   const client = getMarketDataClient();
-  const quote = await client.getQuote(ticker);
+  const [quote, fundamentals] = await Promise.all([
+    client.getQuote(ticker),
+    client.getFundamentals(ticker)
+  ]);
 
-  // In a real implementation, you'd fetch financial data from Alpha Vantage or similar
-  // For now, we'll use the quote data and make intelligent assessments
-  
-  const analysis = calculateFundamentalAnalysis(quote, ticker);
+  const analysis = calculateFundamentalAnalysis(quote, fundamentals, ticker);
   
   return analysis;
 }
 
-function calculateFundamentalAnalysis(quote: Quote, ticker: string): FundamentalAnalysis {
-  const marketCap = quote.marketCap;
+function calculateFundamentalAnalysis(quote: Quote, fundamentals: any, ticker: string): FundamentalAnalysis {
+  const marketCap = fundamentals?.marketCap || quote.marketCap;
+  const peRatio = fundamentals?.peRatio;
+  const pegRatio = fundamentals?.pegRatio;
+  const profitMargin = fundamentals?.profitMargin;
+  const roe = fundamentals?.returnOnEquity;
   
-  // Simple valuation logic based on market cap and price movement
   let signal: 'undervalued' | 'overvalued' | 'fair' = 'fair';
-  let confidence = 60;
-
-  // Large cap stocks (>$200B) with positive momentum
-  if (marketCap > 200_000_000_000 && quote.changePercent > 0) {
-    signal = 'fair';
-    confidence = 70;
-  }
+  let confidence = 50;
 
   const strengths: string[] = [];
   const concerns: string[] = [];
 
-  // Analyze based on available data
-  if (quote.volume > 10_000_000) {
-    strengths.push('High trading volume indicates strong investor interest');
+  // Valuation analysis
+  if (peRatio) {
+    if (peRatio < 15) {
+      signal = 'undervalued';
+      confidence = 70;
+      strengths.push(`Low P/E ratio of ${peRatio.toFixed(1)} suggests undervaluation`);
+    } else if (peRatio > 30) {
+      signal = 'overvalued';
+      confidence = 70;
+      concerns.push(`High P/E ratio of ${peRatio.toFixed(1)} indicates premium valuation`);
+    } else {
+      strengths.push(`Reasonable P/E ratio of ${peRatio.toFixed(1)}`);
+    }
   }
 
+  // Growth analysis
+  if (pegRatio) {
+    if (pegRatio < 1) {
+      strengths.push(`PEG ratio of ${pegRatio.toFixed(2)} suggests growth at reasonable price`);
+      if (signal === 'fair') signal = 'undervalued';
+      confidence += 10;
+    } else if (pegRatio > 2) {
+      concerns.push(`High PEG ratio of ${pegRatio.toFixed(2)} may indicate overvaluation`);
+    }
+  }
+
+  // Profitability analysis
+  if (profitMargin) {
+    if (profitMargin > 0.20) {
+      strengths.push(`Strong profit margin of ${(profitMargin * 100).toFixed(1)}%`);
+      confidence += 5;
+    } else if (profitMargin < 0.05) {
+      concerns.push(`Low profit margin of ${(profitMargin * 100).toFixed(1)}%`);
+    }
+  }
+
+  // Return on equity
+  if (roe) {
+    if (roe > 0.15) {
+      strengths.push(`Excellent ROE of ${(roe * 100).toFixed(1)}%`);
+      confidence += 5;
+    } else if (roe < 0.05) {
+      concerns.push(`Weak ROE of ${(roe * 100).toFixed(1)}%`);
+    }
+  }
+
+  // Market cap analysis
   if (marketCap > 100_000_000_000) {
-    strengths.push('Large market cap provides stability and liquidity');
+    strengths.push('Large-cap stability and liquidity');
+  } else if (marketCap < 2_000_000_000) {
+    concerns.push('Small-cap volatility and liquidity risk');
   }
 
-  if (quote.changePercent < -5) {
-    concerns.push('Significant recent price decline may indicate fundamental issues');
+  // Volume analysis
+  if (quote.volume > 10_000_000) {
+    strengths.push('High trading volume indicates strong interest');
+  } else if (quote.volume < 1_000_000) {
+    concerns.push('Low trading volume may limit liquidity');
   }
 
-  if (quote.volume < 1_000_000) {
-    concerns.push('Low trading volume may indicate limited liquidity');
+  // Recent price action
+  if (quote.changePercent < -10) {
+    concerns.push('Significant recent decline may signal fundamental issues');
   }
+
+  confidence = Math.min(Math.max(confidence, 40), 90);
 
   return {
     signal,
     confidence,
     valuation: {
       marketCap,
+      peRatio,
+      priceToSales: fundamentals?.revenuePerShare ? quote.price / fundamentals.revenuePerShare : undefined,
     },
-    strengths,
-    concerns,
-    summary: `${signal.toUpperCase()} valuation with ${confidence}% confidence. Market cap: $${(marketCap / 1_000_000_000).toFixed(2)}B.`
+    strengths: strengths.slice(0, 5),
+    concerns: concerns.slice(0, 5),
+    summary: `${signal.toUpperCase()} with ${confidence}% confidence. Market cap: $${(marketCap / 1_000_000_000).toFixed(2)}B${peRatio ? `, P/E: ${peRatio.toFixed(1)}` : ''}.`
   };
 }
 

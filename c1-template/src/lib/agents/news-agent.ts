@@ -17,14 +17,17 @@ export interface NewsAnalysis {
 
 export async function analyzeNews(ticker: string): Promise<NewsAnalysis> {
   const client = getMarketDataClient();
-  const news = await client.getNews(ticker, 10);
+  const [news, socialSentiment] = await Promise.all([
+    client.getNews(ticker, 15),
+    client.getSocialSentiment(ticker)
+  ]);
 
-  const analysis = calculateNewsAnalysis(news, ticker);
+  const analysis = calculateNewsAnalysis(news, socialSentiment, ticker);
   
   return analysis;
 }
 
-function calculateNewsAnalysis(news: NewsItem[], ticker: string): NewsAnalysis {
+function calculateNewsAnalysis(news: NewsItem[], socialSentiment: any, ticker: string): NewsAnalysis {
   // Calculate sentiment from news
   let positiveCount = 0;
   let negativeCount = 0;
@@ -37,33 +40,59 @@ function calculateNewsAnalysis(news: NewsItem[], ticker: string): NewsAnalysis {
   });
 
   const total = news.length || 1;
-  const sentimentScore = Math.round(((positiveCount - negativeCount) / total + 1) * 50);
+  const newsSentimentScore = Math.round(((positiveCount - negativeCount) / total + 1) * 50);
+
+  // Combine news and social sentiment
+  const sentimentScore = socialSentiment 
+    ? Math.round((newsSentimentScore + socialSentiment.score) / 2)
+    : newsSentimentScore;
 
   let sentiment: 'positive' | 'negative' | 'neutral' = 'neutral';
   if (sentimentScore > 60) sentiment = 'positive';
   if (sentimentScore < 40) sentiment = 'negative';
 
-  const confidence = news.length > 5 ? 75 : 50;
+  const confidence = news.length > 8 ? 80 : news.length > 4 ? 65 : 50;
 
   // Extract key catalysts and risks from news titles
   const keyCatalysts: string[] = [];
   const risks: string[] = [];
 
+  // Positive keywords
+  const positiveKeywords = [
+    'earnings beat', 'revenue growth', 'partnership', 'innovation',
+    'expansion', 'acquisition', 'breakthrough', 'record', 'upgrade',
+    'bullish', 'outperform', 'strong results', 'exceeds expectations'
+  ];
+
+  // Negative keywords
+  const negativeKeywords = [
+    'lawsuit', 'decline', 'warning', 'investigation', 'downgrade',
+    'miss', 'disappoints', 'concern', 'risk', 'bearish', 'underperform',
+    'layoffs', 'loss', 'debt', 'regulatory'
+  ];
+
   news.forEach(item => {
     const title = item.title.toLowerCase();
     
-    // Positive keywords
-    if (title.includes('earnings beat') || title.includes('revenue growth') || 
-        title.includes('partnership') || title.includes('innovation')) {
-      keyCatalysts.push(item.title);
+    // Check for positive signals
+    if (positiveKeywords.some(keyword => title.includes(keyword))) {
+      if (keyCatalysts.length < 3) {
+        keyCatalysts.push(item.title);
+      }
     }
     
-    // Negative keywords
-    if (title.includes('lawsuit') || title.includes('decline') || 
-        title.includes('warning') || title.includes('investigation')) {
-      risks.push(item.title);
+    // Check for negative signals
+    if (negativeKeywords.some(keyword => title.includes(keyword))) {
+      if (risks.length < 3) {
+        risks.push(item.title);
+      }
     }
   });
+
+  // Add social sentiment insights
+  if (socialSentiment?.trending) {
+    keyCatalysts.push(`High social media buzz (${socialSentiment.volume} mentions)`);
+  }
 
   return {
     sentiment,
@@ -72,7 +101,7 @@ function calculateNewsAnalysis(news: NewsItem[], ticker: string): NewsAnalysis {
     recentNews: news.slice(0, 5),
     keyCatalysts: keyCatalysts.slice(0, 3),
     risks: risks.slice(0, 3),
-    summary: `${sentiment.toUpperCase()} sentiment (${sentimentScore}/100) based on ${news.length} recent articles.`
+    summary: `${sentiment.toUpperCase()} sentiment (${sentimentScore}/100) from ${news.length} articles${socialSentiment ? ` and ${socialSentiment.volume} social mentions` : ''}.`
   };
 }
 
