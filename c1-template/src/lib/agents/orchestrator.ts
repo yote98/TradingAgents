@@ -4,33 +4,130 @@
  */
 
 import { getMarketDataClient } from '../data/marketdata-client';
+import { getCoinGeckoClient } from '../data/coingecko-client';
 import { analyzeMarket } from './market-agent';
 import { analyzeFundamentals } from './fundamental-agent';
 import { analyzeNews } from './news-agent';
 import { synthesizeStrategy, ComprehensiveAnalysis } from './strategy-agent';
+import { conductDebate } from './debate-agent';
+import { assessRisk } from './risk-agent';
 
 export async function analyzeStock(ticker: string): Promise<ComprehensiveAnalysis> {
+  const coinGeckoClient = getCoinGeckoClient();
+  
+  // Check if it's a crypto symbol
+  const isCrypto = coinGeckoClient.isCryptoSymbol(ticker);
+  
+  if (isCrypto) {
+    return analyzeCrypto(ticker);
+  }
+
   const client = getMarketDataClient();
 
   // Step 1: Get current quote (needed by all agents)
   const quote = await client.getQuote(ticker);
 
-  // Step 2: Run all 4 agents in parallel for maximum speed
+  // Step 2: Run all 4 analysts in parallel for maximum speed
   const [market, fundamental, news] = await Promise.all([
     analyzeMarket(ticker),
     analyzeFundamentals(ticker),
     analyzeNews(ticker),
   ]);
 
-  // Step 3: Synthesize into trading strategy
+  // Step 3: Bull vs Bear Debate (eliminate bias)
+  const debate = conductDebate(market, fundamental, news);
+
+  // Step 4: Synthesize into trading strategy
   const strategy = synthesizeStrategy(quote, market, fundamental, news);
+
+  // Step 5: Risk Management Team Assessment
+  const riskAssessment = assessRisk(strategy, debate);
 
   return {
     quote,
     market,
     fundamental,
     news,
+    debate,
     strategy,
+    riskAssessment,
+  };
+}
+
+async function analyzeCrypto(ticker: string): Promise<ComprehensiveAnalysis> {
+  const coinGeckoClient = getCoinGeckoClient();
+  
+  // Get crypto quote
+  const cryptoQuote = await coinGeckoClient.getCryptoQuote(ticker);
+  
+  if (!cryptoQuote) {
+    throw new Error(`Cryptocurrency ${ticker} not found`);
+  }
+
+  // Convert crypto quote to standard quote format
+  const quote = {
+    symbol: cryptoQuote.symbol,
+    price: cryptoQuote.price,
+    change: cryptoQuote.change,
+    changePercent: cryptoQuote.changePercent,
+    volume: cryptoQuote.volume,
+    marketCap: cryptoQuote.marketCap,
+    high: cryptoQuote.high,
+    low: cryptoQuote.low,
+    open: cryptoQuote.price - cryptoQuote.change,
+    previousClose: cryptoQuote.price - cryptoQuote.change,
+  };
+
+  // For crypto, create simplified technical analysis from price data
+  const market = {
+    signal: cryptoQuote.changePercent > 0 ? 'bullish' as const : 'bearish' as const,
+    confidence: Math.min(Math.abs(cryptoQuote.changePercent) * 10, 80),
+    technicalIndicators: {
+      rsi: 50, // Neutral default
+      macd: cryptoQuote.changePercent > 0 ? 'bullish' : 'bearish',
+      trend: cryptoQuote.changePercent > 5 ? 'uptrend' : cryptoQuote.changePercent < -5 ? 'downtrend' : 'sideways',
+    },
+    momentum: `24h change: ${cryptoQuote.changePercent.toFixed(2)}%`,
+    summary: `${cryptoQuote.changePercent > 0 ? 'BULLISH' : 'BEARISH'} with ${cryptoQuote.changePercent.toFixed(2)}% 24h change.`,
+  };
+  
+  // Crypto doesn't have traditional fundamentals, so we create a crypto-specific analysis
+  const fundamental = {
+    signal: 'fair' as const,
+    confidence: 60,
+    valuation: {
+      marketCap: cryptoQuote.marketCap,
+    },
+    strengths: [
+      `Market Cap: $${(cryptoQuote.marketCap / 1_000_000_000).toFixed(2)}B`,
+      cryptoQuote.maxSupply ? `Max Supply: ${(cryptoQuote.maxSupply / 1_000_000).toFixed(2)}M` : 'No max supply cap',
+    ],
+    concerns: [
+      `${Math.abs(cryptoQuote.athChangePercent).toFixed(1)}% below all-time high`,
+    ],
+    summary: `Crypto asset with $${(cryptoQuote.marketCap / 1_000_000_000).toFixed(2)}B market cap.`,
+  };
+
+  // News analysis (can use same news agent)
+  const news = await analyzeNews(ticker);
+
+  // Bull vs Bear Debate
+  const debate = conductDebate(market, fundamental, news);
+
+  // Synthesize strategy
+  const strategy = synthesizeStrategy(quote, market, fundamental, news);
+
+  // Risk Assessment
+  const riskAssessment = assessRisk(strategy, debate);
+
+  return {
+    quote,
+    market,
+    fundamental,
+    news,
+    debate,
+    strategy,
+    riskAssessment,
   };
 }
 

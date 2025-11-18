@@ -37,6 +37,79 @@ export async function POST(req: NextRequest) {
   const messageStore = getMessageStore(threadId);
   messageStore.addMessage(prompt);
 
+  // 🚀 AUTO-DETECT STOCK ANALYSIS REQUESTS - SUPPORT SINGLE & MULTIPLE STOCKS
+  const userMessage = typeof prompt.content === 'string' ? prompt.content : '';
+  console.log(`📝 User message: "${userMessage}"`);
+  
+  // Extract text from XML tags if present (C1 format: <content>text</content>)
+  const textContent = userMessage.match(/<content>(.*?)<\/content>/i)?.[1] || userMessage;
+  console.log(`📝 Extracted text: "${textContent}"`);
+  
+  // Find all ticker symbols in the message (supports comparisons)
+  const tickerMatches = textContent.match(/\b([A-Z]{2,5}(-USD)?)\b/g);
+  
+  if (tickerMatches && tickerMatches.length > 0) {
+    const tickers = [...new Set(tickerMatches)]; // Remove duplicates
+    console.log(`🎯 FOUND ${tickers.length} TICKER(S): ${tickers.join(', ')}`);
+    
+    try {
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+      
+      // Limit to max 3 tickers to prevent timeout
+      const limitedTickers = tickers.slice(0, 3);
+      if (tickers.length > 3) {
+        console.log(`⚠️ Too many tickers (${tickers.length}), limiting to first 3: ${limitedTickers.join(', ')}`);
+      }
+      
+      // Fetch data for tickers in parallel with timeout
+      const dataPromises = limitedTickers.map(ticker =>
+        Promise.race([
+          fetch(`${baseUrl}/api/analyze`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ticker }),
+          }).then(res => res.ok ? res.json() : null),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 15000))
+        ]).catch(err => {
+          console.error(`Failed to fetch ${ticker}:`, err.message);
+          return null;
+        })
+      );
+      
+      const allData = await Promise.all(dataPromises);
+      
+      // Inject real-time data for all tickers
+      const validData = allData.filter(d => d !== null);
+      
+      if (validData.length > 0) {
+        const dataMessage: DBMessage = {
+          role: 'system',
+          content: `🚨 REAL-TIME DATA (${new Date().toISOString()}) 🚨
+
+${validData.map(data => `
+${data.ticker}:
+- Current Price: $${data.current_price}
+- Recommendation: ${data.final_decision}
+- Confidence: ${data.confidence}%
+- Target: $${data.target_price}
+- Stop Loss: $${data.stop_loss}
+
+<StockCard ticker="${data.ticker}" price={${data.current_price}} recommendation="${data.final_decision}" confidence={${data.confidence}} target={${data.target_price}} stopLoss={${data.stop_loss}} />
+`).join('\n')}
+
+CRITICAL: Use these EXACT prices in your response! This is real-time market data.
+
+Full analysis data: ${JSON.stringify(validData, null, 2)}`,
+        };
+        
+        messageStore.addMessage(dataMessage);
+        console.log(`✅ Injected data for ${validData.length} ticker(s): ${validData.map(d => `${d.ticker}=$${d.current_price}`).join(', ')}`);
+      }
+    } catch (error) {
+      console.error('Error fetching stock data:', error);
+    }
+  }
+
   const llmStream = await client.chat.completions.create({
     model: "c1/anthropic/claude-sonnet-4/v-20250617",
     messages: messageStore.getOpenAICompatibleMessageList(),

@@ -25,12 +25,17 @@ export interface TradingStrategy {
   keyPoints: string[];
 }
 
+import { DebateResult } from './debate-agent';
+import { RiskAssessment } from './risk-agent';
+
 export interface ComprehensiveAnalysis {
   quote: Quote;
   market: MarketAnalysis;
   fundamental: FundamentalAnalysis;
   news: NewsAnalysis;
+  debate?: DebateResult;
   strategy: TradingStrategy;
+  riskAssessment?: RiskAssessment;
 }
 
 export function synthesizeStrategy(

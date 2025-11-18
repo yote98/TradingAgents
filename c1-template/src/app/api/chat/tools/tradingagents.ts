@@ -3,6 +3,7 @@ import { z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
 
 const TRADINGAGENTS_API = process.env.TRADINGAGENTS_API_URL || "http://localhost:5000";
+const USE_TYPESCRIPT_API = process.env.USE_TYPESCRIPT_API === "true" || true; // Default to TypeScript API
 
 /**
  * Analyze Stock Tool
@@ -27,7 +28,12 @@ export const analyzeStockTool: RunnableToolFunctionWithParse<{
     },
     function: async ({ ticker, max_debate_rounds = 1 }) => {
       try {
-        const response = await fetch(`${TRADINGAGENTS_API}/analyze`, {
+        // Use TypeScript API (new v2.0 with debate and risk management)
+        const apiUrl = USE_TYPESCRIPT_API 
+          ? `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/analyze`
+          : `${TRADINGAGENTS_API}/analyze`;
+        
+        const response = await fetch(apiUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ticker, max_debate_rounds }),
@@ -63,7 +69,9 @@ export const analyzeStockTool: RunnableToolFunctionWithParse<{
             news: result.news_report,
             social: result.social_report,
           },
-          debate_summary: result.research_synthesis,
+          debate: result.debate, // NEW: Bull vs Bear debate
+          risk_assessment: result.risk_assessment, // NEW: Risk management team
+          debate_summary: result.research_synthesis || result.debate?.consensus,
           timestamp: new Date().toISOString(),
         }, null, 2);
       } catch (error) {

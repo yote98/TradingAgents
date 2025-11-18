@@ -76,21 +76,16 @@ export class MarketDataClient {
   }
 
   async getNews(ticker: string, limit: number = 10): Promise<NewsItem[]> {
-    const newsdataKey = process.env.NEWSDATA_API_KEY;
+    const alphaVantageKey = process.env.ALPHA_VANTAGE_API_KEY;
     
-    if (!newsdataKey) {
-      console.warn('NEWSDATA_API_KEY not set, news unavailable');
+    if (!alphaVantageKey) {
+      console.warn('ALPHA_VANTAGE_API_KEY not set, news unavailable');
       return [];
     }
 
     try {
-      // Get news from last 7 days
-      const endDate = new Date();
-      const startDate = new Date();
-      startDate.setDate(startDate.getDate() - 7);
-
       const response = await fetch(
-        `https://newsdata.io/api/1/news?apikey=${newsdataKey}&q=${ticker}&language=en&category=business`,
+        `https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers=${ticker}&limit=${limit}&apikey=${alphaVantageKey}`,
         { next: { revalidate: 1800 } } // Cache for 30 minutes
       );
 
@@ -100,119 +95,173 @@ export class MarketDataClient {
 
       const data = await response.json();
       
-      if (data.status !== 'success' || !data.results) {
+      if (!data.feed || data.feed.length === 0) {
+        console.warn('No news data returned from Alpha Vantage');
         return [];
       }
 
-      return data.results.slice(0, limit).map((item: any) => ({
+      return data.feed.map((item: any) => ({
         title: item.title || '',
-        source: item.source_id || 'Unknown',
-        url: item.link || '',
-        publishedAt: item.pubDate || '',
-        sentiment: item.sentiment?.toLowerCase() as any || 'neutral',
+        source: item.source || 'Unknown',
+        url: item.url || '',
+        publishedAt: item.time_published || '',
+        sentiment: item.overall_sentiment_label?.toLowerCase() as any || 'neutral',
       }));
     } catch (error) {
-      console.error('Error fetching news from NewsData.io:', error);
+      console.error('Error fetching news from Alpha Vantage:', error);
       return [];
     }
   }
 
   async getFundamentals(ticker: string) {
+    // Try FMP first (better data), fallback to Alpha Vantage
     const fmpKey = process.env.FMP_API_KEY;
+    const alphaVantageKey = process.env.ALPHA_VANTAGE_API_KEY;
     
-    if (!fmpKey) {
-      console.warn('FMP_API_KEY not set, fundamentals unavailable');
+    // Try FMP v3 API (non-legacy endpoints)
+    if (fmpKey) {
+      try {
+        // Use multiple v3 endpoints that are NOT legacy
+        const [quoteRes, ratiosRes, metricsRes] = await Promise.all([
+          fetch(`https://financialmodelingprep.com/api/v3/quote/${ticker}?apikey=${fmpKey}`, 
+            { next: { revalidate: 3600 } }),
+          fetch(`https://financialmodelingprep.com/api/v3/ratios-ttm/${ticker}?apikey=${fmpKey}`, 
+            { next: { revalidate: 86400 } }),
+          fetch(`https://financialmodelingprep.com/api/v3/key-metrics-ttm/${ticker}?apikey=${fmpKey}`, 
+            { next: { revalidate: 86400 } }),
+        ]);
+
+        if (quoteRes.ok && ratiosRes.ok && metricsRes.ok) {
+          const [quoteData, ratiosData, metricsData] = await Promise.all([
+            quoteRes.json(),
+            ratiosRes.json(),
+            metricsRes.json(),
+          ]);
+
+          const quote = quoteData[0];
+          const ratios = ratiosData[0];
+          const metrics = metricsData[0];
+
+          if (quote && quote.symbol) {
+            return {
+              marketCap: quote.marketCap || 0,
+              peRatio: quote.pe || ratios?.peRatioTTM || null,
+              pegRatio: ratios?.pegRatioTTM || null,
+              priceToBook: ratios?.priceToBookRatioTTM || null,
+              debtToEquity: ratios?.debtToEquityTTM || null,
+              dividendYield: metrics?.dividendYieldTTM || null,
+              eps: quote.eps || metrics?.netIncomePerShareTTM || null,
+              revenuePerShare: metrics?.revenuePerShareTTM || null,
+              profitMargin: ratios?.netProfitMarginTTM || null,
+              operatingMargin: ratios?.operatingProfitMarginTTM || null,
+              returnOnAssets: ratios?.returnOnAssetsTTM || null,
+              returnOnEquity: ratios?.returnOnEquityTTM || null,
+              currentRatio: ratios?.currentRatioTTM || null,
+              beta: metrics?.betaTTM || null,
+              fiftyTwoWeekHigh: quote.yearHigh || null,
+              fiftyTwoWeekLow: quote.yearLow || null,
+              sector: quote.sector || 'Unknown',
+              industry: quote.industry || 'Unknown',
+              description: quote.exchange || '',
+              companyName: quote.name || ticker,
+              source: 'FMP',
+            };
+          }
+        }
+      } catch (error) {
+        console.warn('FMP failed, trying Alpha Vantage fallback:', error);
+      }
+    }
+
+    // Fallback to Alpha Vantage
+    if (!alphaVantageKey) {
+      console.warn('No API keys available for fundamentals');
       return null;
     }
 
     try {
-      // Get company profile, metrics, and ratios in parallel
-      const [profileRes, metricsRes, ratiosRes] = await Promise.all([
-        fetch(
-          `https://financialmodelingprep.com/api/v3/profile/${ticker}?apikey=${fmpKey}`,
-          { next: { revalidate: 86400 } }
-        ),
-        fetch(
-          `https://financialmodelingprep.com/api/v3/key-metrics/${ticker}?limit=1&apikey=${fmpKey}`,
-          { next: { revalidate: 86400 } }
-        ),
-        fetch(
-          `https://financialmodelingprep.com/api/v3/ratios/${ticker}?limit=1&apikey=${fmpKey}`,
-          { next: { revalidate: 86400 } }
-        ),
-      ]);
+      const response = await fetch(
+        `https://www.alphavantage.co/query?function=OVERVIEW&symbol=${ticker}&apikey=${alphaVantageKey}`,
+        { next: { revalidate: 86400 } }
+      );
 
-      if (!profileRes.ok || !metricsRes.ok || !ratiosRes.ok) {
+      if (!response.ok) {
         return null;
       }
 
-      const [profileData, metricsData, ratiosData] = await Promise.all([
-        profileRes.json(),
-        metricsRes.json(),
-        ratiosRes.json(),
-      ]);
-
-      const profile = profileData[0] || {};
-      const metrics = metricsData[0] || {};
-      const ratios = ratiosData[0] || {};
+      const data = await response.json();
+      
+      if (!data.Symbol) {
+        return null;
+      }
 
       return {
-        marketCap: profile.mktCap || 0,
-        peRatio: ratios.priceEarningsRatio || null,
-        pegRatio: ratios.priceEarningsToGrowthRatio || null,
-        priceToBook: ratios.priceToBookRatio || null,
-        debtToEquity: ratios.debtEquityRatio || null,
-        dividendYield: ratios.dividendYield || null,
-        eps: metrics.netIncomePerShare || null,
-        revenuePerShare: metrics.revenuePerShare || null,
-        profitMargin: ratios.netProfitMargin || null,
-        operatingMargin: ratios.operatingProfitMargin || null,
-        returnOnAssets: ratios.returnOnAssets || null,
-        returnOnEquity: ratios.returnOnEquity || null,
-        currentRatio: ratios.currentRatio || null,
-        beta: profile.beta || null,
-        fiftyTwoWeekHigh: profile.range?.split('-')[1]?.trim() || null,
-        fiftyTwoWeekLow: profile.range?.split('-')[0]?.trim() || null,
-        sector: profile.sector || 'Unknown',
-        industry: profile.industry || 'Unknown',
-        description: profile.description || '',
-        companyName: profile.companyName || ticker,
-        source: 'FMP',
+        marketCap: parseFloat(data.MarketCapitalization) || 0,
+        peRatio: parseFloat(data.PERatio) || null,
+        pegRatio: parseFloat(data.PEGRatio) || null,
+        priceToBook: parseFloat(data.PriceToBookRatio) || null,
+        debtToEquity: parseFloat(data.DebtToEquity) || null,
+        dividendYield: parseFloat(data.DividendYield) || null,
+        eps: parseFloat(data.EPS) || null,
+        revenuePerShare: parseFloat(data.RevenuePerShareTTM) || null,
+        profitMargin: parseFloat(data.ProfitMargin) || null,
+        operatingMargin: parseFloat(data.OperatingMarginTTM) || null,
+        returnOnAssets: parseFloat(data.ReturnOnAssetsTTM) || null,
+        returnOnEquity: parseFloat(data.ReturnOnEquityTTM) || null,
+        currentRatio: null,
+        beta: parseFloat(data.Beta) || null,
+        fiftyTwoWeekHigh: parseFloat(data['52WeekHigh']) || null,
+        fiftyTwoWeekLow: parseFloat(data['52WeekLow']) || null,
+        sector: data.Sector || 'Unknown',
+        industry: data.Industry || 'Unknown',
+        description: data.Description || '',
+        companyName: data.Name || ticker,
+        source: 'Alpha Vantage',
       };
     } catch (error) {
-      console.error('Error fetching fundamentals from FMP:', error);
+      console.error('Error fetching fundamentals:', error);
       return null;
     }
   }
 
   async getSocialSentiment(ticker: string) {
-    // For now, we'll use news sentiment as a proxy
-    // In the future, you could integrate Twitter API, StockTwits, or Reddit
-    const news = await this.getNews(ticker, 20);
+    // Use Nitter RSS feeds for Twitter sentiment (free!)
+    const { getSocialSentimentClient } = await import('./social-sentiment-client');
+    const socialClient = getSocialSentimentClient();
     
-    const sentimentCounts = {
-      positive: 0,
-      negative: 0,
-      neutral: 0,
-    };
+    try {
+      const sentiment = await socialClient.getSocialSentiment(ticker);
+      return sentiment;
+    } catch (error) {
+      console.error('Social sentiment failed, using news fallback:', error);
+      
+      // Fallback to news sentiment
+      const news = await this.getNews(ticker, 20);
+      
+      const sentimentCounts = {
+        positive: 0,
+        negative: 0,
+        neutral: 0,
+      };
 
-    news.forEach(item => {
-      if (item.sentiment) {
-        sentimentCounts[item.sentiment]++;
-      }
-    });
+      news.forEach(item => {
+        if (item.sentiment) {
+          sentimentCounts[item.sentiment]++;
+        }
+      });
 
-    const total = news.length || 1;
-    const score = Math.round(((sentimentCounts.positive - sentimentCounts.negative) / total + 1) * 50);
+      const total = news.length || 1;
+      const score = Math.round(((sentimentCounts.positive - sentimentCounts.negative) / total + 1) * 50);
 
-    return {
-      score,
-      volume: news.length,
-      positive: sentimentCounts.positive,
-      negative: sentimentCounts.negative,
-      neutral: sentimentCounts.neutral,
-      trending: news.length > 15, // High news volume = trending
-    };
+      return {
+        score,
+        volume: news.length,
+        positive: sentimentCounts.positive,
+        negative: sentimentCounts.negative,
+        neutral: sentimentCounts.neutral,
+        trending: news.length > 15,
+      };
+    }
   }
 }
 
