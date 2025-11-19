@@ -8,6 +8,7 @@ import { getCoinGeckoClient } from '../data/coingecko-client';
 import { analyzeMarket } from './market-agent';
 import { analyzeFundamentals } from './fundamental-agent';
 import { analyzeNews } from './news-agent';
+import { analyzeOptionsFlow } from './options-agent';
 import { synthesizeStrategy, ComprehensiveAnalysis } from './strategy-agent';
 import { conductDebate } from './debate-agent';
 import { assessRisk } from './risk-agent';
@@ -27,11 +28,12 @@ export async function analyzeStock(ticker: string): Promise<ComprehensiveAnalysi
   // Step 1: Get current quote (needed by all agents)
   const quote = await client.getQuote(ticker);
 
-  // Step 2: Run all 4 analysts in parallel for maximum speed
-  const [market, fundamental, news] = await Promise.all([
+  // Step 2: Run all 5 analysts in parallel for maximum speed
+  const [market, fundamental, news, options] = await Promise.all([
     analyzeMarket(ticker),
     analyzeFundamentals(ticker),
     analyzeNews(ticker),
+    analyzeOptionsFlow(ticker).catch(() => null), // Options data optional
   ]);
 
   // Step 3: Bull vs Bear Debate (eliminate bias)
@@ -48,6 +50,7 @@ export async function analyzeStock(ticker: string): Promise<ComprehensiveAnalysi
     market,
     fundamental,
     news,
+    options,
     debate,
     strategy,
     riskAssessment,
@@ -143,8 +146,8 @@ export async function* analyzeStockStreaming(ticker: string): AsyncGenerator<Str
   const quote = await client.getQuote(ticker);
   yield { type: 'quote', data: quote };
 
-  // Stream 2-4: Agents working in parallel
-  const [market, fundamental, news] = await Promise.all([
+  // Stream 2-5: Agents working in parallel
+  const [market, fundamental, news, options] = await Promise.all([
     analyzeMarket(ticker).then(data => {
       return data;
     }),
@@ -154,11 +157,15 @@ export async function* analyzeStockStreaming(ticker: string): AsyncGenerator<Str
     analyzeNews(ticker).then(data => {
       return data;
     }),
+    analyzeOptionsFlow(ticker).catch(() => null),
   ]);
 
   yield { type: 'market', data: market };
   yield { type: 'fundamental', data: fundamental };
   yield { type: 'news', data: news };
+  if (options) {
+    yield { type: 'options' as any, data: options };
+  }
 
   // Stream 5: Final strategy
   const strategy = synthesizeStrategy(quote, market, fundamental, news);
@@ -167,6 +174,6 @@ export async function* analyzeStockStreaming(ticker: string): AsyncGenerator<Str
   // Complete
   yield { 
     type: 'complete', 
-    data: { quote, market, fundamental, news, strategy } 
+    data: { quote, market, fundamental, news, options, strategy } 
   };
 }

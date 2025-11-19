@@ -4,6 +4,7 @@
  */
 
 import { getMarketDataClient, NewsItem } from '../data/marketdata-client';
+import { getAlphaVantageNews, convertToNewsItems } from '../data/alphavantage-news-client';
 
 export interface NewsAnalysis {
   sentiment: 'positive' | 'negative' | 'neutral';
@@ -17,12 +18,26 @@ export interface NewsAnalysis {
 
 export async function analyzeNews(ticker: string): Promise<NewsAnalysis> {
   const client = getMarketDataClient();
-  const [news, socialSentiment] = await Promise.all([
-    client.getNews(ticker, 15),
-    client.getSocialSentiment(ticker)
+  
+  // Try to get news from both sources
+  const [marketDataNews, alphaVantageNews, socialSentiment] = await Promise.all([
+    client.getNews(ticker, 15).catch(() => []),
+    getAlphaVantageNews(ticker, 10).catch(() => []),
+    client.getSocialSentiment(ticker).catch(() => null)
   ]);
 
-  const analysis = calculateNewsAnalysis(news, socialSentiment, ticker);
+  // Convert Alpha Vantage news to our format
+  const convertedAlphaNews = convertToNewsItems(alphaVantageNews, ticker);
+  
+  // Combine news from both sources, prioritizing Alpha Vantage (has sentiment scores)
+  const allNews = [...convertedAlphaNews, ...marketDataNews];
+  
+  // Remove duplicates based on title similarity
+  const uniqueNews = allNews.filter((item, index, self) =>
+    index === self.findIndex(t => t.title === item.title)
+  );
+
+  const analysis = calculateNewsAnalysis(uniqueNews.slice(0, 15), socialSentiment, ticker);
   
   return analysis;
 }

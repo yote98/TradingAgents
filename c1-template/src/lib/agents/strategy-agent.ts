@@ -27,12 +27,14 @@ export interface TradingStrategy {
 
 import { DebateResult } from './debate-agent';
 import { RiskAssessment } from './risk-agent';
+import { OptionsAnalysisResult } from './options-agent';
 
 export interface ComprehensiveAnalysis {
   quote: Quote;
   market: MarketAnalysis;
   fundamental: FundamentalAnalysis;
   news: NewsAnalysis;
+  options?: OptionsAnalysisResult | null;
   debate?: DebateResult;
   strategy: TradingStrategy;
   riskAssessment?: RiskAssessment;

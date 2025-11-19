@@ -42,10 +42,15 @@ export class SocialSentimentClient {
 
   async getSocialSentiment(ticker: string): Promise<SocialSentiment> {
     try {
-      // Try to fetch from Nitter RSS feeds
-      const posts = await this.fetchFromNitter(ticker);
+      // Try Reddit first (most reliable)
+      const redditPosts = await this.fetchFromReddit(ticker);
       
-      if (posts.length === 0) {
+      // Fallback to Nitter if Reddit fails
+      const nitterPosts = redditPosts.length === 0 ? await this.fetchFromNitter(ticker) : [];
+      
+      const allPosts = [...redditPosts, ...nitterPosts];
+      
+      if (allPosts.length === 0) {
         // Fallback to basic sentiment
         return {
           score: 50,
@@ -59,7 +64,7 @@ export class SocialSentimentClient {
       }
 
       // Calculate sentiment from posts
-      return this.calculateSentiment(posts);
+      return this.calculateSentiment(allPosts);
     } catch (error) {
       console.error('Error fetching social sentiment:', error);
       return {
@@ -72,6 +77,45 @@ export class SocialSentimentClient {
         posts: [],
       };
     }
+  }
+
+  private async fetchFromReddit(ticker: string): Promise<SocialPost[]> {
+    const posts: SocialPost[] = [];
+    const subreddits = ['wallstreetbets', 'stocks', 'investing'];
+    
+    try {
+      for (const subreddit of subreddits) {
+        const url = `https://www.reddit.com/r/${subreddit}/search.json?q=${ticker}&restrict_sr=1&sort=hot&limit=10&t=week`;
+        
+        const response = await fetch(url, {
+          headers: { 'User-Agent': 'TradingAgents/1.0' },
+          next: { revalidate: 600 }, // Cache for 10 minutes
+          signal: AbortSignal.timeout(5000)
+        });
+
+        if (!response.ok) continue;
+
+        const data = await response.json();
+        const redditPosts = data.data?.children || [];
+
+        for (const child of redditPosts) {
+          const post = child.data;
+          const text = post.title + ' ' + (post.selftext || '');
+          
+          posts.push({
+            text: post.title,
+            author: `r/${subreddit}`,
+            timestamp: new Date(post.created_utc * 1000),
+            url: `https://reddit.com${post.permalink}`,
+            sentiment: this.analyzeSentiment(text)
+          });
+        }
+      }
+    } catch (error) {
+      console.warn('Reddit fetch failed:', error);
+    }
+
+    return posts;
   }
 
   private async fetchFromNitter(ticker: string): Promise<SocialPost[]> {
