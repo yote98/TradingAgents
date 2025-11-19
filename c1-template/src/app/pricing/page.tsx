@@ -5,31 +5,6 @@ import { useState } from "react";
 
 export default function PricingPage() {
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly");
-  const [loading, setLoading] = useState<string | null>(null);
-
-  const handleCheckout = async (planName: string, priceId: string) => {
-    setLoading(planName);
-    try {
-      const response = await fetch('/api/stripe/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ priceId, planName }),
-      });
-      
-      const data = await response.json();
-      
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        alert('Failed to create checkout session');
-        setLoading(null);
-      }
-    } catch (error) {
-      console.error('Checkout error:', error);
-      alert('Something went wrong. Please try again.');
-      setLoading(null);
-    }
-  };
 
   const plans = [
     {
@@ -186,33 +161,16 @@ export default function PricingPage() {
                 )}
               </div>
 
-              {plan.name === "Free" ? (
-                <Link
-                  href="/chat"
-                  className="block w-full py-3 rounded-lg font-semibold text-center transition-all mb-6 bg-white/10 text-white hover:bg-white/20"
-                >
-                  {plan.cta}
-                </Link>
-              ) : plan.name === "Enterprise" ? (
-                <Link
-                  href="/contact"
-                  className="block w-full py-3 rounded-lg font-semibold text-center transition-all mb-6 bg-white/10 text-white hover:bg-white/20"
-                >
-                  {plan.cta}
-                </Link>
-              ) : (
-                <button
-                  onClick={() => handleCheckout(plan.name, process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID || '')}
-                  disabled={loading === plan.name}
-                  className={`block w-full py-3 rounded-lg font-semibold text-center transition-all mb-6 ${
-                    plan.popular
-                      ? "bg-gradient-to-r from-lime-400 via-green-400 to-cyan-400 text-black hover:opacity-90"
-                      : "bg-white/10 text-white hover:bg-white/20"
-                  } disabled:opacity-50 disabled:cursor-not-allowed`}
-                >
-                  {loading === plan.name ? "Loading..." : plan.cta}
-                </button>
-              )}
+              <Link
+                href={plan.name === "Enterprise" ? "/contact" : "/chat"}
+                className={`block w-full py-3 rounded-lg font-semibold text-center transition-all mb-6 ${
+                  plan.popular
+                    ? "bg-gradient-to-r from-lime-400 via-green-400 to-cyan-400 text-black hover:opacity-90"
+                    : "bg-white/10 text-white hover:bg-white/20"
+                }`}
+              >
+                {plan.cta}
+              </Link>
 
               <div className="space-y-3 text-left">
                 {plan.features.map((feature, index) => (
