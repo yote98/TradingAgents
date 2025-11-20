@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 
+// Force rebuild with env vars - Nov 20 2025
 const nextConfig: NextConfig = {
   reactStrictMode: false, // Disable to reduce hydration noise
   output: 'standalone', // Use standalone output for server deployment
