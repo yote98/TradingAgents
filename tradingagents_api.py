@@ -93,8 +93,13 @@ def analyze():
         request_config = config.copy()
         request_config["max_debate_rounds"] = max_debate_rounds
         
-        # Run analysis
-        result = graph.run(ticker=ticker, timeframe="1mo")
+        # Run analysis using propagate method
+        from datetime import date
+        final_state, signal, coach_plans = graph.propagate(
+            company_name=ticker,
+            trade_date=date.today()
+        )
+        result = final_state
         
         print(f"✅ Analysis complete for {ticker}")
         
