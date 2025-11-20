@@ -24,7 +24,8 @@ import { theme, darkTheme, themeMode } from "../../theme";
 
 export default function ChatPage() {
   const [mounted, setMounted] = useState(false);
-  const [showPrompts, setShowPrompts] = useState(true);
+  const [showPrompts, setShowPrompts] = useState(true); // Show prompts initially
+  const [hasMessages, setHasMessages] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -33,7 +34,15 @@ export default function ChatPage() {
   const handlePromptClick = () => {
     // Hide prompts when user clicks one
     setShowPrompts(false);
+    setHasMessages(true);
   };
+
+  // Hide prompts when user starts typing or sends a message
+  useEffect(() => {
+    if (hasMessages) {
+      setShowPrompts(false);
+    }
+  }, [hasMessages]);
 
   // Import CSS on client side only
   useEffect(() => {
@@ -62,7 +71,7 @@ export default function ChatPage() {
       {mounted && <StreamingLoadingIndicator />}
 
       {/* Prompt Suggestions - Shows above input when chat is empty */}
-      {mounted && showPrompts && (
+      {mounted && showPrompts && !hasMessages && (
         <div className="fixed bottom-24 left-0 right-0 z-20">
           <PromptSuggestions onPromptClick={handlePromptClick} />
         </div>

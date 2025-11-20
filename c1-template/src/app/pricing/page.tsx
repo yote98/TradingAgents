@@ -5,11 +5,49 @@ import { useState } from "react";
 
 export default function PricingPage() {
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly");
+  const [loading, setLoading] = useState<string | null>(null);
+
+  const handleCheckout = async (planName: string, priceId: string) => {
+    if (!priceId) {
+      // Free plan or no price ID - just go to chat
+      window.location.href = "/chat";
+      return;
+    }
+
+    setLoading(planName);
+    try {
+      const response = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          priceId,
+          planName,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        console.error("No checkout URL returned");
+        alert("Failed to start checkout. Please try again.");
+        setLoading(null);
+      }
+    } catch (error) {
+      console.error("Checkout error:", error);
+      alert("Failed to start checkout. Please try again.");
+      setLoading(null);
+    }
+  };
 
   const plans = [
     {
       name: "Free",
       price: { monthly: 0, annual: 0 },
+      priceId: { monthly: "", annual: "" },
       description: "Perfect for trying out AlphaFlow AI",
       features: [
         "5 stock analyses per day",
@@ -30,6 +68,10 @@ export default function PricingPage() {
     {
       name: "Pro",
       price: { monthly: 19, annual: 190 },
+      priceId: { 
+        monthly: process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID || "",
+        annual: process.env.NEXT_PUBLIC_STRIPE_PRO_ANNUAL_PRICE_ID || ""
+      },
       description: "For serious traders and investors",
       badge: "🎉 Launch Price - Save 34%",
       features: [
@@ -52,6 +94,10 @@ export default function PricingPage() {
     {
       name: "Enterprise",
       price: { monthly: 49, annual: 490 },
+      priceId: { 
+        monthly: process.env.NEXT_PUBLIC_STRIPE_ENTERPRISE_PRICE_ID || "",
+        annual: process.env.NEXT_PUBLIC_STRIPE_ENTERPRISE_ANNUAL_PRICE_ID || ""
+      },
       description: "For teams and institutions",
       badge: "🚀 50% Off Launch Price",
       features: [
@@ -68,7 +114,7 @@ export default function PricingPage() {
         "Custom reports",
       ],
       limitations: [],
-      cta: "Contact Sales",
+      cta: "Start Enterprise Trial",
       popular: false,
     },
   ];
@@ -161,16 +207,22 @@ export default function PricingPage() {
                 )}
               </div>
 
-              <Link
-                href={plan.name === "Enterprise" ? "/contact" : "/chat"}
+              <button
+                onClick={() => {
+                  const priceId = billingCycle === "monthly" 
+                    ? plan.priceId.monthly 
+                    : plan.priceId.annual;
+                  handleCheckout(plan.name, priceId);
+                }}
+                disabled={loading === plan.name}
                 className={`block w-full py-3 rounded-lg font-semibold text-center transition-all mb-6 ${
                   plan.popular
                     ? "bg-gradient-to-r from-lime-400 via-green-400 to-cyan-400 text-black hover:opacity-90"
                     : "bg-white/10 text-white hover:bg-white/20"
-                }`}
+                } ${loading === plan.name ? "opacity-50 cursor-not-allowed" : ""}`}
               >
-                {plan.cta}
-              </Link>
+                {loading === plan.name ? "Loading..." : plan.cta}
+              </button>
 
               <div className="space-y-3 text-left">
                 {plan.features.map((feature, index) => (

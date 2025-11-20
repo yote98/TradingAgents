@@ -107,7 +107,7 @@ export default function LandingPage() {
             <span className="bg-gradient-to-r from-lime-400 via-green-400 to-cyan-400 bg-clip-text text-transparent">
               {typedText}
             </span>
-            <span className="animate-pulse">|</span>
+            {typedText.length < fullText.length && <span className="animate-pulse">|</span>}
             <br />
             <span className="text-4xl md:text-5xl">for Smarter Decisions</span>
           </h1>
@@ -396,7 +396,7 @@ export default function LandingPage() {
 
         {/* Newsletter Subscription Section */}
         <div className="mt-32 max-w-2xl mx-auto">
-          <div className="newsletter-box bg-white/5 backdrop-blur-md rounded-2xl p-8 md:p-12 border border-white/10">
+          <div className="newsletter-box relative bg-gradient-to-r from-lime-400/10 via-green-400/10 to-cyan-400/10 backdrop-blur-md rounded-2xl p-8 md:p-12 border border-green-400/30 animate-pulse-border">
             <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-4">
               Unlock AI-Powered Trading Intelligence
             </h2>
