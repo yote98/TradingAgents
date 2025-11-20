@@ -8,6 +8,7 @@ import { getCoinGeckoClient } from '../data/coingecko-client';
 import { analyzeMarket } from './market-agent';
 import { analyzeFundamentals } from './fundamental-agent';
 import { analyzeNews } from './news-agent';
+import { analyzeSocial } from './social-agent';
 import { analyzeOptionsFlow } from './options-agent';
 import { synthesizeStrategy, ComprehensiveAnalysis } from './strategy-agent';
 import { conductDebate } from './debate-agent';
@@ -29,18 +30,19 @@ export async function analyzeStock(ticker: string): Promise<ComprehensiveAnalysi
   const quote = await client.getQuote(ticker);
 
   // Step 2: Run all 5 analysts in parallel for maximum speed
-  const [market, fundamental, news, options] = await Promise.all([
+  const [market, fundamental, news, social, options] = await Promise.all([
     analyzeMarket(ticker),
     analyzeFundamentals(ticker),
     analyzeNews(ticker),
+    analyzeSocial(ticker),
     analyzeOptionsFlow(ticker).catch(() => null), // Options data optional
   ]);
 
   // Step 3: Bull vs Bear Debate (eliminate bias)
-  const debate = conductDebate(market, fundamental, news);
+  const debate = conductDebate(market, fundamental, news, social);
 
   // Step 4: Synthesize into trading strategy
-  const strategy = synthesizeStrategy(quote, market, fundamental, news);
+  const strategy = synthesizeStrategy(quote, market, fundamental, news, social);
 
   // Step 5: Risk Management Team Assessment
   const riskAssessment = assessRisk(strategy, debate);
@@ -50,6 +52,7 @@ export async function analyzeStock(ticker: string): Promise<ComprehensiveAnalysi
     market,
     fundamental,
     news,
+    social,
     options,
     debate,
     strategy,

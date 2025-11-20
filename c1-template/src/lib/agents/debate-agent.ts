@@ -30,13 +30,14 @@ export interface DebateResult {
 export function conductDebate(
   market: MarketAnalysis,
   fundamental: FundamentalAnalysis,
-  news: NewsAnalysis
+  news: NewsAnalysis,
+  social?: any
 ): DebateResult {
   // Bull Researcher builds the bull case
-  const bullCase = buildBullCase(market, fundamental, news);
+  const bullCase = buildBullCase(market, fundamental, news, social);
   
   // Bear Researcher builds the bear case
-  const bearCase = buildBearCase(market, fundamental, news);
+  const bearCase = buildBearCase(market, fundamental, news, social);
   
   // Determine winner based on strength of arguments
   const debateScore = bullCase.confidence - bearCase.confidence;
@@ -60,7 +61,8 @@ export function conductDebate(
 function buildBullCase(
   market: MarketAnalysis,
   fundamental: FundamentalAnalysis,
-  news: NewsAnalysis
+  news: NewsAnalysis,
+  social?: any
 ): BullCase {
   const bullArguments: string[] = [];
   const keyPoints: string[] = [];
@@ -71,6 +73,13 @@ function buildBullCase(
     bullArguments.push(`Technical setup is bullish with ${market.confidence}% confidence`);
     keyPoints.push(market.momentum);
     confidence += 15;
+  }
+
+  // Social sentiment bullish signals
+  if (social && social.signal === 'bullish') {
+    bullArguments.push(`Social sentiment is bullish with ${social.sentiment.overall > 0 ? '+' : ''}${social.sentiment.overall} score`);
+    keyPoints.push(`${social.volume.mentions} social mentions trending ${social.volume.trend}`);
+    confidence += 10;
   }
 
   if (market.technicalIndicators.rsi && market.technicalIndicators.rsi < 30) {
@@ -119,7 +128,8 @@ function buildBullCase(
 function buildBearCase(
   market: MarketAnalysis,
   fundamental: FundamentalAnalysis,
-  news: NewsAnalysis
+  news: NewsAnalysis,
+  social?: any
 ): BearCase {
   const bearArguments: string[] = [];
   const keyPoints: string[] = [];
@@ -130,6 +140,13 @@ function buildBearCase(
     bearArguments.push(`Technical setup is bearish with ${market.confidence}% confidence`);
     keyPoints.push(market.momentum);
     confidence += 15;
+  }
+
+  // Social sentiment bearish signals
+  if (social && social.signal === 'bearish') {
+    bearArguments.push(`Social sentiment is bearish with ${social.sentiment.overall} score`);
+    keyPoints.push(`Negative social buzz with ${social.volume.mentions} mentions`);
+    confidence += 10;
   }
 
   if (market.technicalIndicators.rsi && market.technicalIndicators.rsi > 70) {

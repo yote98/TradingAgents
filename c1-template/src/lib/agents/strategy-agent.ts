@@ -34,6 +34,7 @@ export interface ComprehensiveAnalysis {
   market: MarketAnalysis;
   fundamental: FundamentalAnalysis;
   news: NewsAnalysis;
+  social?: any;
   options?: OptionsAnalysisResult | null;
   debate?: DebateResult;
   strategy: TradingStrategy;
@@ -44,13 +45,15 @@ export function synthesizeStrategy(
   quote: Quote,
   market: MarketAnalysis,
   fundamental: FundamentalAnalysis,
-  news: NewsAnalysis
+  news: NewsAnalysis,
+  social?: any
 ): TradingStrategy {
   // Combine all signals to make a recommendation
   const signals = {
     market: market.signal === 'bullish' ? 1 : market.signal === 'bearish' ? -1 : 0,
     fundamental: fundamental.signal === 'undervalued' ? 1 : fundamental.signal === 'overvalued' ? -1 : 0,
     news: news.sentiment === 'positive' ? 1 : news.sentiment === 'negative' ? -1 : 0,
+    social: social ? (social.signal === 'bullish' ? 1 : social.signal === 'bearish' ? -1 : 0) : 0,
   };
 
   const totalSignal = signals.market + signals.fundamental + signals.news;

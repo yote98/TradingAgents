@@ -33,8 +33,10 @@ export class MarketDataClient {
   }
 
   async getQuote(ticker: string): Promise<Quote> {
+    // Use our backend API which properly handles MarketData.app
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
     const response = await fetch(
-      `${this.baseUrl}/stocks/quotes/${ticker}/?token=${this.apiKey}`,
+      `${backendUrl}/quote/${ticker}`,
       { next: { revalidate: 60 } } // Cache for 1 minute
     );
 
@@ -45,16 +47,16 @@ export class MarketDataClient {
     const data = await response.json();
     
     return {
-      symbol: data.symbol,
-      price: data.last,
-      change: data.change,
-      changePercent: data.changepct,
-      volume: data.volume,
+      symbol: data.symbol || ticker,
+      price: data.price || data.mid || 0,
+      change: data.change || 0,
+      changePercent: data.changepct || 0,
+      volume: data.volume || 0,
       marketCap: data.marketCap || 0,
-      high: data.high,
-      low: data.low,
-      open: data.open,
-      previousClose: data.close,
+      high: data.high || 0,
+      low: data.low || 0,
+      open: data.open || 0,
+      previousClose: data.close || 0,
     };
   }
 

@@ -155,6 +155,67 @@ def get_marketdata_quote(
         return {"error": str(e)}
 
 
+def get_marketdata_earnings(
+    symbol: Annotated[str, "ticker symbol"]
+) -> dict:
+    """
+    Get earnings data for a stock from MarketData.app
+    Premium endpoint - returns reported and estimated EPS
+    
+    Args:
+        symbol: Stock ticker (e.g., AAPL, NVDA)
+    
+    Returns:
+        Dictionary with earnings data including:
+        - reportedEPS: Actual earnings per share
+        - estimatedEPS: Analyst estimates
+        - surpriseEPS: Beat/miss amount
+        - reportDate: When earnings were reported
+    """
+    api_key = os.getenv("MARKETDATA_API_KEY")
+    
+    if not api_key:
+        return {"error": "MARKETDATA_API_KEY not set"}
+    
+    url = f"https://api.marketdata.app/v1/stocks/earnings/{symbol.upper()}/"
+    
+    headers = {
+        "Authorization": f"Token {api_key}"
+    }
+    
+    try:
+        response = requests.get(url, headers=headers, timeout=10)
+        response.raise_for_status()
+        
+        data = response.json()
+        
+        if data.get("s") != "ok":
+            return {"error": data.get("errmsg", "Unknown error")}
+        
+        # Parse earnings data
+        earnings = {
+            "symbol": data.get("symbol", [symbol.upper()])[0],
+            "fiscalYear": data.get("fiscalYear", [None])[0],
+            "fiscalQuarter": data.get("fiscalQuarter", [None])[0],
+            "reportDate": data.get("reportDate", [None])[0],
+            "reportTime": data.get("reportTime", [None])[0],
+            "reportedEPS": data.get("reportedEPS", [None])[0],
+            "estimatedEPS": data.get("estimatedEPS", [None])[0],
+            "surpriseEPS": data.get("surpriseEPS", [None])[0],
+            "surpriseEPSpct": data.get("surpriseEPSpct", [None])[0],
+            "source": "MarketData.app"
+        }
+        
+        # Convert timestamps to readable dates
+        if earnings["reportDate"]:
+            earnings["reportDateFormatted"] = datetime.fromtimestamp(earnings["reportDate"]).strftime("%Y-%m-%d")
+        
+        return earnings
+        
+    except Exception as e:
+        return {"error": str(e)}
+
+
 def get_marketdata_index_quote(
     symbol: Annotated[str, "index symbol (e.g., ^GSPC, ^DJI, ^VIX)"]
 ) -> dict:

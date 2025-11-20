@@ -236,6 +236,28 @@ def calculate_risk():
             "details": str(e)
         }), 500
 
+@app.route('/earnings/<ticker>', methods=['GET'])
+def get_earnings(ticker):
+    """
+    Get earnings data for a stock using MarketData.app
+    """
+    try:
+        print(f"\n📊 Getting earnings for {ticker}...")
+        
+        from tradingagents.dataflows.marketdata import get_marketdata_earnings
+        
+        result = get_marketdata_earnings(ticker)
+        
+        if "error" in result:
+            return jsonify(result), 404
+        
+        print(f"✅ Earnings retrieved for {ticker}")
+        return jsonify(result)
+        
+    except Exception as e:
+        print(f"❌ Error getting earnings: {e}")
+        return jsonify({"error": str(e)}), 500
+
 @app.route('/quote/<ticker>', methods=['GET'])
 def get_quote(ticker):
     """
