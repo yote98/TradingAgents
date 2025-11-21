@@ -131,11 +131,18 @@ Full analysis data: ${JSON.stringify(validData, null, 2)}`,
   }
 
   const llmStream = await client.chat.completions.create({
-    model: "c1/anthropic/claude-sonnet-4/v-20250617", // Thesys C1 model (known working)
+    model: "c1/anthropic/claude-sonnet-4/v-20250930", // Latest Thesys model (from changelog)
     messages: messageStore.getOpenAICompatibleMessageList(),
     stream: true,
     temperature: 0.1, // Low temperature for factual financial data
     max_tokens: 2048,
+    // Add metadata for cache control
+    metadata: {
+      thesys: JSON.stringify({
+        cache_key: `trading-${Date.now()}-${Math.random()}`, // Force unique requests
+        real_time_data: true,
+      }),
+    },
   });
 
   const responseStream = transformStream(
