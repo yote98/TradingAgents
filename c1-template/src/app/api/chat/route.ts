@@ -109,6 +109,20 @@ export async function POST(req: NextRequest) {
       const validData = allData.filter(d => d !== null);
       
       if (validData.length > 0) {
+        // CRITICAL: Remove any old price data from message store to prevent stale data
+        const messages = messageStore.messageList;
+        const oldDataIndices: number[] = [];
+        messages.forEach((m, i) => {
+          if (m.role === 'system' && typeof m.content === 'string' && m.content.includes('🚨 REAL-TIME DATA')) {
+            oldDataIndices.push(i);
+          }
+        });
+        // Remove in reverse order to maintain indices
+        oldDataIndices.reverse().forEach(i => {
+          messages.splice(i, 1);
+          console.log(`🗑️ Removed old price data at index ${i}`);
+        });
+        
         const dataMessage: DBMessage = {
           role: 'system',
           content: `🚨 REAL-TIME DATA (${new Date().toISOString()}) 🚨
