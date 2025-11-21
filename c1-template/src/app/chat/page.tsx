@@ -49,33 +49,55 @@ export default function ChatPage() {
     if (!mounted) return;
 
     const detectMessageSent = () => {
-      // Check if there are any messages in the chat
-      const messageElements = document.querySelectorAll('[class*="message"], [class*="Message"], [role="article"]');
-      if (messageElements.length > 0) {
+      // Check multiple selectors for messages
+      const messageElements = document.querySelectorAll(
+        '[class*="message"], [class*="Message"], [role="article"], ' +
+        '[class*="chat"], [class*="Chat"], [class*="thread"], ' +
+        'div[class*="crayon-shell-thread"]'
+      );
+      
+      // Also check if there's any substantial content in the chat area
+      const chatContent = document.querySelector('[class*="thread"], [class*="chat-container"]');
+      const hasContent = chatContent && chatContent.textContent && chatContent.textContent.length > 100;
+      
+      if (messageElements.length > 0 || hasContent) {
         setHasMessages(true);
         setShowPrompts(false);
       }
     };
 
+    // Initial check
+    detectMessageSent();
+
     // Watch for DOM changes (messages being added)
-    const observer = new MutationObserver(detectMessageSent);
+    const observer = new MutationObserver(() => {
+      detectMessageSent();
+    });
+    
     observer.observe(document.body, { 
       childList: true, 
-      subtree: true 
+      subtree: true,
+      characterData: true
     });
 
-    // Also check on input focus/typing
-    const handleInputActivity = () => {
-      setTimeout(detectMessageSent, 500);
+    // Also check on any user interaction
+    const handleUserActivity = () => {
+      setTimeout(detectMessageSent, 300);
     };
 
-    document.addEventListener('keydown', handleInputActivity);
-    document.addEventListener('click', handleInputActivity);
+    document.addEventListener('keydown', handleUserActivity);
+    document.addEventListener('click', handleUserActivity);
+    document.addEventListener('input', handleUserActivity);
+
+    // Periodic check as fallback
+    const intervalCheck = setInterval(detectMessageSent, 1000);
 
     return () => {
       observer.disconnect();
-      document.removeEventListener('keydown', handleInputActivity);
-      document.removeEventListener('click', handleInputActivity);
+      document.removeEventListener('keydown', handleUserActivity);
+      document.removeEventListener('click', handleUserActivity);
+      document.removeEventListener('input', handleUserActivity);
+      clearInterval(intervalCheck);
     };
   }, [mounted]);
 
@@ -107,7 +129,10 @@ export default function ChatPage() {
 
       {/* Prompt Suggestions - Shows above input when chat is empty */}
       {mounted && showPrompts && !hasMessages && (
-        <div className="fixed bottom-24 left-0 right-0 z-20">
+        <div 
+          className="fixed bottom-24 left-0 right-0 z-20 transition-opacity duration-300"
+          style={{ opacity: showPrompts ? 1 : 0, pointerEvents: showPrompts ? 'auto' : 'none' }}
+        >
           <PromptSuggestions onPromptClick={handlePromptClick} />
         </div>
       )}
