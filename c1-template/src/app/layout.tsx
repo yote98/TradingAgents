@@ -7,6 +7,10 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
+// Force dynamic rendering globally - NO CACHING
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export const metadata: Metadata = {
   title: "AlphaFlow AI",
   description: "Multi-Agent Intelligence for Trading Analysis",
