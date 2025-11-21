@@ -258,17 +258,20 @@ function synthesizeAnalysis(quote: Quote, indicators: TechnicalIndicators): Mark
   if (quote.changePercent > 1) trend = 'uptrend';
   if (quote.changePercent < -1) trend = 'downtrend';
 
-  // Calculate support and resistance
+  // Calculate support and resistance based on CURRENT PRICE (not today's high/low)
+  // This ensures levels are relevant for future trading decisions
+  const currentPrice = quote.price;
+  
   const resistance = [
-    indicators.bollingerBands?.upper || quote.high * 1.05,
-    indicators.sma50 && quote.price < indicators.sma50 ? indicators.sma50 : quote.high * 1.10,
-    indicators.sma200 && quote.price < indicators.sma200 ? indicators.sma200 : quote.high * 1.15
+    indicators.bollingerBands?.upper || currentPrice * 1.05,
+    indicators.sma50 && currentPrice < indicators.sma50 ? indicators.sma50 : currentPrice * 1.10,
+    indicators.sma200 && currentPrice < indicators.sma200 ? indicators.sma200 : currentPrice * 1.15
   ];
 
   const support = [
-    indicators.bollingerBands?.lower || quote.low * 0.95,
-    indicators.sma50 && quote.price > indicators.sma50 ? indicators.sma50 : quote.low * 0.90,
-    indicators.sma200 && quote.price > indicators.sma200 ? indicators.sma200 : quote.low * 0.85
+    indicators.bollingerBands?.lower || currentPrice * 0.95,
+    indicators.sma50 && currentPrice > indicators.sma50 ? indicators.sma50 : currentPrice * 0.90,
+    indicators.sma200 && currentPrice > indicators.sma200 ? indicators.sma200 : currentPrice * 0.85
   ];
 
   return {
