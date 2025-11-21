@@ -68,7 +68,7 @@ export class MarketDataClient {
       const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
       const response = await fetch(
         `${backendUrl}/quote/${ticker}`,
-        { next: { revalidate: 60 } }
+        { cache: 'no-store' } // CRITICAL: No caching for price data
       );
 
       if (response.ok) {
@@ -100,7 +100,7 @@ export class MarketDataClient {
 
     const response = await fetch(
       `${this.baseUrl}/stocks/candles/D/${ticker}/?from=${from.toISOString().split('T')[0]}&to=${to.toISOString().split('T')[0]}&token=${this.apiKey}`,
-      { next: { revalidate: 3600 } } // Cache for 1 hour
+      { cache: 'no-store' } // CRITICAL: No caching
     );
 
     if (!response.ok) {

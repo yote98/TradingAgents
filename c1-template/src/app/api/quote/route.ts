@@ -1,10 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getReliableQuote, verifyQuoteAccuracy } from '@/lib/data/reliable-quote';
 
+// CRITICAL: Disable ALL caching for price data
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 /**
  * GET /api/quote?symbol=NVDA&verify=true
  * RELIABLE stock quote with multiple source fallbacks
  * Use verify=true to cross-check multiple sources for accuracy
+ * 
+ * ZERO CACHING - Always returns fresh data
  */
 export async function GET(request: NextRequest) {
   try {

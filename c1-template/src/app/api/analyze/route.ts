@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { analyzeStock } from '@/lib/agents/orchestrator';
 
+// CRITICAL: Disable ALL caching for analysis data
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 /**
  * POST /api/analyze
  * Direct TypeScript analysis endpoint (bypasses Python API)
+ * ZERO CACHING - Always returns fresh analysis
  */
 export async function POST(request: NextRequest) {
   try {
