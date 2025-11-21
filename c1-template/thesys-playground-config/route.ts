@@ -11,16 +11,16 @@ export async function POST(req: NextRequest) {
     responseId: string;
   };
   const client = new OpenAI({
-    baseURL: "https://api.thesys.dev/v1/embed/",
-    apiKey: process.env.THESYS_API_KEY,
+    apiKey: process.env.OPENAI_API_KEY,
+    // No baseURL needed - defaults to OpenAI
   });
   const messageStore = getMessageStore(threadId);
 
   messageStore.addMessage(prompt);
 
   const llmStream = await client.beta.chat.completions.runTools({
-    model: `c1/openai/gpt-5/v-20250930`,
-    temperature: 1 as unknown as number,
+    model: "gpt-4o", // OpenAI's flagship model
+    temperature: 0.1, // Low for factual responses
     messages: messageStore.getOpenAICompatibleMessageList(),
     stream: true,
     tool_choice: tools.length > 0 ? "auto" : "none",

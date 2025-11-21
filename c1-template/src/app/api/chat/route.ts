@@ -30,13 +30,15 @@ export async function POST(req: NextRequest) {
   };
 
   const client = new OpenAI({
-    baseURL: "https://api.thesys.dev/v1/embed",
-    apiKey: process.env.THESYS_API_KEY,
+    apiKey: process.env.OPENAI_API_KEY,
+    // No baseURL needed - defaults to OpenAI's API
   });
 
   const messageStore = getMessageStore(threadId);
+  
+  // Add user message to store
   messageStore.addMessage(prompt);
-
+  
   // 🚀 AUTO-DETECT STOCK ANALYSIS REQUESTS - SUPPORT SINGLE & MULTIPLE STOCKS
   const userMessage = typeof prompt.content === 'string' ? prompt.content : '';
   console.log(`📝 User message: "${userMessage}"`);
@@ -128,9 +130,11 @@ Full analysis data: ${JSON.stringify(validData, null, 2)}`,
   }
 
   const llmStream = await client.chat.completions.create({
-    model: "c1/anthropic/claude-sonnet-4/v-20250617",
+    model: "gpt-4o", // OpenAI's flagship model - excellent for financial analysis
     messages: messageStore.getOpenAICompatibleMessageList(),
     stream: true,
+    temperature: 0.1, // Low temperature for factual financial data
+    max_tokens: 2048,
   });
 
   const responseStream = transformStream(
