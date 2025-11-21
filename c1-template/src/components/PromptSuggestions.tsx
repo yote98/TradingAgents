@@ -6,9 +6,9 @@ interface PromptSuggestionsProps {
 
 export default function PromptSuggestions({ onPromptClick }: PromptSuggestionsProps) {
   const suggestions = [
-    "Compare AAPL vs MSFT vs GOOGL with sector performance charts",
-    "Show me TSLA analysis with price chart and analyst breakdown",
-    "Portfolio allocation: 60% tech, 30% healthcare, 10% finance with pie chart",
+    "Compare AAPL vs MSFT vs GOOGL - which tech giant should I buy today?",
+    "Analyze TSLA with all 5 analysts: market, fundamentals, news, social, and options",
+    "What's the market sentiment on NVDA? Show me social buzz and analyst ratings",
   ];
 
   const handleClick = (prompt: string) => {
