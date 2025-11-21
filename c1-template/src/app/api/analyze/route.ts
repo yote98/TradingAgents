@@ -4,6 +4,7 @@ import { analyzeStock } from '@/lib/agents/orchestrator';
 // CRITICAL: Disable ALL caching for analysis data
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
+export const fetchCache = 'force-no-store';
 
 /**
  * POST /api/analyze
@@ -95,6 +96,12 @@ export async function POST(request: NextRequest) {
       } : undefined,
       
       timestamp: new Date().toISOString(),
+    }, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+      },
     });
   } catch (error) {
     console.error('Analysis error:', error);
@@ -104,7 +111,14 @@ export async function POST(request: NextRequest) {
         error: 'Analysis failed',
         details: error instanceof Error ? error.message : String(error),
       },
-      { status: 500 }
+      { 
+        status: 500,
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+        },
+      }
     );
   }
 }

@@ -4,6 +4,7 @@ import { getReliableQuote, verifyQuoteAccuracy } from '@/lib/data/reliable-quote
 // CRITICAL: Disable ALL caching for price data
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
+export const fetchCache = 'force-no-store';
 
 /**
  * GET /api/quote?symbol=NVDA&verify=true
@@ -37,6 +38,12 @@ export async function GET(request: NextRequest) {
         reliable: verification.reliable,
         warning: verification.reliable ? null : 'High variance detected between sources',
         timestamp: new Date().toISOString(),
+      }, {
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+        },
       });
     }
 
@@ -56,6 +63,12 @@ export async function GET(request: NextRequest) {
       previousClose: quote.previousClose,
       source: quote.source,
       timestamp: quote.timestamp,
+    }, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+      },
     });
   } catch (error) {
     console.error('Quote error:', error);
@@ -65,7 +78,14 @@ export async function GET(request: NextRequest) {
         error: 'Failed to fetch quote from all sources',
         details: error instanceof Error ? error.message : String(error),
       },
-      { status: 500 }
+      { 
+        status: 500,
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+        },
+      }
     );
   }
 }

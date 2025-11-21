@@ -22,6 +22,11 @@ const CUSTOM_COMPONENT_SCHEMAS = {
   StockCard: zodToJsonSchema(StockCardSchema),
 };
 
+// CRITICAL: Disable ALL caching
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+export const fetchCache = 'force-no-store';
+
 export async function POST(req: NextRequest) {
   const { prompt, threadId, responseId } = (await req.json()) as {
     prompt: DBMessage;
@@ -72,8 +77,9 @@ export async function POST(req: NextRequest) {
         Promise.race([
           isSimplePriceQuestion
             ? // Use quick quote endpoint for simple price questions
-              fetch(`${baseUrl}/api/quote?symbol=${ticker}`, {
+              fetch(`${baseUrl}/api/quote?symbol=${ticker}&_t=${Date.now()}`, {
                 headers: { 'Content-Type': 'application/json' },
+                cache: 'no-store',
               }).then(res => res.ok ? res.json().then(data => ({
                 ticker: data.symbol,
                 current_price: data.price,
@@ -84,10 +90,11 @@ export async function POST(req: NextRequest) {
                 quote: data,
               })) : null)
             : // Use full analysis for complex questions
-              fetch(`${baseUrl}/api/analyze`, {
+              fetch(`${baseUrl}/api/analyze?_t=${Date.now()}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ticker }),
+                cache: 'no-store',
               }).then(res => res.ok ? res.json() : null),
           new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), isSimplePriceQuestion ? 5000 : 15000))
         ]).catch(err => {
@@ -158,7 +165,9 @@ Full analysis data: ${JSON.stringify(validData, null, 2)}`,
   return new NextResponse(responseStream, {
     headers: {
       "Content-Type": "text/event-stream",
-      "Cache-Control": "no-cache, no-transform",
+      "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
+      "Pragma": "no-cache",
+      "Expires": "0",
       Connection: "keep-alive",
     },
   });
