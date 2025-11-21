@@ -44,6 +44,41 @@ export default function ChatPage() {
     }
   }, [hasMessages]);
 
+  // Detect when user sends a message by watching for input activity
+  useEffect(() => {
+    if (!mounted) return;
+
+    const detectMessageSent = () => {
+      // Check if there are any messages in the chat
+      const messageElements = document.querySelectorAll('[class*="message"], [class*="Message"], [role="article"]');
+      if (messageElements.length > 0) {
+        setHasMessages(true);
+        setShowPrompts(false);
+      }
+    };
+
+    // Watch for DOM changes (messages being added)
+    const observer = new MutationObserver(detectMessageSent);
+    observer.observe(document.body, { 
+      childList: true, 
+      subtree: true 
+    });
+
+    // Also check on input focus/typing
+    const handleInputActivity = () => {
+      setTimeout(detectMessageSent, 500);
+    };
+
+    document.addEventListener('keydown', handleInputActivity);
+    document.addEventListener('click', handleInputActivity);
+
+    return () => {
+      observer.disconnect();
+      document.removeEventListener('keydown', handleInputActivity);
+      document.removeEventListener('click', handleInputActivity);
+    };
+  }, [mounted]);
+
   // Import CSS on client side only
   useEffect(() => {
     import("@crayonai/react-ui/styles/index.css");
