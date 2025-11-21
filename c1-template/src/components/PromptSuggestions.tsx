@@ -6,9 +6,9 @@ interface PromptSuggestionsProps {
 
 export default function PromptSuggestions({ onPromptClick }: PromptSuggestionsProps) {
   const suggestions = [
-    "Analyze NVIDIA (NVDA) - valuation, financial, and performance.",
-    "Market briefing: top movers, sector trends, and macro highlights.",
-    "S&P 500 top performers this week and driving sectors.",
+    "Compare AAPL vs MSFT vs GOOGL with sector performance charts",
+    "Show me TSLA analysis with price chart and analyst breakdown",
+    "Portfolio allocation: 60% tech, 30% healthcare, 10% finance with pie chart",
   ];
 
   const handleClick = (prompt: string) => {

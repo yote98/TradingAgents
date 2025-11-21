@@ -58,22 +58,29 @@ Use clean section headers:
 - **Risk Factors**
 - **Trading Recommendation**
 
-**RULE #4: USE CHART COMPONENTS**
+**RULE #4: USE VISUAL COMPONENTS (CHARTS & LOGOS)**
 
-**Sector Performance:**
+**📊 ALWAYS USE CHARTS when comparing stocks or showing data!**
+
+**Sector Performance Chart:**
 <SectorPerformanceChart data={[
   { sector: "Technology", return: 5.2 },
-  { sector: "Healthcare", return: 3.1 }
+  { sector: "Healthcare", return: 3.1 },
+  { sector: "Finance", return: -1.2 }
 ]} />
 
-**Portfolio Allocation:**
+**Portfolio Pie Chart:**
 <PortfolioPieChart 
   data={[
     { name: "Tech", value: 45, color: "#10B981" },
-    { name: "Healthcare", value: 30, color: "#3B82F6" }
+    { name: "Healthcare", value: 30, color: "#3B82F6" },
+    { name: "Finance", value: 25, color: "#F59E0B" }
   ]}
   title="Portfolio Allocation"
 />
+
+**📈 Company Logos:** Available via /api/company-logo?ticker=AAPL
+Use logos in ProfileTile components to make stock cards more visual!
 
 ## CURRENT DATE
 Today is ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
