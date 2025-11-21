@@ -82,9 +82,15 @@ export function synthesizeStrategy(
     target = market.keyLevels.resistance[0] || currentPrice * 1.10;
     stopLoss = market.keyLevels.support[0] || currentPrice * 0.95;
   } else if (recommendation === 'SELL') {
+    // For SELL: recommend exiting at current price (not shorting)
+    // This is more appropriate for retail traders
     entry = currentPrice;
-    target = market.keyLevels.support[0] || currentPrice * 0.90;
-    stopLoss = market.keyLevels.resistance[0] || currentPrice * 1.05;
+    target = currentPrice; // Exit now
+    stopLoss = currentPrice * 1.05; // If price goes up 5%, definitely exit
+    
+    // Convert SELL to HOLD for better UX (most retail traders don't short)
+    recommendation = 'HOLD';
+    confidence = Math.max(confidence - 20, 30); // Lower confidence for bearish HOLD
   } else {
     // HOLD
     target = currentPrice * 1.05;
