@@ -61,15 +61,32 @@ export async function POST(req: NextRequest) {
         console.log(`⚠️ Too many tickers (${tickers.length}), limiting to first 3: ${limitedTickers.join(', ')}`);
       }
       
+      // Check if this is a simple price question (use quick quote endpoint)
+      const isSimplePriceQuestion = /\b(price|current|quote|trading at|worth)\b/i.test(textContent);
+      
       // Fetch data for tickers in parallel with timeout
       const dataPromises = limitedTickers.map(ticker =>
         Promise.race([
-          fetch(`${baseUrl}/api/analyze`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ticker }),
-          }).then(res => res.ok ? res.json() : null),
-          new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 15000))
+          isSimplePriceQuestion
+            ? // Use quick quote endpoint for simple price questions
+              fetch(`${baseUrl}/api/quote?symbol=${ticker}`, {
+                headers: { 'Content-Type': 'application/json' },
+              }).then(res => res.ok ? res.json().then(data => ({
+                ticker: data.symbol,
+                current_price: data.price,
+                final_decision: 'HOLD',
+                confidence: 50,
+                target_price: data.price,
+                stop_loss: data.price * 0.95,
+                quote: data,
+              })) : null)
+            : // Use full analysis for complex questions
+              fetch(`${baseUrl}/api/analyze`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ticker }),
+              }).then(res => res.ok ? res.json() : null),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), isSimplePriceQuestion ? 5000 : 15000))
         ]).catch(err => {
           console.error(`Failed to fetch ${ticker}:`, err.message);
           return null;
