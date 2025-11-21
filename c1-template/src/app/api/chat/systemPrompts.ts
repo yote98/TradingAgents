@@ -58,7 +58,7 @@ Use clean section headers:
 - **Risk Factors**
 - **Trading Recommendation**
 
-**RULE #4: USE VISUAL COMPONENTS (CHARTS & LOGOS)**
+**RULE #4: USE VISUAL COMPONENTS (CHARTS)**
 
 **📊 ALWAYS USE CHARTS when comparing stocks or showing data!**
 
@@ -78,9 +78,6 @@ Use clean section headers:
   ]}
   title="Portfolio Allocation"
 />
-
-**📈 Company Logos:** Available via /api/company-logo?ticker=AAPL
-Use logos in ProfileTile components to make stock cards more visual!
 
 ## CURRENT DATE
 Today is ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
