@@ -5,6 +5,7 @@
 
 import { getMarketDataClient } from '../data/marketdata-client';
 import { getCoinGeckoClient } from '../data/coingecko-client';
+import { getReliableQuote } from '../data/reliable-quote';
 import { analyzeMarket } from './market-agent';
 import { analyzeFundamentals } from './fundamental-agent';
 import { analyzeNews } from './news-agent';
@@ -24,10 +25,8 @@ export async function analyzeStock(ticker: string): Promise<ComprehensiveAnalysi
     return analyzeCrypto(ticker);
   }
 
-  const client = getMarketDataClient();
-
-  // Step 1: Get current quote (needed by all agents)
-  const quote = await client.getQuote(ticker);
+  // Step 1: Get current quote using triple-redundant system (Finnhub → Alpha Vantage → Alpaca)
+  const quote = await getReliableQuote(ticker);
 
   // Step 2: Run all 5 analysts in parallel for maximum speed
   const [market, fundamental, news, social, options] = await Promise.all([
