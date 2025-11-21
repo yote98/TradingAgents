@@ -33,31 +33,64 @@ export class MarketDataClient {
   }
 
   async getQuote(ticker: string): Promise<Quote> {
-    // Use our backend API which properly handles MarketData.app
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
-    const response = await fetch(
-      `${backendUrl}/quote/${ticker}`,
-      { next: { revalidate: 60 } } // Cache for 1 minute
-    );
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch quote for ${ticker}`);
+    // Try yfinance directly (FREE and reliable)
+    try {
+      // Use a simple yfinance proxy or direct fetch
+      const yfinanceUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}`;
+      const response = await fetch(yfinanceUrl);
+      
+      if (response.ok) {
+        const data = await response.json();
+        const result = data.chart?.result?.[0];
+        const meta = result?.meta;
+        
+        if (meta) {
+          return {
+            symbol: ticker,
+            price: meta.regularMarketPrice || meta.previousClose || 0,
+            change: (meta.regularMarketPrice || 0) - (meta.previousClose || 0),
+            changePercent: ((meta.regularMarketPrice || 0) - (meta.previousClose || 0)) / (meta.previousClose || 1) * 100,
+            volume: meta.regularMarketVolume || 0,
+            marketCap: 0, // Not available in this endpoint
+            high: meta.regularMarketDayHigh || 0,
+            low: meta.regularMarketDayLow || 0,
+            open: meta.regularMarketOpen || 0,
+            previousClose: meta.previousClose || 0,
+          };
+        }
+      }
+    } catch (error) {
+      console.warn('yfinance failed, trying backend:', error);
     }
 
-    const data = await response.json();
-    
-    return {
-      symbol: data.symbol || ticker,
-      price: data.price || data.mid || 0,
-      change: data.change || 0,
-      changePercent: data.changepct || 0,
-      volume: data.volume || 0,
-      marketCap: data.marketCap || 0,
-      high: data.high || 0,
-      low: data.low || 0,
-      open: data.open || 0,
-      previousClose: data.close || 0,
-    };
+    // Fallback to backend API
+    try {
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+      const response = await fetch(
+        `${backendUrl}/quote/${ticker}`,
+        { next: { revalidate: 60 } }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        return {
+          symbol: data.symbol || ticker,
+          price: data.price || data.mid || 0,
+          change: data.change || 0,
+          changePercent: data.changepct || 0,
+          volume: data.volume || 0,
+          marketCap: data.marketCap || 0,
+          high: data.high || 0,
+          low: data.low || 0,
+          open: data.open || 0,
+          previousClose: data.close || 0,
+        };
+      }
+    } catch (error) {
+      console.error('Backend API failed:', error);
+    }
+
+    throw new Error(`Failed to fetch quote for ${ticker}`);
   }
 
   async getHistoricalData(ticker: string, days: number = 30) {
@@ -272,10 +305,7 @@ let client: MarketDataClient | null = null;
 
 export function getMarketDataClient(): MarketDataClient {
   if (!client) {
-    const apiKey = process.env.MARKETDATA_API_KEY;
-    if (!apiKey) {
-      throw new Error('MARKETDATA_API_KEY is not set');
-    }
+    const apiKey = process.env.MARKETDATA_API_KEY || 'fallback-to-yfinance';
     client = new MarketDataClient(apiKey);
   }
   return client;
