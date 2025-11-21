@@ -1,0 +1,63 @@
+═══════════════════════════════════════════════════════════════
+🚀 QUICK START - Get Unstuck in 5 Minutes
+═══════════════════════════════════════════════════════════════
+
+YOUR DEPLOYMENT IS LIVE! ✅
+
+Step 1: Find Your URL (1 min)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Go to: https://github.com/yote98/TradingAgents/commits/main
+Look for Vercel bot comment on commit 7c966d2
+Copy the URL (https://your-app.vercel.app)
+
+Step 2: Test It (2 min)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Open in browser: test_deployment.html
+Paste your URL
+Click "Run All Tests"
+
+Step 3: Verify Data Accuracy (2 min)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Go to: https://YOUR_URL.vercel.app/chat
+Ask: "What is the current price of NVDA?"
+✅ Should be ~$180 (NOT $149 - that was hallucinated)
+✅ Should match real market data
+
+═══════════════════════════════════════════════════════════════
+🎯 CRITICAL CHECKS (Previous Session Issues)
+═══════════════════════════════════════════════════════════════
+
+✓ NVDA price is correct (~$180, not $149)
+✓ S&P 500 is correct (~6,538, not 5,900)
+✓ No "Failed to fetch" errors
+✓ Chat uses real-time data, not training data
+
+═══════════════════════════════════════════════════════════════
+🐛 IF SOMETHING'S WRONG
+═══════════════════════════════════════════════════════════════
+
+Problem: Tests fail
+Solution: Check environment variables in Vercel Dashboard
+         Settings → Environment Variables
+         Add: OPENAI_API_KEY, MARKETDATA_API_KEY, etc.
+
+Problem: Wrong prices
+Solution: API keys not set or invalid
+         Check Vercel Function Logs for errors
+
+Problem: Can't find URL
+Solution: Check your email from Vercel
+         Or go to: https://vercel.com/dashboard
+
+═══════════════════════════════════════════════════════════════
+📁 HELPFUL FILES
+═══════════════════════════════════════════════════════════════
+
+test_deployment.html       ← START HERE (easiest!)
+RECOVERY_PLAN.md          ← Full recovery guide
+find_vercel_url.md        ← How to find your URL
+VERCEL_DEPLOYMENT_GUIDE.md ← Complete reference
+
+═══════════════════════════════════════════════════════════════
+
+👉 NEXT: Open test_deployment.html in your browser!

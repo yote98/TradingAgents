@@ -1,14 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getMarketDataClient } from '@/lib/data/marketdata-client';
+import { getReliableQuote, verifyQuoteAccuracy } from '@/lib/data/reliable-quote';
 
 /**
- * GET /api/quote?symbol=NVDA
- * Quick stock quote endpoint (no full analysis)
+ * GET /api/quote?symbol=NVDA&verify=true
+ * RELIABLE stock quote with multiple source fallbacks
+ * Use verify=true to cross-check multiple sources for accuracy
  */
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const symbol = searchParams.get('symbol');
+    const verify = searchParams.get('verify') === 'true';
 
     if (!symbol) {
       return NextResponse.json(
@@ -17,8 +19,23 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const client = getMarketDataClient();
-    const quote = await client.getQuote(symbol);
+    // Verify accuracy across multiple sources if requested
+    if (verify) {
+      const verification = await verifyQuoteAccuracy(symbol);
+      return NextResponse.json({
+        success: true,
+        symbol: symbol,
+        price: verification.price,
+        sources: verification.sources,
+        variance: verification.variance,
+        reliable: verification.reliable,
+        warning: verification.reliable ? null : 'High variance detected between sources',
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    // Get reliable quote with automatic fallbacks
+    const quote = await getReliableQuote(symbol);
 
     return NextResponse.json({
       success: true,
@@ -31,14 +48,15 @@ export async function GET(request: NextRequest) {
       low: quote.low,
       open: quote.open,
       previousClose: quote.previousClose,
-      timestamp: new Date().toISOString(),
+      source: quote.source,
+      timestamp: quote.timestamp,
     });
   } catch (error) {
     console.error('Quote error:', error);
     return NextResponse.json(
       {
         success: false,
-        error: 'Failed to fetch quote',
+        error: 'Failed to fetch quote from all sources',
         details: error instanceof Error ? error.message : String(error),
       },
       { status: 500 }
