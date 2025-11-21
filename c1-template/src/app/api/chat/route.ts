@@ -29,9 +29,10 @@ export async function POST(req: NextRequest) {
     responseId: string;
   };
 
+  // Thesys uses OpenAI-compatible API with their base URL
   const client = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-    // No baseURL needed - defaults to OpenAI's API
+    apiKey: process.env.THESYS_API_KEY!,
+    baseURL: "https://api.thesys.dev/v1/embed",
   });
 
   const messageStore = getMessageStore(threadId);
@@ -130,7 +131,7 @@ Full analysis data: ${JSON.stringify(validData, null, 2)}`,
   }
 
   const llmStream = await client.chat.completions.create({
-    model: "gpt-4o", // OpenAI's flagship model - excellent for financial analysis
+    model: "c1/anthropic/claude-sonnet-4/v-20250617", // Thesys C1 model (known working)
     messages: messageStore.getOpenAICompatibleMessageList(),
     stream: true,
     temperature: 0.1, // Low temperature for factual financial data
