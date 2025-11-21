@@ -12,6 +12,7 @@ export async function GET() {
       ALPHA_VANTAGE_API_KEY: !!process.env.ALPHA_VANTAGE_API_KEY,
       FMP_API_KEY: !!process.env.FMP_API_KEY,
       OPENAI_API_KEY: !!process.env.OPENAI_API_KEY,
+      THESYS_API_KEY: !!process.env.THESYS_API_KEY,
     },
     services: {} as Record<string, any>,
   };
