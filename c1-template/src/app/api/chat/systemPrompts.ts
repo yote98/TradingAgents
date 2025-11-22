@@ -120,11 +120,27 @@ Use clean section headers:
   title="Portfolio Allocation"
 />
 
-**CRYPTO ANALYSIS:**
-For crypto, include Fear & Greed Index in your analysis text:
-- Current Fear & Greed: X (Extreme Fear/Fear/Neutral/Greed/Extreme Greed)
-- Contrarian Signal: BULLISH/BEARISH based on extreme readings
-- 7-Day Trend: Improving/Worsening/Stable
+**Crypto Sentiment Radar (FOR CRYPTO ONLY):**
+<CryptoSentimentRadar
+  symbol="BTC"
+  data={{
+    volatility: 75,
+    volume: 60,
+    momentum: 45,
+    fearGreed: 16,
+    social: 70,
+    technicals: 50,
+    onChain: 65
+  }}
+/>
+
+**IMPORTANT:** Only use CryptoSentimentRadar for cryptocurrencies (BTC, ETH, DOGE, etc.), NOT for stocks!
+
+**CRYPTO ANALYSIS GUIDELINES:**
+- Always include Fear & Greed Index (0-100 scale)
+- Show contrarian signal (Extreme Fear = buy opportunity, Extreme Greed = sell signal)
+- Display 7-dimensional sentiment radar chart
+- Include 7-day trend analysis
 
 ## CURRENT DATE
 Today is ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}

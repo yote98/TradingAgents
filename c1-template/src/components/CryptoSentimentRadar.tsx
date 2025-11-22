@@ -1,5 +1,7 @@
 'use client';
 
+import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts';
+
 export interface CryptoSentimentData {
   volatility: number;      // 0-100
   volume: number;          // 0-100
@@ -16,6 +18,17 @@ interface CryptoSentimentRadarProps {
 }
 
 export function CryptoSentimentRadar({ data, symbol }: CryptoSentimentRadarProps) {
+  // Transform data for radar chart
+  const radarData = [
+    { dimension: 'Volatility', value: data.volatility, fullMark: 100 },
+    { dimension: 'Volume', value: data.volume, fullMark: 100 },
+    { dimension: 'Momentum', value: data.momentum, fullMark: 100 },
+    { dimension: 'Fear/Greed', value: data.fearGreed, fullMark: 100 },
+    { dimension: 'Social', value: data.social, fullMark: 100 },
+    { dimension: 'Technicals', value: data.technicals, fullMark: 100 },
+    { dimension: 'On-Chain', value: data.onChain, fullMark: 100 },
+  ];
+
   return (
     <div className="space-y-4 p-6 border rounded-lg bg-card">
       <div className="flex items-center justify-between">
@@ -25,6 +38,24 @@ export function CryptoSentimentRadar({ data, symbol }: CryptoSentimentRadarProps
         <span className="text-sm text-muted-foreground">
           Multi-dimensional analysis
         </span>
+      </div>
+
+      {/* Radar Chart */}
+      <div className="w-full h-[400px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <RadarChart data={radarData}>
+            <PolarGrid stroke="#333" />
+            <PolarAngleAxis dataKey="dimension" tick={{ fill: '#888', fontSize: 12 }} />
+            <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fill: '#888' }} />
+            <Radar
+              name={symbol}
+              dataKey="value"
+              stroke="#10B981"
+              fill="#10B981"
+              fillOpacity={0.6}
+            />
+          </RadarChart>
+        </ResponsiveContainer>
       </div>
 
       {/* Sentiment bars visualization */}
