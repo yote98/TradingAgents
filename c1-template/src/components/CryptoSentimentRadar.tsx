@@ -1,6 +1,6 @@
 'use client';
 
-import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts';
+import { RadarChart } from '@crayonai/react-ui';
 
 export interface CryptoSentimentData {
   volatility: number;      // 0-100
@@ -18,15 +18,15 @@ interface CryptoSentimentRadarProps {
 }
 
 export function CryptoSentimentRadar({ data, symbol }: CryptoSentimentRadarProps) {
-  // Transform data for radar chart
+  // Transform data for Crayon RadarChart
   const radarData = [
-    { dimension: 'Volatility', value: data.volatility, fullMark: 100 },
-    { dimension: 'Volume', value: data.volume, fullMark: 100 },
-    { dimension: 'Momentum', value: data.momentum, fullMark: 100 },
-    { dimension: 'Fear/Greed', value: data.fearGreed, fullMark: 100 },
-    { dimension: 'Social', value: data.social, fullMark: 100 },
-    { dimension: 'Technicals', value: data.technicals, fullMark: 100 },
-    { dimension: 'On-Chain', value: data.onChain, fullMark: 100 },
+    { dimension: 'Volatility', value: data.volatility },
+    { dimension: 'Volume', value: data.volume },
+    { dimension: 'Momentum', value: data.momentum },
+    { dimension: 'Fear/Greed', value: data.fearGreed },
+    { dimension: 'Social', value: data.social },
+    { dimension: 'Technicals', value: data.technicals },
+    { dimension: 'On-Chain', value: data.onChain },
   ];
 
   return (
@@ -40,22 +40,18 @@ export function CryptoSentimentRadar({ data, symbol }: CryptoSentimentRadarProps
         </span>
       </div>
 
-      {/* Radar Chart */}
-      <div className="w-full h-[400px]">
-        <ResponsiveContainer width="100%" height="100%">
-          <RadarChart data={radarData}>
-            <PolarGrid stroke="#333" />
-            <PolarAngleAxis dataKey="dimension" tick={{ fill: '#888', fontSize: 12 }} />
-            <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fill: '#888' }} />
-            <Radar
-              name={symbol}
-              dataKey="value"
-              stroke="#10B981"
-              fill="#10B981"
-              fillOpacity={0.6}
-            />
-          </RadarChart>
-        </ResponsiveContainer>
+      {/* Crayon RadarChart */}
+      <div className="w-full">
+        <RadarChart
+          data={radarData}
+          categoryKey="dimension"
+          theme="emerald"
+          variant="area"
+          grid={true}
+          legend={false}
+          height={400}
+          isAnimationActive={true}
+        />
       </div>
 
       {/* Sentiment bars visualization */}
