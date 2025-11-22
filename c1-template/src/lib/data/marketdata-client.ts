@@ -33,6 +33,37 @@ export class MarketDataClient {
   }
 
   async getQuote(ticker: string): Promise<Quote> {
+    // 0. CRYPTO CHECK: Use CoinGecko for crypto symbols
+    const upperTicker = ticker.toUpperCase();
+    if (upperTicker.includes('BTC') || upperTicker.includes('ETH') || upperTicker.includes('DOGE') || 
+        upperTicker.includes('SOL') || upperTicker.includes('ADA') || upperTicker.endsWith('-USD')) {
+      try {
+        console.log(`🪙 Detected crypto symbol ${ticker}, using CoinGecko`);
+        const { getCoinGeckoClient } = await import('./coingecko-client');
+        const coinGeckoClient = getCoinGeckoClient();
+        const cryptoQuote = await coinGeckoClient.getCryptoQuote(ticker);
+        
+        if (cryptoQuote && cryptoQuote.price > 0) {
+          const quote = {
+            symbol: cryptoQuote.symbol,
+            price: cryptoQuote.price,
+            change: cryptoQuote.change,
+            changePercent: cryptoQuote.changePercent,
+            volume: cryptoQuote.volume,
+            marketCap: cryptoQuote.marketCap,
+            high: cryptoQuote.high,
+            low: cryptoQuote.low,
+            open: 0, // Not available for crypto
+            previousClose: cryptoQuote.price - cryptoQuote.change,
+          };
+          console.log(`✅ CoinGecko success: ${ticker} = ${quote.price}`);
+          return quote;
+        }
+      } catch (error) {
+        console.warn(`⚠️ CoinGecko failed for ${ticker}:`, error);
+      }
+    }
+
     // 1. PRIMARY: marketdata.app (PAID TIER - Real-time data)
     if (this.apiKey && this.apiKey !== 'fallback-to-yfinance') {
       try {
