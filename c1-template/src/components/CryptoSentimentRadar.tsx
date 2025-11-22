@@ -1,7 +1,5 @@
 'use client';
 
-import { RadarChart } from '@crayonai/ui';
-
 export interface CryptoSentimentData {
   volatility: number;      // 0-100
   volume: number;          // 0-100
@@ -18,19 +16,8 @@ interface CryptoSentimentRadarProps {
 }
 
 export function CryptoSentimentRadar({ data, symbol }: CryptoSentimentRadarProps) {
-  // Transform data for RadarChart component
-  const radarData = [
-    { axis: 'Volatility', value: data.volatility },
-    { axis: 'Volume', value: data.volume },
-    { axis: 'Momentum', value: data.momentum },
-    { axis: 'Fear/Greed', value: data.fearGreed },
-    { axis: 'Social', value: data.social },
-    { axis: 'Technicals', value: data.technicals },
-    { axis: 'On-Chain', value: data.onChain },
-  ];
-
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 p-6 border rounded-lg bg-card">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold">
           {symbol} Sentiment Breakdown
@@ -40,66 +27,108 @@ export function CryptoSentimentRadar({ data, symbol }: CryptoSentimentRadarProps
         </span>
       </div>
 
-      <RadarChart
-        data={radarData}
-        width={400}
-        height={400}
-        color="#10B981"
-      />
+      {/* Sentiment bars visualization */}
+      <div className="space-y-3">
 
-      <div className="grid grid-cols-2 gap-4 text-sm">
-        <div>
-          <div className="font-medium">Volatility</div>
-          <div className="text-muted-foreground">
-            {data.volatility > 70 ? 'High' : data.volatility > 40 ? 'Moderate' : 'Low'}
-          </div>
-        </div>
-        <div>
-          <div className="font-medium">Volume</div>
-          <div className="text-muted-foreground">
-            {data.volume > 70 ? 'High' : data.volume > 40 ? 'Moderate' : 'Low'}
-          </div>
-        </div>
-        <div>
-          <div className="font-medium">Momentum</div>
-          <div className="text-muted-foreground">
-            {data.momentum > 60 ? 'Bullish' : data.momentum < 40 ? 'Bearish' : 'Neutral'}
-          </div>
-        </div>
-        <div>
-          <div className="font-medium">Fear/Greed</div>
-          <div className="text-muted-foreground">
-            {data.fearGreed > 80 ? 'Extreme Greed' : 
-             data.fearGreed > 60 ? 'Greed' :
-             data.fearGreed > 40 ? 'Neutral' :
-             data.fearGreed > 20 ? 'Fear' : 'Extreme Fear'}
-          </div>
-        </div>
-        <div>
-          <div className="font-medium">Social Sentiment</div>
-          <div className="text-muted-foreground">
-            {data.social > 60 ? 'Positive' : data.social < 40 ? 'Negative' : 'Neutral'}
-          </div>
-        </div>
-        <div>
-          <div className="font-medium">Technical Signals</div>
-          <div className="text-muted-foreground">
-            {data.technicals > 60 ? 'Bullish' : data.technicals < 40 ? 'Bearish' : 'Neutral'}
-          </div>
-        </div>
-        <div className="col-span-2">
-          <div className="font-medium">On-Chain Activity</div>
-          <div className="text-muted-foreground">
-            {data.onChain > 70 ? 'High whale activity' : 
-             data.onChain > 40 ? 'Moderate activity' : 'Low activity'}
-          </div>
-        </div>
+        {/* Volatility */}
+        <SentimentBar 
+          label="Volatility" 
+          value={data.volatility}
+          description={data.volatility > 70 ? 'High' : data.volatility > 40 ? 'Moderate' : 'Low'}
+        />
+        
+        {/* Volume */}
+        <SentimentBar 
+          label="Volume" 
+          value={data.volume}
+          description={data.volume > 70 ? 'High' : data.volume > 40 ? 'Moderate' : 'Low'}
+        />
+        
+        {/* Momentum */}
+        <SentimentBar 
+          label="Momentum" 
+          value={data.momentum}
+          description={data.momentum > 60 ? 'Bullish' : data.momentum < 40 ? 'Bearish' : 'Neutral'}
+        />
+        
+        {/* Fear/Greed */}
+        <SentimentBar 
+          label="Fear/Greed" 
+          value={data.fearGreed}
+          description={
+            data.fearGreed > 80 ? 'Extreme Greed' : 
+            data.fearGreed > 60 ? 'Greed' :
+            data.fearGreed > 40 ? 'Neutral' :
+            data.fearGreed > 20 ? 'Fear' : 'Extreme Fear'
+          }
+          highlight={data.fearGreed <= 20 || data.fearGreed >= 80}
+        />
+        
+        {/* Social */}
+        <SentimentBar 
+          label="Social" 
+          value={data.social}
+          description={data.social > 60 ? 'Positive' : data.social < 40 ? 'Negative' : 'Neutral'}
+        />
+        
+        {/* Technicals */}
+        <SentimentBar 
+          label="Technicals" 
+          value={data.technicals}
+          description={data.technicals > 60 ? 'Bullish' : data.technicals < 40 ? 'Bearish' : 'Neutral'}
+        />
+        
+        {/* On-Chain */}
+        <SentimentBar 
+          label="On-Chain" 
+          value={data.onChain}
+          description={
+            data.onChain > 70 ? 'High whale activity' : 
+            data.onChain > 40 ? 'Moderate activity' : 'Low activity'
+          }
+        />
       </div>
 
       <div className="text-xs text-muted-foreground border-t pt-4">
         <strong>Note:</strong> Sentiment components are normalized 0-100. 
         Higher values indicate stronger signals in each dimension.
       </div>
+    </div>
+  );
+}
+
+// Helper component for sentiment bars
+function SentimentBar({ 
+  label, 
+  value, 
+  description,
+  highlight = false 
+}: { 
+  label: string; 
+  value: number; 
+  description: string;
+  highlight?: boolean;
+}) {
+  const getColor = () => {
+    if (highlight) return 'bg-yellow-500';
+    if (value >= 70) return 'bg-green-500';
+    if (value >= 40) return 'bg-blue-500';
+    return 'bg-red-500';
+  };
+
+  return (
+    <div className="space-y-1">
+      <div className="flex items-center justify-between text-sm">
+        <span className="font-medium">{label}</span>
+        <span className="text-muted-foreground">{description}</span>
+      </div>
+      <div className="h-2 bg-secondary rounded-full overflow-hidden">
+        <div 
+          className={`h-full ${getColor()} transition-all duration-300`}
+          style={{ width: `${value}%` }}
+        />
+      </div>
+      <div className="text-xs text-muted-foreground text-right">{value}/100</div>
     </div>
   );
 }

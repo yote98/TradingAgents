@@ -101,7 +101,7 @@ export class CryptoFearGreedClient {
    * Get sentiment signal based on Fear & Greed
    * Contrarian indicator: Extreme Fear = potential buy, Extreme Greed = potential sell
    */
-  getContrarian Signal(value: number): {
+  getContrarianSignal(value: number): {
     signal: 'bullish' | 'bearish' | 'neutral';
     reasoning: string;
   } {
