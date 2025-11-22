@@ -69,6 +69,20 @@ async function analyzeCrypto(ticker: string): Promise<ComprehensiveAnalysis> {
     throw new Error(`Cryptocurrency ${ticker} not found`);
   }
 
+  // Get Fear & Greed Index
+  const { getCryptoFearGreedClient } = await import('../data/crypto-fear-greed');
+  const fearGreedClient = getCryptoFearGreedClient();
+  let fearGreedData = null;
+  let fearGreedSignal = null;
+  
+  try {
+    const history = await fearGreedClient.getHistoricalIndex();
+    fearGreedData = history;
+    fearGreedSignal = fearGreedClient.getContrarianSignal(history.current.value);
+  } catch (error) {
+    console.warn('Fear & Greed Index unavailable:', error);
+  }
+
   // Convert crypto quote to standard quote format
   const quote = {
     symbol: cryptoQuote.symbol,
@@ -83,7 +97,13 @@ async function analyzeCrypto(ticker: string): Promise<ComprehensiveAnalysis> {
     previousClose: cryptoQuote.price - cryptoQuote.change,
   };
 
-  // For crypto, create simplified technical analysis from price data
+  // Calculate volatility score (0-100)
+  const volatilityScore = Math.min(Math.abs(cryptoQuote.changePercent) * 5, 100);
+  
+  // Calculate volume score (normalized)
+  const volumeScore = Math.min((cryptoQuote.volume / cryptoQuote.marketCap) * 1000, 100);
+
+  // For crypto, create enhanced technical analysis with Fear & Greed
   const market = {
     signal: cryptoQuote.changePercent > 0 ? 'bullish' as const : 'bearish' as const,
     confidence: Math.min(Math.abs(cryptoQuote.changePercent) * 10, 80),
@@ -91,9 +111,22 @@ async function analyzeCrypto(ticker: string): Promise<ComprehensiveAnalysis> {
       rsi: 50, // Neutral default
       macd: cryptoQuote.changePercent > 0 ? 'bullish' : 'bearish',
       trend: cryptoQuote.changePercent > 5 ? 'uptrend' : cryptoQuote.changePercent < -5 ? 'downtrend' : 'sideways',
+      fearGreed: fearGreedData?.current.value,
+      fearGreedClassification: fearGreedData?.current.classification,
     },
     momentum: `24h change: ${cryptoQuote.changePercent.toFixed(2)}%`,
-    summary: `${cryptoQuote.changePercent > 0 ? 'BULLISH' : 'BEARISH'} with ${cryptoQuote.changePercent.toFixed(2)}% 24h change.`,
+    summary: fearGreedData 
+      ? `${cryptoQuote.changePercent > 0 ? 'BULLISH' : 'BEARISH'} with ${cryptoQuote.changePercent.toFixed(2)}% 24h change. Fear & Greed: ${fearGreedData.current.value} (${fearGreedData.current.classification}). ${fearGreedSignal?.reasoning}`
+      : `${cryptoQuote.changePercent > 0 ? 'BULLISH' : 'BEARISH'} with ${cryptoQuote.changePercent.toFixed(2)}% 24h change.`,
+    cryptoSentiment: {
+      volatility: volatilityScore,
+      volume: volumeScore,
+      momentum: cryptoQuote.changePercent > 0 ? Math.min(cryptoQuote.changePercent * 10, 100) : Math.max(50 + cryptoQuote.changePercent * 5, 0),
+      fearGreed: fearGreedData?.current.value || 50,
+      social: 50, // Will be enhanced by social analyst
+      technicals: cryptoQuote.changePercent > 0 ? 60 : 40,
+      onChain: 50, // Placeholder for future on-chain metrics
+    },
   };
   
   // Crypto doesn't have traditional fundamentals, so we create a crypto-specific analysis

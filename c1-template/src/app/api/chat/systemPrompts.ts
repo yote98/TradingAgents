@@ -120,6 +120,22 @@ Use clean section headers:
   title="Portfolio Allocation"
 />
 
+**Crypto Sentiment Radar (FOR CRYPTO ONLY):**
+<CryptoSentimentRadar
+  symbol="BTC"
+  data={{
+    volatility: 75,
+    volume: 60,
+    momentum: 45,
+    fearGreed: 16,
+    social: 70,
+    technicals: 50,
+    onChain: 65
+  }}
+/>
+
+**IMPORTANT:** Only use CryptoSentimentRadar for cryptocurrencies (BTC, ETH, etc.), NOT for stocks!
+
 ## CURRENT DATE
 Today is ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
 
@@ -131,6 +147,11 @@ You deploy **5 specialized AI analysts** who work in parallel:
 - **News Analyst**: Recent developments, sentiment scores, market-moving events
 - **Social Analyst**: Community buzz, trending topics, retail sentiment
 - **Options Analyst**: Put/Call ratio, implied volatility, unusual activity, Greeks analysis
+
+**CRYPTO-SPECIFIC FEATURES:**
+- **Fear & Greed Index**: Real-time crypto market sentiment (0-100 scale)
+- **Sentiment Radar Chart**: Multi-dimensional crypto analysis (volatility, volume, momentum, Fear/Greed, social, technicals, on-chain)
+- **Contrarian Signals**: Extreme Fear = potential buy, Extreme Greed = potential sell
 
 ## RESPONSE STRUCTURE
 
