@@ -33,47 +33,84 @@ export class MarketDataClient {
   }
 
   async getQuote(ticker: string): Promise<Quote> {
-    // Try yfinance directly (FREE and reliable)
+    // 1. PRIMARY: marketdata.app (PAID TIER - Real-time data)
+    if (this.apiKey && this.apiKey !== 'fallback-to-yfinance') {
+      try {
+        console.log(`📊 Fetching ${ticker} from marketdata.app (PRIMARY)`);
+        const response = await fetch(
+          `${this.baseUrl}/stocks/quotes/${ticker}/?token=${this.apiKey}`,
+          { cache: 'no-store' }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          
+          if (data.s === 'ok' && data.last && data.last[0]) {
+            const quote = {
+              symbol: data.symbol?.[0] || ticker,
+              price: data.last[0] || 0,
+              change: data.change?.[0] || 0,
+              changePercent: data.changepct?.[0] || 0,
+              volume: data.volume?.[0] || 0,
+              marketCap: 0, // Not in this endpoint
+              high: data.high?.[0] || 0,
+              low: data.low?.[0] || 0,
+              open: data.open?.[0] || 0,
+              previousClose: data.close?.[0] || 0,
+            };
+            console.log(`✅ marketdata.app success: ${ticker} = $${quote.price}`);
+            return quote;
+          }
+        }
+      } catch (error) {
+        console.warn(`⚠️ marketdata.app failed for ${ticker}, trying fallback:`, error);
+      }
+    }
+
+    // 2. FALLBACK: Yahoo Finance (FREE)
     try {
-      // Use a simple yfinance proxy or direct fetch
+      console.log(`📊 Fetching ${ticker} from Yahoo Finance (FALLBACK)`);
       const yfinanceUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}`;
-      const response = await fetch(yfinanceUrl);
+      const response = await fetch(yfinanceUrl, { cache: 'no-store' });
       
       if (response.ok) {
         const data = await response.json();
         const result = data.chart?.result?.[0];
         const meta = result?.meta;
         
-        if (meta) {
-          return {
+        if (meta && meta.regularMarketPrice) {
+          const quote = {
             symbol: ticker,
             price: meta.regularMarketPrice || meta.previousClose || 0,
             change: (meta.regularMarketPrice || 0) - (meta.previousClose || 0),
             changePercent: ((meta.regularMarketPrice || 0) - (meta.previousClose || 0)) / (meta.previousClose || 1) * 100,
             volume: meta.regularMarketVolume || 0,
-            marketCap: 0, // Not available in this endpoint
+            marketCap: 0,
             high: meta.regularMarketDayHigh || 0,
             low: meta.regularMarketDayLow || 0,
             open: meta.regularMarketOpen || 0,
             previousClose: meta.previousClose || 0,
           };
+          console.log(`✅ Yahoo Finance success: ${ticker} = $${quote.price}`);
+          return quote;
         }
       }
     } catch (error) {
-      console.warn('yfinance failed, trying backend:', error);
+      console.warn(`⚠️ Yahoo Finance failed for ${ticker}, trying backend:`, error);
     }
 
-    // Fallback to backend API
+    // 3. EMERGENCY: Backend API (if you have one running)
     try {
+      console.log(`📊 Fetching ${ticker} from Backend API (EMERGENCY)`);
       const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
       const response = await fetch(
         `${backendUrl}/quote/${ticker}`,
-        { cache: 'no-store' } // CRITICAL: No caching for price data
+        { cache: 'no-store' }
       );
 
       if (response.ok) {
         const data = await response.json();
-        return {
+        const quote = {
           symbol: data.symbol || ticker,
           price: data.price || data.mid || 0,
           change: data.change || 0,
@@ -85,12 +122,14 @@ export class MarketDataClient {
           open: data.open || 0,
           previousClose: data.close || 0,
         };
+        console.log(`✅ Backend API success: ${ticker} = $${quote.price}`);
+        return quote;
       }
     } catch (error) {
-      console.error('Backend API failed:', error);
+      console.error(`❌ Backend API failed for ${ticker}:`, error);
     }
 
-    throw new Error(`Failed to fetch quote for ${ticker}`);
+    throw new Error(`❌ All data sources failed for ${ticker}`);
   }
 
   async getHistoricalData(ticker: string, days: number = 30) {
