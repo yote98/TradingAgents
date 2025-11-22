@@ -54,8 +54,27 @@ export async function POST(req: NextRequest) {
   const textContent = userMessage.match(/<content>(.*?)<\/content>/i)?.[1] || userMessage;
   console.log(`📝 Extracted text: "${textContent}"`);
   
+  // Convert common crypto names to tickers
+  let processedText = textContent;
+  const cryptoNameMap: { [key: string]: string } = {
+    'bitcoin': 'BTC-USD',
+    'ethereum': 'ETH-USD',
+    'dogecoin': 'DOGE-USD',
+    'solana': 'SOL-USD',
+    'cardano': 'ADA-USD',
+    'ripple': 'XRP-USD',
+  };
+  
+  for (const [name, ticker] of Object.entries(cryptoNameMap)) {
+    const regex = new RegExp(`\\b${name}\\b`, 'gi');
+    if (regex.test(processedText)) {
+      console.log(`🪙 Converting "${name}" to ${ticker}`);
+      processedText = processedText.replace(regex, ticker);
+    }
+  }
+  
   // Find all ticker symbols in the message (supports comparisons)
-  const tickerMatches = textContent.match(/\b([A-Z]{2,5}(-USD)?)\b/g);
+  const tickerMatches = processedText.match(/\b([A-Z]{2,5}(-USD)?)\b/g);
   
   if (tickerMatches && tickerMatches.length > 0) {
     const tickers = [...new Set(tickerMatches)]; // Remove duplicates
