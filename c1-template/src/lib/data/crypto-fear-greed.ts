@@ -2,6 +2,7 @@
  * Crypto Fear & Greed Index Client
  * Free API from Alternative.me - No key required!
  * https://api.alternative.me/fng/
+ * Updates every 8 hours
  */
 
 export interface FearGreedData {
