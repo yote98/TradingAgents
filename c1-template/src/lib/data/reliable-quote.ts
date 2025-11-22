@@ -19,10 +19,35 @@ export interface ReliableQuote {
 
 /**
  * Get quote with triple fallback - GUARANTEED accuracy
- * Priority: Finnhub (fastest) → Alpha Vantage (reliable) → Alpaca (institutional)
+ * Priority: MarketData.app (stocks) / CoinGecko (crypto) → Finnhub → Alpha Vantage → Alpaca
  */
 export async function getReliableQuote(symbol: string): Promise<ReliableQuote> {
   const errors: string[] = [];
+  
+  // 0. Try MarketData.app client (includes CoinGecko for crypto)
+  try {
+    const { getMarketDataClient } = await import('./marketdata-client');
+    const client = getMarketDataClient();
+    const quote = await client.getQuote(symbol);
+    
+    if (quote && quote.price > 0) {
+      return {
+        symbol: quote.symbol,
+        price: quote.price,
+        change: quote.change,
+        changePercent: quote.changePercent,
+        volume: quote.volume,
+        high: quote.high,
+        low: quote.low,
+        open: quote.open,
+        previousClose: quote.previousClose,
+        timestamp: new Date().toISOString(),
+        source: 'MarketData.app',
+      };
+    }
+  } catch (error) {
+    errors.push(`MarketData.app: ${error}`);
+  }
   
   // 1. Try Finnhub (fastest and most reliable)
   try {
