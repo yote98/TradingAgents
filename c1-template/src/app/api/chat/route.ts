@@ -74,15 +74,16 @@ export async function POST(req: NextRequest) {
       const isSimplePriceQuestion = /\b(price|current|quote|trading at|worth)\b/i.test(textContent);
       
       // Fetch data for tickers in parallel with timeout
-      const dataPromises = limitedTickers.map(ticker =>
+      // CRITICAL: Preserve the requested ticker symbol to prevent mixing
+      const dataPromises = limitedTickers.map(requestedTicker =>
         Promise.race([
           isSimplePriceQuestion
             ? // Use quick quote endpoint for simple price questions
-              fetch(`${baseUrl}/api/quote?symbol=${ticker}&_t=${Date.now()}`, {
+              fetch(`${baseUrl}/api/quote?symbol=${requestedTicker}&_t=${Date.now()}`, {
                 headers: { 'Content-Type': 'application/json' },
                 cache: 'no-store',
               }).then(res => res.ok ? res.json().then(data => ({
-                ticker: data.symbol,
+                ticker: requestedTicker, // Use requested ticker, not response ticker
                 current_price: data.price,
                 final_decision: 'HOLD',
                 confidence: 50,
@@ -94,12 +95,15 @@ export async function POST(req: NextRequest) {
               fetch(`${baseUrl}/api/analyze?_t=${Date.now()}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ticker }),
+                body: JSON.stringify({ ticker: requestedTicker }),
                 cache: 'no-store',
-              }).then(res => res.ok ? res.json() : null),
+              }).then(res => res.ok ? res.json().then(data => ({
+                ...data,
+                ticker: requestedTicker, // Ensure ticker matches request
+              })) : null),
           new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), isSimplePriceQuestion ? 5000 : 15000))
         ]).catch(err => {
-          console.error(`Failed to fetch ${ticker}:`, err.message);
+          console.error(`Failed to fetch ${requestedTicker}:`, err.message);
           return null;
         })
       );
