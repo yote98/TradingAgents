@@ -54,15 +54,54 @@ export async function POST(req: NextRequest) {
   const textContent = userMessage.match(/<content>(.*?)<\/content>/i)?.[1] || userMessage;
   console.log(`📝 Extracted text: "${textContent}"`);
   
-  // Convert common crypto names to tickers
+  // Convert common crypto names to tickers - Top 30+ cryptocurrencies
   let processedText = textContent;
   const cryptoNameMap: { [key: string]: string } = {
+    // Top 10
     'bitcoin': 'BTC-USD',
     'ethereum': 'ETH-USD',
-    'dogecoin': 'DOGE-USD',
+    'tether': 'USDT-USD',
+    'binance coin': 'BNB-USD',
+    'bnb': 'BNB-USD',
     'solana': 'SOL-USD',
-    'cardano': 'ADA-USD',
     'ripple': 'XRP-USD',
+    'xrp': 'XRP-USD',
+    'usd coin': 'USDC-USD',
+    'usdc': 'USDC-USD',
+    'cardano': 'ADA-USD',
+    'dogecoin': 'DOGE-USD',
+    'tron': 'TRX-USD',
+    
+    // Top 11-20
+    'avalanche': 'AVAX-USD',
+    'shiba inu': 'SHIB-USD',
+    'shib': 'SHIB-USD',
+    'polkadot': 'DOT-USD',
+    'polygon': 'MATIC-USD',
+    'matic': 'MATIC-USD',
+    'litecoin': 'LTC-USD',
+    'chainlink': 'LINK-USD',
+    'uniswap': 'UNI-USD',
+    'cosmos': 'ATOM-USD',
+    'stellar': 'XLM-USD',
+    'bitcoin cash': 'BCH-USD',
+    
+    // Top 21-30
+    'monero': 'XMR-USD',
+    'ethereum classic': 'ETC-USD',
+    'algorand': 'ALGO-USD',
+    'vechain': 'VET-USD',
+    'filecoin': 'FIL-USD',
+    'hedera': 'HBAR-USD',
+    'aptos': 'APT-USD',
+    'near': 'NEAR-USD',
+    'arbitrum': 'ARB-USD',
+    'optimism': 'OP-USD',
+    
+    // Popular meme/alt coins
+    'pepe': 'PEPE-USD',
+    'floki': 'FLOKI-USD',
+    'bonk': 'BONK-USD',
   };
   
   for (const [name, ticker] of Object.entries(cryptoNameMap)) {

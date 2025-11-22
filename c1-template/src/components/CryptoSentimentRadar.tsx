@@ -1,6 +1,7 @@
 'use client';
 
 import { RadarChart } from '@crayonai/react-ui';
+import { TickerLogo } from './TickerLogo';
 
 export interface CryptoSentimentData {
   volatility: number;      // 0-100
@@ -32,9 +33,12 @@ export function CryptoSentimentRadar({ data, symbol }: CryptoSentimentRadarProps
   return (
     <div className="space-y-4 p-6 border rounded-lg bg-card">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">
-          {symbol} Sentiment Breakdown
-        </h3>
+        <div className="flex items-center gap-3">
+          <TickerLogo ticker={symbol} size="md" />
+          <h3 className="text-lg font-semibold">
+            {symbol} Sentiment Breakdown
+          </h3>
+        </div>
         <span className="text-sm text-muted-foreground">
           Multi-dimensional analysis
         </span>

@@ -33,8 +33,9 @@ export interface CryptoMarketData {
 export class CoinGeckoClient {
   private baseUrl = 'https://api.coingecko.com/api/v3';
 
-  // Map common symbols to CoinGecko IDs
+  // Map common symbols to CoinGecko IDs - Top 30 cryptocurrencies
   private symbolToId: { [key: string]: string } = {
+    // Top 10
     'BTC': 'bitcoin',
     'ETH': 'ethereum',
     'USDT': 'tether',
@@ -45,11 +46,40 @@ export class CoinGeckoClient {
     'ADA': 'cardano',
     'DOGE': 'dogecoin',
     'TRX': 'tron',
+    
+    // Top 11-20
     'AVAX': 'avalanche-2',
     'SHIB': 'shiba-inu',
     'DOT': 'polkadot',
     'MATIC': 'matic-network',
     'LTC': 'litecoin',
+    'LINK': 'chainlink',
+    'UNI': 'uniswap',
+    'ATOM': 'cosmos',
+    'XLM': 'stellar',
+    'BCH': 'bitcoin-cash',
+    
+    // Top 21-30
+    'XMR': 'monero',
+    'ETC': 'ethereum-classic',
+    'ALGO': 'algorand',
+    'VET': 'vechain',
+    'FIL': 'filecoin',
+    'HBAR': 'hedera-hashgraph',
+    'APT': 'aptos',
+    'NEAR': 'near',
+    'ARB': 'arbitrum',
+    'OP': 'optimism',
+    
+    // Popular meme/alt coins
+    'PEPE': 'pepe',
+    'FLOKI': 'floki',
+    'BONK': 'bonk',
+    
+    // Stablecoins
+    'DAI': 'dai',
+    'BUSD': 'binance-usd',
+    'TUSD': 'true-usd',
   };
 
   private getCoinId(symbol: string): string {

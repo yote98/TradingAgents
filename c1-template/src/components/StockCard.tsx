@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { TickerLogo } from './TickerLogo';
 
 interface StockCardProps {
   ticker: string;
@@ -24,42 +24,13 @@ export function StockCard({
   stopLoss,
 }: StockCardProps) {
   const isPositive = (change || 0) >= 0;
-  const [logoUrl, setLogoUrl] = useState<string | null>(null);
-
-  // Fetch logo from FMP API (more reliable than Clearbit)
-  useEffect(() => {
-    const fetchLogo = async () => {
-      try {
-        // Use FMP profile endpoint to get company logo
-        const response = await fetch(`/api/company-logo?ticker=${ticker}`);
-        if (response.ok) {
-          const data = await response.json();
-          setLogoUrl(data.logoUrl);
-        }
-      } catch (error) {
-        console.error('Failed to fetch logo:', error);
-      }
-    };
-
-    fetchLogo();
-  }, [ticker]);
 
   return (
     <div className="bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 rounded-xl p-6 shadow-2xl max-w-md">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          {logoUrl && (
-            <img 
-              src={logoUrl} 
-              alt={`${ticker} logo`}
-              className="w-12 h-12 rounded-lg bg-white p-1"
-              onError={(e) => {
-                // Hide image if logo fails to load
-                e.currentTarget.style.display = 'none';
-              }}
-            />
-          )}
+          <TickerLogo ticker={ticker} size="lg" />
           <div>
             <h2 className="text-2xl font-bold text-white">{ticker}</h2>
             <p className="text-sm text-gray-400">Real-time from MarketData.app</p>

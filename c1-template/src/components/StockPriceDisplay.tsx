@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { TickerLogo } from './TickerLogo';
 
 interface StockPriceDisplayProps {
   ticker: string;
@@ -77,18 +78,21 @@ export function StockPriceDisplay({ ticker, apiUrl = 'http://localhost:5000' }: 
   return (
     <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-lg p-4 mb-4">
       <div className="flex items-center justify-between">
-        <div>
-          <div className="text-sm text-gray-400 mb-1">Real-Time Price</div>
-          <div className="text-3xl font-bold text-white">
-            ${priceData.price?.toFixed(2) || 'N/A'}
-          </div>
-          <div className="text-xs text-gray-500 mt-1">
-            {priceData.source || 'MarketData.app'}
-            {priceData.updated_datetime && (
-              <span className="ml-2">
-                • Updated: {new Date(priceData.updated_datetime).toLocaleTimeString()}
-              </span>
-            )}
+        <div className="flex items-center gap-3">
+          <TickerLogo ticker={ticker} size="md" />
+          <div>
+            <div className="text-sm text-gray-400 mb-1">Real-Time Price</div>
+            <div className="text-3xl font-bold text-white">
+              ${priceData.price?.toFixed(2) || 'N/A'}
+            </div>
+            <div className="text-xs text-gray-500 mt-1">
+              {priceData.source || 'MarketData.app'}
+              {priceData.updated_datetime && (
+                <span className="ml-2">
+                  • Updated: {new Date(priceData.updated_datetime).toLocaleTimeString()}
+                </span>
+              )}
+            </div>
           </div>
         </div>
         <div className="text-green-400">
