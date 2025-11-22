@@ -118,7 +118,7 @@ export async function POST(req: NextRequest) {
         const messages = messageStore.messageList;
         const oldDataIndices: number[] = [];
         messages.forEach((m, i) => {
-          if (m.role === 'system' && typeof m.content === 'string' && m.content.includes('🚨 REAL-TIME DATA')) {
+          if (m.role === 'system' && typeof m.content === 'string' && m.content.includes('🚨 REAL-TIME')) {
             oldDataIndices.push(i);
           }
         });
@@ -128,138 +128,69 @@ export async function POST(req: NextRequest) {
           console.log(`🗑️ Removed old price data at index ${i}`);
         });
         
+        // Build price mapping for clear reference
+        const priceMap = validData.map(d => `${d.ticker}=$${d.current_price}`).join(', ');
+        
         const dataMessage: DBMessage = {
           role: 'system',
-          content: `🚨 REAL-TIME DATA (${new Date().toISOString()}) 🚨
+          content: `🚨 REAL-TIME MARKET DATA - DO NOT CALL TOOLS 🚨
+Timestamp: ${new Date().toISOString()}
+
+I HAVE ALREADY FETCHED THE DATA FOR YOU. DO NOT CALL get_stock_data TOOL!
+
+PRICE MAPPING: ${priceMap}
 
 ${validData.map(data => `
-${data.ticker}:
-- Current Price: $${data.current_price}
-- Recommendation: ${data.final_decision}
-- Confidence: ${data.confidence}%
-- Target: $${data.target_price}
-- Stop Loss: $${data.stop_loss}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${data.ticker} LIVE DATA:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Current Price: $${data.current_price}
+Recommendation: ${data.final_decision}
+Confidence: ${data.confidence}%
+Target Price: $${data.target_price}
+Stop Loss: $${data.stop_loss}
 
+RENDER THIS COMPONENT:
 <StockCard ticker="${data.ticker}" price={${data.current_price}} recommendation="${data.final_decision}" confidence={${data.confidence}} target={${data.target_price}} stopLoss={${data.stop_loss}} />
 `).join('\n')}
 
-CRITICAL: Use these EXACT prices in your response! This is real-time market data.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚠️ CRITICAL INSTRUCTIONS:
+1. USE THESE EXACT PRICES - They are from live market APIs
+2. DO NOT call get_stock_data tool - I already fetched the data
+3. DO NOT use your training data - It's outdated
+4. DO NOT make up prices - Use only what's above
+5. MATCH ticker symbols EXACTLY as shown above
+6. When comparing stocks, say: "${validData.map(d => `${d.ticker} at $${d.current_price}`).join(', ')}"
 
 Full analysis data: ${JSON.stringify(validData, null, 2)}`,
         };
         
         messageStore.addMessage(dataMessage);
-        console.log(`✅ Injected data for ${validData.length} ticker(s): ${validData.map(d => `${d.ticker}=$${d.current_price}`).join(', ')}`);
+        console.log(`✅ Injected data for ${validData.length} ticker(s): ${priceMap}`);
       }
     } catch (error) {
       console.error('Error fetching stock data:', error);
     }
   }
 
-  // 🔧 Add Financial Datasets tool for automatic data fetching
-  const availableTools = [
-    financialDatasetsTool,
-  ];
+  // 🔧 DISABLE Financial Datasets tool when we've already injected data
+  // This prevents AI from calling tools and getting confused
+  const availableTools = [];
 
-  // First LLM call - may trigger tool calls
+  // First LLM call - NO TOOLS to prevent confusion
   let llmResponse = await client.chat.completions.create({
     model: "c1/anthropic/claude-sonnet-4/v-20250930",
     messages: messageStore.getOpenAICompatibleMessageList(),
-    tools: availableTools, // 🎯 AI can now call tools automatically!
     temperature: 0.1,
     max_tokens: 2048,
   });
 
-  // Check if AI wants to call tools
-  const firstChoice = llmResponse.choices[0];
-  
-  if (firstChoice.finish_reason === 'tool_calls' && firstChoice.message.tool_calls) {
-    console.log(`🔧 AI requested ${firstChoice.message.tool_calls.length} tool call(s)`);
-    
-    // Execute all tool calls
-    const toolResults = await Promise.all(
-      firstChoice.message.tool_calls.map(async (toolCall) => {
-        console.log(`🔧 Executing tool: ${toolCall.function.name}`);
-        console.log(`📊 Arguments:`, toolCall.function.arguments);
-        
-        try {
-          const args = JSON.parse(toolCall.function.arguments);
-          const result = await executeFinancialDatasetsTool(args);
-          
-          console.log(`✅ Tool result:`, result);
-          
-          return {
-            tool_call_id: toolCall.id,
-            role: 'tool' as const,
-            name: toolCall.function.name,
-            content: JSON.stringify(result),
-          };
-        } catch (error) {
-          console.error(`❌ Tool execution failed:`, error);
-          return {
-            tool_call_id: toolCall.id,
-            role: 'tool' as const,
-            name: toolCall.function.name,
-            content: JSON.stringify({ error: String(error) }),
-          };
-        }
-      })
-    );
-    
-    // Add assistant message with tool calls
-    messageStore.addMessage({
-      role: 'assistant',
-      content: firstChoice.message.content || '',
-      tool_calls: firstChoice.message.tool_calls,
-    });
-    
-    // Add tool results
-    toolResults.forEach(result => {
-      messageStore.addMessage(result as any);
-    });
-    
-    // Second LLM call with tool results - now stream the response
-    const llmStream = await client.chat.completions.create({
-      model: "c1/anthropic/claude-sonnet-4/v-20250930",
-      messages: messageStore.getOpenAICompatibleMessageList(),
-      stream: true,
-      temperature: 0.1,
-      max_tokens: 2048,
-    });
-    
-    const responseStream = transformStream(
-      llmStream,
-      (chunk) => {
-        return chunk.choices?.[0]?.delta?.content ?? "";
-      },
-      {
-        onEnd: ({ accumulated }) => {
-          const message = accumulated.filter((chunk) => chunk).join("");
-          messageStore.addMessage({
-            role: "assistant",
-            content: message,
-            id: responseId,
-          });
-        },
-      }
-    ) as ReadableStream<string>;
-
-    return new NextResponse(responseStream, {
-      headers: {
-        "Content-Type": "text/event-stream",
-        "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
-        "Pragma": "no-cache",
-        "Expires": "0",
-        Connection: "keep-alive",
-      },
-    });
-  }
-  
-  // No tool calls - stream the response directly
+  // Stream the response directly
   const llmStream = await client.chat.completions.create({
     model: "c1/anthropic/claude-sonnet-4/v-20250930",
     messages: messageStore.getOpenAICompatibleMessageList(),
-    tools: availableTools,
     stream: true,
     temperature: 0.1,
     max_tokens: 2048,
