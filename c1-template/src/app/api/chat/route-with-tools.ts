@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 import { transformStream } from "@crayonai/stream";
 import { DBMessage, getMessageStore } from "./messageStore";
-import { tools } from "./tools";
 import { z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import { financialDatasetsTool, executeFinancialDatasetsTool } from "./tools/financialDatasets";
@@ -46,116 +45,12 @@ export async function POST(req: NextRequest) {
   // Add user message to store
   messageStore.addMessage(prompt);
   
-  // 🚀 AUTO-DETECT STOCK ANALYSIS REQUESTS - SUPPORT SINGLE & MULTIPLE STOCKS
-  const userMessage = typeof prompt.content === 'string' ? prompt.content : '';
-  console.log(`📝 User message: "${userMessage}"`);
-  
-  // Extract text from XML tags if present (C1 format: <content>text</content>)
-  const textContent = userMessage.match(/<content>(.*?)<\/content>/i)?.[1] || userMessage;
-  console.log(`📝 Extracted text: "${textContent}"`);
-  
-  // Find all ticker symbols in the message (supports comparisons)
-  const tickerMatches = textContent.match(/\b([A-Z]{2,5}(-USD)?)\b/g);
-  
-  if (tickerMatches && tickerMatches.length > 0) {
-    const tickers = [...new Set(tickerMatches)]; // Remove duplicates
-    console.log(`🎯 FOUND ${tickers.length} TICKER(S): ${tickers.join(', ')}`);
-    
-    try {
-      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-      
-      // Limit to max 3 tickers to prevent timeout
-      const limitedTickers = tickers.slice(0, 3);
-      if (tickers.length > 3) {
-        console.log(`⚠️ Too many tickers (${tickers.length}), limiting to first 3: ${limitedTickers.join(', ')}`);
-      }
-      
-      // Check if this is a simple price question (use quick quote endpoint)
-      const isSimplePriceQuestion = /\b(price|current|quote|trading at|worth)\b/i.test(textContent);
-      
-      // Fetch data for tickers in parallel with timeout
-      const dataPromises = limitedTickers.map(ticker =>
-        Promise.race([
-          isSimplePriceQuestion
-            ? // Use quick quote endpoint for simple price questions
-              fetch(`${baseUrl}/api/quote?symbol=${ticker}&_t=${Date.now()}`, {
-                headers: { 'Content-Type': 'application/json' },
-                cache: 'no-store',
-              }).then(res => res.ok ? res.json().then(data => ({
-                ticker: data.symbol,
-                current_price: data.price,
-                final_decision: 'HOLD',
-                confidence: 50,
-                target_price: data.price,
-                stop_loss: data.price * 0.95,
-                quote: data,
-              })) : null)
-            : // Use full analysis for complex questions
-              fetch(`${baseUrl}/api/analyze?_t=${Date.now()}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ticker }),
-                cache: 'no-store',
-              }).then(res => res.ok ? res.json() : null),
-          new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), isSimplePriceQuestion ? 5000 : 15000))
-        ]).catch(err => {
-          console.error(`Failed to fetch ${ticker}:`, err.message);
-          return null;
-        })
-      );
-      
-      const allData = await Promise.all(dataPromises);
-      
-      // Inject real-time data for all tickers
-      const validData = allData.filter(d => d !== null);
-      
-      if (validData.length > 0) {
-        // CRITICAL: Remove any old price data from message store to prevent stale data
-        const messages = messageStore.messageList;
-        const oldDataIndices: number[] = [];
-        messages.forEach((m, i) => {
-          if (m.role === 'system' && typeof m.content === 'string' && m.content.includes('🚨 REAL-TIME DATA')) {
-            oldDataIndices.push(i);
-          }
-        });
-        // Remove in reverse order to maintain indices
-        oldDataIndices.reverse().forEach(i => {
-          messages.splice(i, 1);
-          console.log(`🗑️ Removed old price data at index ${i}`);
-        });
-        
-        const dataMessage: DBMessage = {
-          role: 'system',
-          content: `🚨 REAL-TIME DATA (${new Date().toISOString()}) 🚨
-
-${validData.map(data => `
-${data.ticker}:
-- Current Price: $${data.current_price}
-- Recommendation: ${data.final_decision}
-- Confidence: ${data.confidence}%
-- Target: $${data.target_price}
-- Stop Loss: $${data.stop_loss}
-
-<StockCard ticker="${data.ticker}" price={${data.current_price}} recommendation="${data.final_decision}" confidence={${data.confidence}} target={${data.target_price}} stopLoss={${data.stop_loss}} />
-`).join('\n')}
-
-CRITICAL: Use these EXACT prices in your response! This is real-time market data.
-
-Full analysis data: ${JSON.stringify(validData, null, 2)}`,
-        };
-        
-        messageStore.addMessage(dataMessage);
-        console.log(`✅ Injected data for ${validData.length} ticker(s): ${validData.map(d => `${d.ticker}=$${d.current_price}`).join(', ')}`);
-      }
-    } catch (error) {
-      console.error('Error fetching stock data:', error);
-    }
-  }
-
   // 🔧 Add Financial Datasets tool for automatic data fetching
   const availableTools = [
     financialDatasetsTool,
   ];
+
+  console.log(`📝 User message: "${typeof prompt.content === 'string' ? prompt.content : JSON.stringify(prompt.content)}"`);
 
   // First LLM call - may trigger tool calls
   let llmResponse = await client.chat.completions.create({

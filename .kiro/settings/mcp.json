@@ -1,9 +1,26 @@
 {
   "mcpServers": {
+    "thesys": {
+      "url": "https://thesys-kdif.mcp.tadata.com/sse",
+      "disabled": false,
+      "autoApprove": ["get_stock_quote", "search_stocks"]
+    },
     "alphavantage": {
       "url": "https://mcp.alphavantage.co/mcp?apikey=H0MDWALD76X9X96C",
       "disabled": false,
       "autoApprove": []
+    },
+    "financialdatasets": {
+      "url": "https://mcp.financialdatasets.ai/mcp",
+      "headers": {
+        "X-API-KEY": "b3f23bba-9951-46fe-9fbc-827ea30fa063"
+      },
+      "disabled": false,
+      "autoApprove": [
+        "get_stock_price",
+        "get_company_info",
+        "get_analyst_estimates"
+      ]
     },
     "postgres": {
       "command": "uvx",

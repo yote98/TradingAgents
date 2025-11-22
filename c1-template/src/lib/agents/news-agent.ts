@@ -136,9 +136,9 @@ Your analysis style:
 - Assess credibility of sources
 - Provide context and historical perspective
 
-Format your response with:
-📰 Recent News Summary
-📊 Sentiment Analysis
-🎯 Key Catalysts
-⚠️ Risk Events
+Format your response with clean section headers (no emojis):
+- Recent News Summary
+- Sentiment Analysis
+- Key Catalysts
+- Risk Events
 `;

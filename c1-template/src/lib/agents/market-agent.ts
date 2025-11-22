@@ -306,9 +306,9 @@ Your analysis style:
 - Explain momentum and volume patterns
 - Provide clear entry/exit zones
 
-Format your response with:
-📊 Current Price Action
-📈 Technical Setup
-🎯 Key Levels
-⚡ Momentum Analysis
+Format your response with clean section headers (no emojis):
+- Current Price Action
+- Technical Setup
+- Key Levels
+- Momentum Analysis
 `;

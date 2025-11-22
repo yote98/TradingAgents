@@ -140,9 +140,9 @@ Your analysis style:
 - Assess financial health and growth potential
 - Provide clear valuation assessment
 
-Format your response with:
-💰 Valuation Overview
-📊 Financial Health
-🏆 Competitive Position
-⚠️ Key Risks
+Format your response with clean section headers (no emojis):
+- Valuation Overview
+- Financial Health
+- Competitive Position
+- Key Risks
 `;
